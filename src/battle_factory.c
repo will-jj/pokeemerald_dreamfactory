@@ -168,6 +168,7 @@ static const u8 sFixedIVTable[][2] =
     {23, 27},
     {27, 31},
     {31, 31},
+    {31, 31},
 };
 
 static const u16 sInitialRentalMonRanges[][2] =
