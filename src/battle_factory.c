@@ -836,37 +836,27 @@ void FillFactoryBrainParty(void)
 static u16 GetFactoryMonId(u8 lvlMode, u8 challengeNum, bool8 useBetterRange)
 {
     u16 numMons, monId;
-    u16 adder; // Used to skip past early mons for open level
-
-    if (lvlMode == FRONTIER_LVL_50)
-        adder = 0;
-    else
-        adder = 8;
 
     if (challengeNum < 7)
     {
         if (useBetterRange)
         {
-            numMons = (sInitialRentalMonRanges[adder + challengeNum + 1][1] - sInitialRentalMonRanges[adder + challengeNum + 1][0]) + 1;
+            numMons = (sInitialRentalMonRanges[challengeNum + 1][1] - sInitialRentalMonRanges[challengeNum + 1][0]) + 1;
             monId = Random() % numMons;
-            monId += sInitialRentalMonRanges[adder + challengeNum + 1][0];
+            monId += sInitialRentalMonRanges[challengeNum + 1][0];
         }
         else
         {
-            numMons = (sInitialRentalMonRanges[adder + challengeNum][1] - sInitialRentalMonRanges[adder + challengeNum][0]) + 1;
+            numMons = (sInitialRentalMonRanges[challengeNum][1] - sInitialRentalMonRanges[challengeNum][0]) + 1;
             monId = Random() % numMons;
-            monId += sInitialRentalMonRanges[adder + challengeNum][0];
+            monId += sInitialRentalMonRanges[challengeNum][0];
         }
     }
     else
     {
-        u16 challenge = challengeNum;
-        if (challenge != 7)
-            challenge = 7; // why bother assigning it above at all
-
-        numMons = (sInitialRentalMonRanges[adder + challenge][1] - sInitialRentalMonRanges[adder + challenge][0]) + 1;
+        numMons = (sInitialRentalMonRanges[7][1] - sInitialRentalMonRanges[7][0]) + 1;
         monId = Random() % numMons;
-        monId += sInitialRentalMonRanges[adder + challenge][0];
+        monId += sInitialRentalMonRanges[7][0];
     }
 
     return monId;
