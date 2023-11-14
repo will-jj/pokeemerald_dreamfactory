@@ -748,14 +748,7 @@ u8 GetFactoryMonFixedIV(u8 challengeNum, bool8 isLastBattle)
     u8 ivSet;
     bool8 useHigherIV = isLastBattle ? TRUE : FALSE;
 
-// The Factory has an out-of-bounds access when generating the rental draft for round 9 (challengeNum==8),
-// or the "elevated" rentals from round 8 (challengeNum+1==8)
-// This happens to land on a number higher than 31, which is interpreted as "random IVs"
-#ifdef BUGFIX
     if (challengeNum >= ARRAY_COUNT(sFixedIVTable))
-#else
-    if (challengeNum > ARRAY_COUNT(sFixedIVTable))
-#endif
         ivSet = ARRAY_COUNT(sFixedIVTable) - 1;
     else
         ivSet = challengeNum;
@@ -896,7 +889,14 @@ u32 GetAiScriptsInBattleFactory(void)
         int battleMode = VarGet(VAR_FRONTIER_BATTLE_MODE);
         int challengeNum = gSaveBlock2Ptr->frontier.factoryWinStreaks[battleMode][lvlMode] / FRONTIER_STAGES_PER_CHALLENGE;
 
-        return AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY;
+        if (gTrainerBattleOpponent_A == TRAINER_FRONTIER_BRAIN)
+            return AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | HP_AWARE;
+        else if (challengeNum < 4)
+            return AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY;
+        else if (challengeNum < 7)
+            return AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN  | AI_SCRIPT_RISKY | AI_SCRIPT_PREFER_POWER_EXTREMES;
+        else
+            return AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY;
     }
 }
 
