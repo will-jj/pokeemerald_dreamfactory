@@ -1478,15 +1478,15 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .evSpread = F_EV_SPREAD_DEFENSE | F_EV_SPREAD_SP_ATTACK,
         .nature = NATURE_BOLD
     },
-    [FRONTIER_MON_MR. MIME_1] = {
-        .species = SPECIES_MR. MIME,
+    [FRONTIER_MON_MR_MIME_1] = {
+        .species = SPECIES_MR_MIME,
         .moves = {MOVE_ENCORE, MOVE_PSYCHIC, MOVE_SKILL_SWAP, MOVE_THUNDER_WAVE},
         .itemTableId = BATTLE_FRONTIER_ITEM_LUM_BERRY,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_MR. MIME_2] = {
-        .species = SPECIES_MR. MIME,
+    [FRONTIER_MON_MR_MIME_2] = {
+        .species = SPECIES_MR_MIME,
         .moves = {MOVE_CALM_MIND, MOVE_PSYCHIC, MOVE_THUNDERBOLT, MOVE_ICE_PUNCH},
         .itemTableId = BATTLE_FRONTIER_ITEM_TWISTED_SPOON,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
@@ -2441,15 +2441,15 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_MR. MIME_3] = {
-        .species = SPECIES_MR. MIME,
+    [FRONTIER_MON_MR_MIME_3] = {
+        .species = SPECIES_MR_MIME,
         .moves = {MOVE_HYPNOSIS, MOVE_DREAM_EATER, MOVE_FIRE_PUNCH, MOVE_MAGICAL_LEAF},
         .itemTableId = BATTLE_FRONTIER_ITEM_TWISTED_SPOON,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_MR. MIME_4] = {
-        .species = SPECIES_MR. MIME,
+    [FRONTIER_MON_MR_MIME_4] = {
+        .species = SPECIES_MR_MIME,
         .moves = {MOVE_TRICK, MOVE_PSYCHIC, MOVE_THUNDERBOLT, MOVE_TORMENT},
         .itemTableId = BATTLE_FRONTIER_ITEM_CHOICE_BAND,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
