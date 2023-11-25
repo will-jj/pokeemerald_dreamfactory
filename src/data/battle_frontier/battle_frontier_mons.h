@@ -3208,29 +3208,29 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_ESPEEDON_1] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_1] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_CURSE, MOVE_DIG, MOVE_SHADOW_BALL},
         .itemTableId = BATTLE_FRONTIER_ITEM_WHITE_HERB,
         .evSpread = F_EV_SPREAD_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_NAIVE
     },
-    [FRONTIER_MON_ESPEEDON_2] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_2] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_CALM_MIND, MOVE_REST, MOVE_REFLECT},
         .itemTableId = BATTLE_FRONTIER_ITEM_CHESTO_BERRY,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_ESPEEDON_3] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_3] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_LIGHT_SCREEN, MOVE_BATON_PASS, MOVE_REFLECT},
         .itemTableId = BATTLE_FRONTIER_ITEM_LUM_BERRY,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_ESPEEDON_4] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_4] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_CALM_MIND, MOVE_PROTECT, MOVE_BITE},
         .itemTableId = BATTLE_FRONTIER_ITEM_SHELL_BELL,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
@@ -4213,29 +4213,29 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_NAIVE
     },
-    [FRONTIER_MON_ESPEEDON_5] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_5] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_CALM_MIND, MOVE_SUBSTITUTE, MOVE_HIDDEN_POWER},
         .itemTableId = BATTLE_FRONTIER_ITEM_PETAYA_BERRY,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_ESPEEDON_6] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_6] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_CALM_MIND, MOVE_MORNING_SUN, MOVE_HIDDEN_POWER},
         .itemTableId = BATTLE_FRONTIER_ITEM_LUM_BERRY,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_ESPEEDON_7] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_7] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_BATON_PASS, MOVE_SUBSTITUTE, MOVE_LIGHT_SCREEN},
         .itemTableId = BATTLE_FRONTIER_ITEM_STARF_BERRY,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
-    [FRONTIER_MON_ESPEEDON_8] = {
-        .species = SPECIES_ESPEEDON,
+    [FRONTIER_MON_ESPEON_8] = {
+        .species = SPECIES_ESPEON,
         .moves = {MOVE_PSYCHIC, MOVE_SUNNY_DAY, MOVE_MORNING_SUN, MOVE_HIDDEN_POWER},
         .itemTableId = BATTLE_FRONTIER_ITEM_TWISTED_SPOON,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
