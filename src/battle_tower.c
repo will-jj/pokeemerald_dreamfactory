@@ -144,7 +144,7 @@ const u16 gBattleFrontierHeldItems[] =
     [BATTLE_FRONTIER_ITEM_PETAYA_BERRY]   = ITEM_PETAYA_BERRY,
     [BATTLE_FRONTIER_ITEM_LUCKY_PUNCH]    = ITEM_LUCKY_PUNCH,
     [BATTLE_FRONTIER_ITEM_GANLON_BERRY]   = ITEM_GANLON_BERRY,
-    [BATTLE_FRONTIER_ITEM_MAIL]           = ITEM_MAIL,
+    [BATTLE_FRONTIER_ITEM_MAIL]           = ITEM_ORANGE_MAIL,
 };
 
 #include "data/battle_frontier/battle_frontier_trainer_mons.h"

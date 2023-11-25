@@ -623,6 +623,10 @@ Score_Minus10:
 	score -10
 	end
 
+Score_Minus20:
+    score -20
+    end
+    
 Score_Minus12:
 	score -12
 	end
