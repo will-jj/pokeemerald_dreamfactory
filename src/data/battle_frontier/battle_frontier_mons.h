@@ -1826,14 +1826,14 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_ATTACK,
         .nature = NATURE_ADAMANT
     },
-    [FRONTIER_MON_TORKOAL_2] = {
+    [FRONTIER_MON_TORKOAL_3] = {
         .species = SPECIES_TORKOAL,
         .moves = {MOVE_FLAMETHROWER, MOVE_TOXIC, MOVE_AMNESIA, MOVE_REST},
         .itemTableId = BATTLE_FRONTIER_ITEM_CHESTO_BERRY,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SP_DEFENSE,
         .nature = NATURE_IMPISH
     },
-    [FRONTIER_MON_TORKOAL_2] = {
+    [FRONTIER_MON_TORKOAL_4] = {
         .species = SPECIES_TORKOAL,
         .moves = {MOVE_FLAMETHROWER, MOVE_YAWN, MOVE_OVERHEAT, MOVE_EXPLOSION},
         .itemTableId = BATTLE_FRONTIER_ITEM_WHITE_HERB,
