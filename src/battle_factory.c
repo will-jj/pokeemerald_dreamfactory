@@ -49,7 +49,7 @@ static const u8 sRequiredMoveCounts[FACTORY_NUM_STYLES - 1] = {
     [FACTORY_STYLE_HIGH_RISK - 1]     = 3,
     [FACTORY_STYLE_WEAKENING - 1]     = 2,
     [FACTORY_STYLE_UNPREDICTABLE - 1] = 2,
-    [FACTORY_STYLE_WEATHER - 1]       = 2
+    [FACTORY_STYLE_WEATHER - 1]       = 3
 };
 
 static const u16 sMoves_TotalPreparation[] =
