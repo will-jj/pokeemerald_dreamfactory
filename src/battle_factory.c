@@ -829,6 +829,7 @@ void FillFactoryBrainParty(void)
 static u16 GetFactoryMonId(u8 lvlMode, u8 challengeNum, bool8 useBetterRange)
 {
     u16 numMons, monId;
+    u16 adder; // Used to skip past early mons for open level
 
     if (lvlMode == FRONTIER_LVL_50)
         adder = 0;
