@@ -830,26 +830,31 @@ static u16 GetFactoryMonId(u8 lvlMode, u8 challengeNum, bool8 useBetterRange)
 {
     u16 numMons, monId;
 
+    if (lvlMode == FRONTIER_LVL_50)
+        adder = 0;
+    else
+        adder = 8;
+
     if (challengeNum < 7)
     {
         if (useBetterRange)
         {
-            numMons = (sInitialRentalMonRanges[challengeNum + 1][1] - sInitialRentalMonRanges[challengeNum + 1][0]) + 1;
+            numMons = (sInitialRentalMonRanges[adder + challengeNum + 1][1] - sInitialRentalMonRanges[adder + challengeNum + 1][0]) + 1;
             monId = Random() % numMons;
-            monId += sInitialRentalMonRanges[challengeNum + 1][0];
+            monId += sInitialRentalMonRanges[adder + challengeNum + 1][0];
         }
         else
         {
-            numMons = (sInitialRentalMonRanges[challengeNum][1] - sInitialRentalMonRanges[challengeNum][0]) + 1;
+            numMons = (sInitialRentalMonRanges[adder + challengeNum][1] - sInitialRentalMonRanges[adder + challengeNum][0]) + 1;
             monId = Random() % numMons;
-            monId += sInitialRentalMonRanges[challengeNum][0];
+            monId += sInitialRentalMonRanges[adder + challengeNum][0];
         }
     }
     else
     {
-        numMons = (sInitialRentalMonRanges[7][1] - sInitialRentalMonRanges[7][0]) + 1;
+        numMons = (sInitialRentalMonRanges[adder + 7][1] - sInitialRentalMonRanges[adder + 7][0]) + 1;
         monId = Random() % numMons;
-        monId += sInitialRentalMonRanges[7][0];
+        monId += sInitialRentalMonRanges[adder + 7][0];
     }
 
     return monId;
