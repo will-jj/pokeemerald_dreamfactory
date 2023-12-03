@@ -798,7 +798,7 @@ AI_CV_SleepEncourageSlpDamage:
 	goto AI_CV_Sleep_End
 
 AI_CV_SleepRandom:
-	get_last_used_bank_move
+	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
 	if_equal EFFECT_SLEEP, AI_CV_Sleep_End
 	if_random_less_than 220, AI_CV_Sleep_End
