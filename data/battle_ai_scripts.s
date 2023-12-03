@@ -980,7 +980,7 @@ AI_CV_SpeedUp:
 
 AI_CV_SpeedUp2:
 	if_random_less_than 70, AI_CV_SpeedUp_End
-	# score +3
+	score +3
 AI_CV_SpeedUp_End:
 	end
 
