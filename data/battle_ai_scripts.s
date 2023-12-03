@@ -2020,7 +2020,7 @@ AI_CV_Protect12:
 	score -2
 	goto AI_CV_ProtectEnd
 
-AI_Protect13:
+AI_CV_Protect13:
 	score +2
 AI_CV_ProtectEnd:
 	end
