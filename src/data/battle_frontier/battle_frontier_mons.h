@@ -1,4 +1,5 @@
 const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
+{
     [FRONTIER_MON_ABSOL_1] = {
         .species = SPECIES_ABSOL,
         .moves = {MOVE_SWORDS_DANCE, MOVE_FIRE_BLAST, MOVE_ENDURE, MOVE_FRUSTRATION},
