@@ -866,15 +866,15 @@ u8 GetNumPastRentalsRank(u8 battleMode, u8 lvlMode)
     u8 ret;
     u8 rents = gSaveBlock2Ptr->frontier.factoryRentsCount[battleMode][lvlMode];
 
-    if (rents < 15)
+    if (rents < 10)
         ret = 0;
-    else if (rents < 22)
+    else if (rents < 15)
         ret = 1;
-    else if (rents < 29)
+    else if (rents < 20)
         ret = 2;
-    else if (rents < 36)
+    else if (rents < 25)
         ret = 3;
-    else if (rents < 43)
+    else if (rents < 30)
         ret = 4;
     else
         ret = 5;
