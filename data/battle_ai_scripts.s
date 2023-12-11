@@ -1460,7 +1460,7 @@ AI_CV_DefenseUp4:
 	if_equal 0, AI_CV_DefenseUp5
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_PhysicalTypeList, AI_CV_DefenseUp_ScoreDown2
+	if_not_in_bytes AI_CV_PhysicalTypeList, AI_CV_DefenseUp_ScoreDown2
 	if_random_less_than 60, AI_CV_DefenseUp_End
 AI_CV_DefenseUp5:
 	if_random_less_than 60, AI_CV_DefenseUp_End
