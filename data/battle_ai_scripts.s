@@ -1291,7 +1291,7 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_YAWN, AI_CV_Sleep
 	if_equal EFFECT_ABSORB, AI_CV_Absorb
 	if_equal EFFECT_EXPLOSION, AI_CV_SelfKO
-	if_equal EFFECT_DREAM_EATER, AI_CV_DreamEater
+	if_equal EFFECT_DREAM_EATER, AI_CV_End
 	if_equal EFFECT_MIRROR_MOVE, AI_CV_MirrorMove
 	if_equal EFFECT_ATTACK_UP, AI_CV_AttackUp
 	if_equal EFFECT_DEFENSE_UP, AI_CV_DefenseUp
