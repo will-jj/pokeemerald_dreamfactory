@@ -1180,7 +1180,6 @@ AI_CheckViability:
 	if_effect EFFECT_FAKE_OUT, AI_CV_FakeOut
 	if_effect EFFECT_SPIT_UP, AI_CV_SpitUp
 	if_effect EFFECT_SWALLOW, AI_CV_Heal
-	if_effect EFFECT_HAIL, AI_CV_Hail
 	if_effect EFFECT_FLATTER, AI_CV_Flatter
 	if_effect EFFECT_MEMENTO, AI_CV_SelfKO
 	if_effect EFFECT_FACADE, AI_CV_Facade
@@ -2911,23 +2910,6 @@ AI_CV_SpitUp:
 	if_random_less_than 80, AI_CV_SpitUp_End
 	score +2
 AI_CV_SpitUp_End:
-	end
-
-AI_CV_Hail:
-	if_hp_less_than AI_USER, 40, AI_CV_Hail_ScoreDown1
-	get_weather
-	if_equal AI_WEATHER_SUN, AI_CV_Hail2
-	if_equal AI_WEATHER_RAIN, AI_CV_Hail2
-	if_equal AI_WEATHER_SANDSTORM, AI_CV_Hail2
-	goto AI_CV_Hail_End
-
-AI_CV_Hail2:
-	score +1
-	goto AI_CV_Hail_End
-
-AI_CV_Hail_ScoreDown1:
-	score -1
-AI_CV_Hail_End:
 	end
 
 AI_CV_Facade:
