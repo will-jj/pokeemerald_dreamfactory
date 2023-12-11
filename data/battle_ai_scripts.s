@@ -1372,6 +1372,8 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_MOONLIGHT, AI_CV_HealWeather
 	if_equal EFFECT_RAIN_DANCE, AI_CV_RainDance
 	if_equal EFFECT_SUNNY_DAY, AI_CV_SunnyDay
+	if_equal EFFECT_SANDSTORM, AI_CV_Sandstorm
+	if_equal EFFECT_HAIL, AI_CV_Hail
 	if_equal EFFECT_BELLY_DRUM, AI_CV_BellyDrum
 	if_equal EFFECT_PSYCH_UP, AI_CV_PsychUp
 	if_equal EFFECT_MIRROR_COAT, AI_CV_MirrorCoat
