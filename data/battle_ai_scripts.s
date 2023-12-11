@@ -877,11 +877,6 @@ AI_CBM_PerishSong:
 	if_status3 AI_TARGET, STATUS3_PERISH_SONG, Score_Minus10
 	end
 
-AI_CBM_Sandstorm:
-	get_weather
-	if_equal AI_WEATHER_SANDSTORM, Score_Minus8
-	end
-
 AI_CBM_Attract:
 	if_status2 AI_TARGET, STATUS2_INFATUATION, Score_Minus10
 	get_ability AI_TARGET
@@ -926,6 +921,16 @@ AI_CBM_SunnyDay:
 	if_equal AI_WEATHER_SUN, Score_Minus8
 	end
 
+AI_CBM_Hail:
+	get_weather
+	if_equal AI_WEATHER_HAIL, Score_Minus8
+	end
+
+AI_CBM_Sandstorm:
+	get_weather
+	if_equal AI_WEATHER_SANDSTORM, Score_Minus8
+	end
+
 AI_CBM_FutureSight:
 	if_side_affecting AI_TARGET, SIDE_STATUS_FUTUREATTACK, Score_Minus12
 	if_side_affecting AI_USER, SIDE_STATUS_FUTUREATTACK, Score_Minus12
@@ -946,11 +951,6 @@ AI_CBM_SpitUpAndSwallow:
 	if_type_effectiveness AI_EFFECTIVENESS_x0, Score_Minus10
 	get_stockpile_count AI_USER
 	if_equal 0, Score_Minus10
-	end
-
-AI_CBM_Hail:
-	get_weather
-	if_equal AI_WEATHER_HAIL, Score_Minus8
 	end
 
 AI_CBM_Torment:
@@ -1168,6 +1168,8 @@ AI_CheckViability:
 	if_effect EFFECT_MOONLIGHT, AI_CV_HealWeather
 	if_effect EFFECT_RAIN_DANCE, AI_CV_RainDance
 	if_effect EFFECT_SUNNY_DAY, AI_CV_SunnyDay
+	if_effect EFFECT_SANDSTORM, AI_CV_Sandstorm
+	if_effect EFFECT_HAIL, AI_CV_Hail
 	if_effect EFFECT_BELLY_DRUM, AI_CV_BellyDrum
 	if_effect EFFECT_PSYCH_UP, AI_CV_PsychUp
 	if_effect EFFECT_MIRROR_COAT, AI_CV_MirrorCoat
@@ -1459,7 +1461,7 @@ AI_CV_DefenseUp4:
 	if_equal 0, AI_CV_DefenseUp5
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_CV_DefenseUp_PhysicalTypes, AI_CV_DefenseUp_ScoreDown2
+	if_not_in_bytes AI_PhysicalTypeList, AI_CV_DefenseUp_ScoreDown2
 	if_random_less_than 60, AI_CV_DefenseUp_End
 AI_CV_DefenseUp5:
 	if_random_less_than 60, AI_CV_DefenseUp_End
@@ -1467,18 +1469,6 @@ AI_CV_DefenseUp_ScoreDown2:
 	score -2
 AI_CV_DefenseUp_End:
 	end
-
-AI_CV_DefenseUp_PhysicalTypes:
-	.byte TYPE_NORMAL
-	.byte TYPE_FIGHTING
-	.byte TYPE_POISON
-	.byte TYPE_GROUND
-	.byte TYPE_FLYING
-	.byte TYPE_ROCK
-	.byte TYPE_BUG
-	.byte TYPE_GHOST
-	.byte TYPE_STEEL
-	.byte -1
 
 AI_CV_SpeedUp:
 	if_target_faster AI_CV_SpeedUp2
@@ -1530,7 +1520,7 @@ AI_CV_SpDefUp4:
 	if_equal 0, AI_CV_SpDefUp5
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_in_bytes AI_CV_SpDefUp_PhysicalTypes, AI_CV_SpDefUp_ScoreDown2
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_SpDefUp_ScoreDown2
 	if_random_less_than 60, AI_CV_SpDefUp_End
 AI_CV_SpDefUp5:
 	if_random_less_than 60, AI_CV_SpDefUp_End
@@ -1538,18 +1528,6 @@ AI_CV_SpDefUp_ScoreDown2:
 	score -2
 AI_CV_SpDefUp_End:
 	end
-
-AI_CV_SpDefUp_PhysicalTypes:
-	.byte TYPE_NORMAL
-	.byte TYPE_FIGHTING
-	.byte TYPE_POISON
-	.byte TYPE_GROUND
-	.byte TYPE_FLYING
-	.byte TYPE_ROCK
-	.byte TYPE_BUG
-	.byte TYPE_GHOST
-	.byte TYPE_STEEL
-	.byte -1
 
 AI_CV_AccuracyUp:
 	if_stat_level_less_than AI_USER, STAT_ACC, 9, AI_CV_AccuracyUp2
@@ -1628,25 +1606,13 @@ AI_CV_AttackDown3:
 	score -2
 AI_CV_AttackDown4:
 	get_target_type1
-	if_in_bytes AI_CV_AttackDown_PhysicalTypeList, AI_CV_AttackDown_End
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_AttackDown_End
 	get_target_type2
-	if_in_bytes AI_CV_AttackDown_PhysicalTypeList, AI_CV_AttackDown_End
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_AttackDown_End
 	if_random_less_than 50, AI_CV_AttackDown_End
 	score -2
 AI_CV_AttackDown_End:
 	end
-
-AI_CV_AttackDown_PhysicalTypeList:
-	.byte TYPE_NORMAL
-	.byte TYPE_FIGHTING
-	.byte TYPE_GROUND
-	.byte TYPE_ROCK
-	.byte TYPE_BUG
-	.byte TYPE_STEEL
-	.byte TYPE_POISON
-	.byte TYPE_FLYING
-	.byte TYPE_GHOST
-	.byte -1
 
 AI_CV_DefenseDown:
 	if_hp_less_than AI_USER, 70, AI_CV_DefenseDown2
@@ -1691,24 +1657,13 @@ AI_CV_SpAtkDown3:
 	score -2
 AI_CV_SpAtkDown4:
 	get_target_type1
-	if_in_bytes AI_CV_SpAtkDown_SpecialTypeList, AI_CV_SpAtkDown_End
+	if_in_bytes AI_CV_SpecialTypeList, AI_CV_SpAtkDown_End
 	get_target_type2
-	if_in_bytes AI_CV_SpAtkDown_SpecialTypeList, AI_CV_SpAtkDown_End
+	if_in_bytes AI_CV_SpecialTypeList, AI_CV_SpAtkDown_End
 	if_random_less_than 50, AI_CV_SpAtkDown_End
 	score -2
 AI_CV_SpAtkDown_End:
 	end
-
-AI_CV_SpAtkDown_SpecialTypeList:
-	.byte TYPE_FIRE
-	.byte TYPE_WATER
-	.byte TYPE_GRASS
-	.byte TYPE_ELECTRIC
-	.byte TYPE_PSYCHIC
-	.byte TYPE_ICE
-	.byte TYPE_DRAGON
-	.byte TYPE_DARK
-	.byte -1
 
 AI_CV_SpDefDown:
 	if_hp_less_than AI_USER, 70, AI_CV_SpDefDown2
@@ -1919,25 +1874,14 @@ AI_CV_Toxic_End:
 AI_CV_LightScreen:
 	if_hp_less_than AI_USER, 50, AI_CV_LightScreen_ScoreDown2
 	get_target_type1
-	if_in_bytes AI_CV_LightScreen_SpecialTypeList, AI_CV_LightScreen_End
+	if_in_bytes AI_CV_SpecialTypeList, AI_CV_LightScreen_End
 	get_target_type2
-	if_in_bytes AI_CV_LightScreen_SpecialTypeList, AI_CV_LightScreen_End
+	if_in_bytes AI_CV_SpecialTypeList, AI_CV_LightScreen_End
 	if_random_less_than 50, AI_CV_LightScreen_End
 AI_CV_LightScreen_ScoreDown2:
 	score -2
 AI_CV_LightScreen_End:
 	end
-
-AI_CV_LightScreen_SpecialTypeList:
-	.byte TYPE_FIRE
-	.byte TYPE_WATER
-	.byte TYPE_GRASS
-	.byte TYPE_ELECTRIC
-	.byte TYPE_PSYCHIC
-	.byte TYPE_ICE
-	.byte TYPE_DRAGON
-	.byte TYPE_DARK
-	.byte -1
 
 AI_CV_Rest:
 	if_target_faster AI_CV_Rest4
@@ -2038,26 +1982,14 @@ AI_CV_SwaggerHasPsychUp_End:
 AI_CV_Reflect:
 	if_hp_less_than AI_USER, 50, AI_CV_Reflect_ScoreDown2
 	get_target_type1
-	if_in_bytes AI_CV_Reflect_PhysicalTypeList, AI_CV_Reflect_End
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_Reflect_End
 	get_target_type2
-	if_in_bytes AI_CV_Reflect_PhysicalTypeList, AI_CV_Reflect_End
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_Reflect_End
 	if_random_less_than 50, AI_CV_Reflect_End
 AI_CV_Reflect_ScoreDown2:
 	score -2
 AI_CV_Reflect_End:
 	end
-
-AI_CV_Reflect_PhysicalTypeList:
-	.byte TYPE_NORMAL
-	.byte TYPE_FIGHTING
-	.byte TYPE_FLYING
-	.byte TYPE_POISON
-	.byte TYPE_GROUND
-	.byte TYPE_ROCK
-	.byte TYPE_BUG
-	.byte TYPE_GHOST
-	.byte TYPE_STEEL
-	.byte -1
 
 AI_CV_Poison:
 	if_hp_less_than AI_USER, 50, AI_CV_Poison_ScoreDown1
@@ -2601,43 +2533,187 @@ AI_CV_Pursuit_End:
 	end
 
 AI_CV_RainDance:
-	if_user_faster AI_CV_RainDance2
-	get_ability AI_USER
-	if_equal ABILITY_SWIFT_SWIM, AI_CV_RainDance3
-AI_CV_RainDance2:
-	if_hp_less_than AI_USER, 40, AI_CV_RainDance_ScoreDown1
-	get_weather
-	if_equal AI_WEATHER_HAIL, AI_CV_RainDance3
-	if_equal AI_WEATHER_SUN, AI_CV_RainDance3
-	if_equal AI_WEATHER_SANDSTORM, AI_CV_RainDance3
-	get_ability AI_USER
-	if_equal ABILITY_RAIN_DISH, AI_CV_RainDance3
-	goto AI_CV_RainDance_End
+	if_has_move_with_effect AI_TARGET, EFFECT_THUNDER, AI_CV_RainDance_Thunder
+	goto AI_CV_RainDance_CheckTargetFire
 
-AI_CV_RainDance3:
+AI_CV_RainDance_Thunder:
 	score +1
-	goto AI_CV_RainDance_End
+AI_CV_RainDance_CheckTargetFire:
+	get_target_type1
+	if_equal TYPE_FIRE, AI_CV_RainDance_WeakenFire
+	get_target_type2
+	if_equal TYPE_FIRE, AI_CV_RainDance_WeakenFire
+	goto AI_CV_RainDance_CheckUserWater
 
-AI_CV_RainDance_ScoreDown1:
+AI_CV_RainDance_WeakenFire:
+	score +1
+AI_CV_RainDance_CheckUserWater:
+	get_user_type1
+	if_equal TYPE_WATER, AI_CV_RainDance_PowerUpWater
+	get_user_type2
+	if_equal TYPE_WATER, AI_CV_RainDance_PowerUpWater
+	goto AI_CV_RainDance_CheckRainDish
+
+AI_CV_RainDance_PowerUpWater:
+	score +1
+AI_CV_RainDance_CheckRainDish:
+	get_ability AI_USER
+	if_not_equal ABILITY_RAIN_DISH, AI_CV_RainDance_UserSwims
+	score +1
+	goto AI_CV_RainDance_TargetSwims
+
+AI_CV_RainDance_UserSwims:
+	get_ability AI_USER
+	if_not_equal ABILITY_SWIFT_SWIM, AI_CV_RainDance_TargetSwims
+	if_user_faster AI_CV_RainDance_TargetSwims
+	score +1
+AI_CV_RainDance_TargetSwims:
+	get_ability AI_TARGET
+	if_not_equal ABILITY_SWIFT_SWIM, AI_CV_RainDance_WeatherCheck
+	if_target_faster AI_CV_RainDance_WeatherCheck
 	score -1
-AI_CV_RainDance_End:
-	end
+	goto AI_CV_RainDance_WeatherCheck
+
+AI_CV_RainDance_RainDishCheck:
+	get_ability AI_TARGET
+	if_not_equal ABILITY_RAIN_DISH, AI_CV_RainDance_WeatherCheck
+	score -1
+AI_CV_RainDance_WeatherCheck:
+	get_weather
+	if_equal AI_WEATHER_HAIL, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_SUN, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_SANDSTORM, AI_CV_ReplaceWeather
+	goto AI_CV_Weather_LowHP_Check
 
 AI_CV_SunnyDay:
-	if_hp_less_than AI_USER, 40, AI_CV_SunnyDay_ScoreDown1
-	get_weather
-	if_equal AI_WEATHER_HAIL, AI_CV_SunnyDay2
-	if_equal AI_WEATHER_RAIN, AI_CV_SunnyDay2
-	if_equal AI_WEATHER_SANDSTORM, AI_CV_SunnyDay2
-	goto AI_CV_SunnyDay_End
+	if_has_move_with_effect AI_TARGET, EFFECT_SOLAR_BEAM, AI_CV_SunnyDay_SB_Found
+	goto AI_CV_SunnyDay_CheckUserFireWeak
 
-AI_CV_SunnyDay2:
+AI_CV_SunnyDay_SB_Found:
 	score +1
-	goto AI_CV_SunnyDay_End
+AI_CV_SunnyDay_CheckUserFireWeak:
+	get_user_type1
+	if_equal TYPE_BUG, AI_CV_SunnyDay_CheckTargetFire
+	if_equal TYPE_GRASS, AI_CV_SunnyDay_CheckTargetFire
+	if_equal TYPE_ICE, AI_CV_SunnyDay_CheckTargetFire
+	if_equal TYPE_STEEL, AI_CV_SunnyDay_CheckTargetFire
+	get_user_type2
+	if_equal TYPE_BUG, AI_CV_SunnyDay_CheckTargetFire
+	if_equal TYPE_GRASS, AI_CV_SunnyDay_CheckTargetFire
+	if_equal TYPE_ICE, AI_CV_SunnyDay_CheckTargetFire
+	if_equal TYPE_STEEL, AI_CV_SunnyDay_CheckTargetFire
+	goto AI_CV_SunnyDay_CheckTargetWater
 
-AI_CV_SunnyDay_ScoreDown1:
+AI_CV_SunnyDay_CheckTargetFire:
+	get_target_type1
+	if_equal TYPE_FIRE, AI_CV_SunnyDay_NoSunForFire
+	get_target_type2
+	if_equal TYPE_FIRE, AI_CV_SunnyDay_NoSunForFire
+	goto AI_CV_SunnyDay_CheckTargetWater
+
+AI_CV_SunnyDay_NoSunForFire:
+	score -5
+AI_CV_SunnyDay_CheckTargetWater:
+	get_target_type1
+	if_equal TYPE_WATER, AI_CV_SunnyDay_WeakenWater
+	get_target_type2
+	if_equal TYPE_WATER, AI_CV_SunnyDay_WeakenWater
+	goto AI_CV_SunnyDay_CheckUserFire
+
+AI_CV_SunnyDay_WeakenWater:
+	score +1
+AI_CV_SunnyDay_CheckUserFire:
+	get_user_type1
+	if_equal TYPE_FIRE, AI_CV_SunnyDay_BoostFire
+	get_user_type2
+	if_equal TYPE_FIRE, AI_CV_SunnyDay_BoostFire
+	goto AI_CV_SunnyDay_UserChloro
+
+AI_CV_SunnyDay_BoostFire:
+	score +1
+AI_CV_SunnyDay_UserChloro:
+	get_ability AI_USER
+	if_not_equal ABILITY_CHLOROPHYLL, AI_CV_SunnyDay_TargetChloro
+	if_user_faster AI_CV_SunnyDay_TargetChloro
+	score +1
+AI_CV_SunnyDay_TargetChloro:
+	get_ability AI_TARGET
+	if_not_equal ABILITY_CHLOROPHYLL, AI_CV_SunnyDay_WeatherCheck
+	if_target_faster AI_CV_SunnyDay_WeatherCheck
 	score -1
-AI_CV_SunnyDay_End:
+AI_CV_SunnyDay_WeatherCheck:
+	get_weather
+	if_equal AI_WEATHER_HAIL, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_RAIN, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_SANDSTORM, AI_CV_ReplaceWeather
+	goto AI_CV_Weather_LowHP_Check
+
+AI_CV_Sandstorm:
+	get_ability AI_TARGET
+	if_not_equal ABILITY_WONDER_GUARD, AI_CV_Sandstorm_TypeCheck
+	score +1
+AI_CV_Sandstorm_TypeCheck:
+	get_target_type1
+	if_in_bytes AI_CV_SandstormResistantTypes, AI_CV_Sand_TargetIsSandImmune
+	get_target_type2
+	if_in_bytes AI_CV_SandstormResistantTypes, AI_CV_Sand_TargetIsSandImmune
+	goto AI_CV_Sand_WeatherCheck
+
+AI_CV_Sand_TargetIsSandImmune:
+	score -1
+AI_CV_Sand_WeatherCheck:
+	get_weather
+	if_equal AI_WEATHER_SUN, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_RAIN, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_HAIL, AI_CV_ReplaceWeather
+	goto AI_CV_Weather_LowHP_Check
+
+AI_CV_Hail:
+	get_ability AI_TARGET
+	if_not_equal ABILITY_WONDER_GUARD, AI_CV_Hail_TypeCheck
+	score +1
+AI_CV_Hail_TypeCheck:
+	get_target_type1
+	if_equal TYPE_ICE, AI_CV_Hail_TargetIsIce
+	get_target_type2
+	if_equal TYPE_ICE, AI_CV_Hail_TargetIsIce
+	goto AI_CV_Hail_WeatherCheck
+
+AI_CV_Hail_TargetIsIce:
+	score -1
+AI_CV_Hail_WeatherCheck:
+	get_weather
+	if_equal AI_WEATHER_SUN, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_RAIN, AI_CV_ReplaceWeather
+	if_equal AI_WEATHER_SANDSTORM, AI_CV_ReplaceWeather
+	goto AI_CV_Weather_LowHP_Check
+
+AI_CV_ReplaceWeather:
+	score +1
+AI_CV_Weather_LowHP_Check:
+	if_hp_less_than AI_USER, 25, AI_CV_Weather_LowHP
+	goto AI_CV_Forecast_Check
+
+AI_CV_Weather_LowHP:
+	score -1
+AI_CV_Forecast_Check:
+	get_ability AI_USER
+	if_equal ABILITY_FORECAST, AI_CV_Forecast_Found
+
+AI_CV_Forecast_Found:
+	score +1
+AI_CV_CloudNineCheck:
+	get_ability AI_TARGET
+	if_equal ABILITY_AIR_LOCK, AI_CV_WeatherImmune
+	if_equal ABILITY_CLOUD_NINE, AI_CV_WeatherImmune
+	get_ability AI_USER
+	if_equal ABILITY_AIR_LOCK, AI_CV_WeatherImmune
+	if_equal ABILITY_CLOUD_NINE, AI_CV_WeatherImmune
+	goto AI_CV_Weather_End
+
+AI_CV_WeatherImmune:
+	score -2
+AI_CV_Weather_End:
 	end
 
 AI_CV_BellyDrum:
@@ -2683,15 +2759,15 @@ AI_CV_Counter:
 	if_not_equal 0, AI_CV_Counter_PhysCheck
 	if_target_not_taunted AI_CV_CounterCoatMinus
 	get_target_type1
-	if_in_bytes AI_CV_Counter_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
 	get_target_type2
-	if_in_bytes AI_CV_Counter_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
 	goto AI_CV_CounterCoatMinus
 
 AI_CV_Counter_PhysCheck:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_CV_Counter_PhysicalTypeList, AI_CV_CounterCoatMinus
+	if_not_in_bytes AI_CV_PhysicalTypeList, AI_CV_CounterCoatMinus
 	if_target_taunted AI_CV_CounterCoatPlus
 	goto AI_CV_CounterCoat_StatusCheck
 
@@ -2701,15 +2777,15 @@ AI_CV_MirrorCoat:
 	if_not_equal 0, AI_CV_MirrorCoat_SpcCheck
 	if_target_not_taunted AI_CV_CounterCoatMinus
 	get_target_type1
-	if_in_bytes AI_CV_MirrorCoat_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_CV_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
 	get_target_type2
-	if_in_bytes AI_CV_MirrorCoat_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_CV_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
 	goto AI_CV_CounterCoatMinus
 
 AI_CV_MirrorCoat_SpcCheck:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_CV_MirrorCoat_SpecialTypeList, AI_CV_CounterCoatMinus
+	if_not_in_bytes AI_CV_SpecialTypeList, AI_CV_CounterCoatMinus
 	if_target_taunted AI_CV_CounterCoatPlus
 	goto AI_CV_CounterCoat_StatusCheck
 
@@ -2755,29 +2831,6 @@ AI_CV_CounterCoat_RandDown:
 	score -1
 AI_CV_CounterCoat_End:
 	end
-
-AI_CV_Counter_PhysicalTypeList:
-	.byte TYPE_NORMAL
-	.byte TYPE_FIGHTING
-	.byte TYPE_FLYING
-	.byte TYPE_POISON
-	.byte TYPE_GROUND
-	.byte TYPE_ROCK
-	.byte TYPE_BUG
-	.byte TYPE_GHOST
-	.byte TYPE_STEEL
-	.byte -1
-
-AI_CV_MirrorCoat_SpecialTypeList:
-	.byte TYPE_FIRE
-	.byte TYPE_WATER
-	.byte TYPE_GRASS
-	.byte TYPE_ELECTRIC
-	.byte TYPE_PSYCHIC
-	.byte TYPE_ICE
-	.byte TYPE_DRAGON
-	.byte TYPE_DARK
-	.byte -1
 
 AI_CV_SolarBeam:
 	get_weather
@@ -3242,6 +3295,29 @@ AI_CV_SuicideCheck:
 	score -40
 AI_CV_SuicideCheckEnd:
 	end
+
+AI_CV_SpecialTypeList:
+	.byte TYPE_FIRE
+	.byte TYPE_WATER
+	.byte TYPE_GRASS
+	.byte TYPE_ELECTRIC
+	.byte TYPE_PSYCHIC
+	.byte TYPE_ICE
+	.byte TYPE_DRAGON
+	.byte TYPE_DARK
+	.byte -1
+
+AI_CV_PhysicalTypeList:
+	.byte TYPE_NORMAL
+	.byte TYPE_FIGHTING
+	.byte TYPE_GROUND
+	.byte TYPE_ROCK
+	.byte TYPE_BUG
+	.byte TYPE_STEEL
+	.byte TYPE_POISON
+	.byte TYPE_FLYING
+	.byte TYPE_GHOST
+	.byte -1
 
 AI_CV_End:
 	end
