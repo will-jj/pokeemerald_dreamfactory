@@ -1085,11 +1085,11 @@ Score_Plus10:
 
 AI_CheckViability:
 	if_target_is_ally AI_Ret
+	if_effect EFFECT_MIRROR_MOVE, AI_CV_MirrorMove
 	if_effect EFFECT_SLEEP, AI_CV_Sleep
 	if_effect EFFECT_YAWN, AI_CV_Sleep
 	if_effect EFFECT_ABSORB, AI_CV_Absorb
 	if_effect EFFECT_EXPLOSION, AI_CV_SelfKO
-	if_effect EFFECT_MIRROR_MOVE, AI_CV_MirrorMove
 	if_effect EFFECT_ATTACK_UP, AI_CV_AttackUp
 	if_effect EFFECT_DEFENSE_UP, AI_CV_DefenseUp
 	if_effect EFFECT_SPEED_UP, AI_CV_SpeedUp
@@ -1151,7 +1151,7 @@ AI_CheckViability:
 	if_effect EFFECT_LOCK_ON, AI_CV_LockOn
 	if_effect EFFECT_SLEEP_TALK, AI_CV_SleepTalk
 	if_effect EFFECT_DESTINY_BOND, AI_CV_DestinyBond
-	if_effect EFFECT_GRUDGE, AI_CV_DestinyBond
+	if_effect EFFECT_GRUDGE, AI_CV_Grudge
 	if_effect EFFECT_FLAIL, AI_CV_Flail
 	if_effect EFFECT_HEAL_BELL, AI_CV_HealBell
 	if_effect EFFECT_THIEF, AI_CV_Thief
@@ -1285,6 +1285,7 @@ AI_CV_MirrorMove2:
 	if_equal MOVE_TARGET_SELECTED, AI_CV_CheckViability_MirrorMove
 	score -2
 	goto AI_CV_MirrorMoveEnd
+
 AI_CV_CheckViability_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
@@ -1293,7 +1294,6 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_ABSORB, AI_CV_Absorb
 	if_equal EFFECT_EXPLOSION, AI_CV_SelfKO
 	if_equal EFFECT_DREAM_EATER, AI_CV_End
-	if_equal EFFECT_MIRROR_MOVE, AI_CV_MirrorMove
 	if_equal EFFECT_ATTACK_UP, AI_CV_AttackUp
 	if_equal EFFECT_DEFENSE_UP, AI_CV_DefenseUp
 	if_equal EFFECT_SPEED_UP, AI_CV_SpeedUp
@@ -1355,7 +1355,7 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_LOCK_ON, AI_CV_LockOn
 	if_equal EFFECT_SLEEP_TALK, AI_CV_SleepTalk
 	if_equal EFFECT_DESTINY_BOND, AI_CV_DestinyBond
-	if_equal EFFECT_GRUDGE, AI_CV_DestinyBond
+	if_equal EFFECT_GRUDGE, AI_CV_Grudge
 	if_equal EFFECT_FLAIL, AI_CV_Flail
 	if_equal EFFECT_HEAL_BELL, AI_CV_HealBell
 	if_equal EFFECT_THIEF, AI_CV_Thief
@@ -2220,17 +2220,32 @@ AI_CV_SleepTalk_End:
 	score -5
 	end
 
+AI_CV_Grudge:
+	score -1
+	if_target_faster AI_CV_DestinyBond_End
+	goto AI_CV_DestinyBond2
+
 AI_CV_DestinyBond:
 	score -1
 	if_target_faster AI_CV_DestinyBond_End
-	if_hp_more_than AI_USER, 70, AI_CV_DestinyBond_End
-	if_random_less_than 128, AI_CV_DestinyBond2
+	count_usable_party_mons AI_TARGET
+	if_not_equal 0, AI_CV_DestinyBond2
 	score +1
 AI_CV_DestinyBond2:
-	if_hp_more_than AI_USER, 50, AI_CV_DestinyBond_End
-	if_random_less_than 128, AI_CV_DestinyBond3
+	if_random_less_than 220, AI_CV_DestinyBond3
 	score +1
 AI_CV_DestinyBond3:
+	if_random_less_than 196, AI_CV_DestinyBond4
+	score +1
+AI_CV_DestinyBond4:
+	if_hp_more_than AI_USER, 70, AI_CV_DestinyBond_End
+	if_random_less_than 128, AI_CV_DestinyBond5
+	score +1
+AI_CV_DestinyBond5:
+	if_hp_more_than AI_USER, 50, AI_CV_DestinyBond_End
+	if_random_less_than 128, AI_CV_DestinyBond6
+	score +1
+AI_CV_DestinyBond6:
 	if_hp_more_than AI_USER, 30, AI_CV_DestinyBond_End
 	if_random_less_than 100, AI_CV_DestinyBond_End
 	score +2
@@ -2607,12 +2622,15 @@ AI_CV_SunnyDay_CheckUserFireWeak:
 
 AI_CV_SunnyDay_CheckTargetFire:
 	get_target_type1
-	if_equal TYPE_FIRE, AI_CV_SunnyDay_NoSunForFire
+	if_equal TYPE_FIRE, AI_CV_SunnyDay_CheckTargetStatus
 	get_target_type2
-	if_equal TYPE_FIRE, AI_CV_SunnyDay_NoSunForFire
+	if_equal TYPE_FIRE, AI_CV_SunnyDay_CheckTargetStatus
 	goto AI_CV_SunnyDay_CheckTargetWater
 
-AI_CV_SunnyDay_NoSunForFire:
+AI_CV_SunnyDay_CheckTargetStatus:
+	if_status AI_TARGET, STATUS1_SLEEP, AI_CV_SunnyDay_CheckTargetWater
+	if_status AI_TARGET, STATUS1_FREEZE, AI_CV_SunnyDay_CheckTargetWater
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_SunnyDay_CheckTargetWater
 	score -5
 AI_CV_SunnyDay_CheckTargetWater:
 	get_target_type1
