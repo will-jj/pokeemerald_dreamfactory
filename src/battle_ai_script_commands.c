@@ -100,7 +100,7 @@ static void Cmd_get_considered_move_effect(void);
 static void Cmd_get_ability(void);
 static void Cmd_get_highest_type_effectiveness(void);
 static void Cmd_if_type_effectiveness(void);
-static void Cmd_nop_32(void);
+static void Cmd_if_target(void);
 static void Cmd_nop_33(void);
 static void Cmd_if_status_in_party(void);
 static void Cmd_if_status_not_in_party(void);
@@ -209,7 +209,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_ability,                                // 0x2F
     Cmd_get_highest_type_effectiveness,             // 0x30
     Cmd_if_type_effectiveness,                      // 0x31
-    Cmd_nop_32,                                     // 0x32
+    Cmd_if_target,                                  // 0x32
     Cmd_nop_33,                                     // 0x33
     Cmd_if_status_in_party,                         // 0x34
     Cmd_if_status_not_in_party,                     // 0x35
@@ -1553,8 +1553,12 @@ static void Cmd_if_type_effectiveness(void)
         gAIScriptPtr += 6;
 }
 
-static void Cmd_nop_32(void)
+static void Cmd_if_target(void)
 {
+    if (gBattleMoves[AI_THINKING_STRUCT->moveConsidered].target == gAIScriptPtr[1])
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
+    else
+        gAIScriptPtr += 6;
 }
 
 static void Cmd_nop_33(void)

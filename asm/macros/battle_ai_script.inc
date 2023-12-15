@@ -287,8 +287,10 @@
 	.4byte \param1
 	.endm
 
-	.macro nop_32
+	.macro if_target param0:req, param1:req
 	.byte 0x32
+	.byte \param0
+	.4byte \param1
 	.endm
 
 	.macro nop_33
