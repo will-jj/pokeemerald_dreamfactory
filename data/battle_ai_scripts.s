@@ -56,6 +56,7 @@ AI_CheckBadMove:
 AI_CBM_VS_Substitute:
 	get_considered_move_power
 	if_equal 0, AI_CBM_VS_Substitute_CheckTarget
+	if_effect EFFECT_EXPLOSION, AI_CBM_SubstituteBlocks
 	if_effect EFFECT_DREAM_EATER, AI_CBM_SubstituteBlocks
 	if_effect EFFECT_TRAP, AI_CBM_SubstituteBlocks
 	if_effect EFFECT_CURSE, AI_CBM_Substitute_CurseTypeCheck
@@ -398,6 +399,7 @@ AI_CheckBadMove_MirrorMove:
 AI_CBM_VS_Substitute_MirrorMove:
 	get_considered_move_power
 	if_equal 0, AI_CBM_VS_Substitute_CheckTarget_MirrorMove
+	if_effect EFFECT_EXPLOSION, AI_CBM_SubstituteBlocks_MirrorMove
 	if_effect EFFECT_DREAM_EATER, AI_CBM_SubstituteBlocks_MirrorMove
 	if_effect EFFECT_TRAP, AI_CBM_SubstituteBlocks_MirrorMove
 	if_effect EFFECT_CURSE, AI_CBM_Substitute_CurseTypeCheck_MirrorMove
@@ -1290,66 +1292,11 @@ AI_CheckViability:
 	if_effect EFFECT_CALM_MIND, AI_CV_SpDefUp
 	if_effect EFFECT_DRAGON_DANCE, AI_CV_DragonDance
 	if_effect EFFECT_RAPID_SPIN, AI_CV_RapidSpin
+	if_effect EFFECT_MULTI_HIT, AI_CV_MultiHit
 	if_effect EFFECT_PERISH_SONG, AI_CV_SuicideCheck
 	if_effect EFFECT_DREAM_EATER, AI_CV_End
 	if_effect EFFECT_NIGHTMARE, AI_CV_End
 	end
-
-AI_CV_Sleep:
-	get_last_used_bank_move AI_TARGET
-	get_move_effect_from_result
-	if_not_equal EFFECT_SLEEP, AI_CV_SleepEncourageSlpDamage_Check
-	if_random_less_than 205, AI_CV_SleepEncourageSlpDamage_Check
-	score +30
-AI_CV_SleepEncourageSlpDamage_Check:
-	if_has_move_with_effect AI_TARGET, EFFECT_DREAM_EATER, AI_CV_SleepEncourageSlpDamage
-	if_has_move_with_effect AI_TARGET, EFFECT_NIGHTMARE, AI_CV_SleepEncourageSlpDamage
-	goto AI_CV_Sleep_End
-
-AI_CV_SleepEncourageSlpDamage:
-	if_random_less_than 128, AI_CV_Sleep_End
-	score +1
-AI_CV_Sleep_End:
-	end
-
-AI_CV_Absorb:
-	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CV_AbsorbEncourageMaybe
-	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CV_AbsorbEncourageMaybe
-	goto AI_CV_Absorb_End
-
-AI_CV_AbsorbEncourageMaybe:
-	if_random_less_than 50, AI_CV_Absorb_End
-	score -3
-AI_CV_Absorb_End:
-	end
-
-AI_CV_SelfKO:
-	if_stat_level_less_than AI_TARGET, STAT_EVASION, 7, AI_CV_SelfKO_Encourage1
-	score -1
-	if_stat_level_less_than AI_TARGET, STAT_EVASION, 10, AI_CV_SelfKO_Encourage1
-	if_random_less_than 128, AI_CV_SelfKO_Encourage1
-	score -1
-AI_CV_SelfKO_Encourage1:
-	if_hp_less_than AI_USER, 80, AI_CV_SelfKO_Encourage2
-	if_target_faster AI_CV_SelfKO_Encourage2
-	if_random_less_than 50, AI_CV_SelfKO_End
-	goto Score_Minus3
-
-AI_CV_SelfKO_Encourage2:
-	if_hp_more_than AI_USER, 50, AI_CV_SelfKO_Encourage4
-	if_random_less_than 128, AI_CV_SelfKO_Encourage3
-	score +1
-AI_CV_SelfKO_Encourage3:
-	if_hp_more_than AI_USER, 30, AI_CV_SelfKO_End
-	if_random_less_than 50, AI_CV_SelfKO_End
-	score +1
-	goto AI_CV_SelfKO_End
-
-AI_CV_SelfKO_Encourage4:
-	if_random_less_than 50, AI_CV_SelfKO_End
-	score -1
-AI_CV_SelfKO_End:
-	goto AI_CV_SuicideCheck
 
 AI_CV_MirrorMove:
 	is_first_turn_for AI_TARGET
@@ -1495,6 +1442,7 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_CALM_MIND, AI_CV_SpDefUp
 	if_equal EFFECT_DRAGON_DANCE, AI_CV_DragonDance
 	if_equal EFFECT_RAPID_SPIN, AI_CV_RapidSpin
+	if_equal EFFECT_MULTI_HIT, AI_CV_MultiHit
 	if_equal EFFECT_PERISH_SONG, AI_CV_SuicideCheck
 	goto AI_CV_MirrorMoveEnd
 
@@ -1502,6 +1450,71 @@ AI_CV_MirrorMovePenalty:
 	score -10
 AI_CV_MirrorMoveEnd:
 	end
+
+AI_CV_MultiHit:
+	if_status2 AI_TARGET, STATUS2_SUBSTITUTE, AI_MultiHit_ScorePlus3
+	goto AI_MultiHit_End
+
+AI_MultiHit_ScorePlus3:
+	score +3
+AI_MultiHit_End:
+	end
+
+AI_CV_Sleep:
+	get_last_used_bank_move AI_TARGET
+	get_move_effect_from_result
+	if_not_equal EFFECT_SLEEP, AI_CV_SleepEncourageSlpDamage_Check
+	if_random_less_than 205, AI_CV_SleepEncourageSlpDamage_Check
+	score +30
+AI_CV_SleepEncourageSlpDamage_Check:
+	if_has_move_with_effect AI_TARGET, EFFECT_DREAM_EATER, AI_CV_SleepEncourageSlpDamage
+	if_has_move_with_effect AI_TARGET, EFFECT_NIGHTMARE, AI_CV_SleepEncourageSlpDamage
+	goto AI_CV_Sleep_End
+
+AI_CV_SleepEncourageSlpDamage:
+	if_random_less_than 128, AI_CV_Sleep_End
+	score +1
+AI_CV_Sleep_End:
+	end
+
+AI_CV_Absorb:
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CV_AbsorbEncourageMaybe
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CV_AbsorbEncourageMaybe
+	goto AI_CV_Absorb_End
+
+AI_CV_AbsorbEncourageMaybe:
+	if_random_less_than 50, AI_CV_Absorb_End
+	score -3
+AI_CV_Absorb_End:
+	end
+
+AI_CV_SelfKO:
+	if_stat_level_less_than AI_TARGET, STAT_EVASION, 7, AI_CV_SelfKO_Encourage1
+	score -1
+	if_stat_level_less_than AI_TARGET, STAT_EVASION, 10, AI_CV_SelfKO_Encourage1
+	if_random_less_than 128, AI_CV_SelfKO_Encourage1
+	score -1
+AI_CV_SelfKO_Encourage1:
+	if_hp_less_than AI_USER, 80, AI_CV_SelfKO_Encourage2
+	if_target_faster AI_CV_SelfKO_Encourage2
+	if_random_less_than 50, AI_CV_SelfKO_End
+	goto Score_Minus3
+
+AI_CV_SelfKO_Encourage2:
+	if_hp_more_than AI_USER, 50, AI_CV_SelfKO_Encourage4
+	if_random_less_than 128, AI_CV_SelfKO_Encourage3
+	score +1
+AI_CV_SelfKO_Encourage3:
+	if_hp_more_than AI_USER, 30, AI_CV_SelfKO_End
+	if_random_less_than 50, AI_CV_SelfKO_End
+	score +1
+	goto AI_CV_SelfKO_End
+
+AI_CV_SelfKO_Encourage4:
+	if_random_less_than 50, AI_CV_SelfKO_End
+	score -1
+AI_CV_SelfKO_End:
+	goto AI_CV_SuicideCheck
 
 AI_CV_AttackUp:
 	if_stat_level_less_than AI_USER, STAT_ATK, 9, AI_CV_AttackUp2
@@ -3409,12 +3422,6 @@ AI_TryToFaint:
 	if_can_faint AI_TryToFaint_TryToEncourageQuickAttack
 	get_how_powerful_move_is
 	if_equal MOVE_NOT_MOST_POWERFUL, Score_Minus1
-	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_TryToFaint_DoubleSuperEffective
-	end
-
-AI_TryToFaint_DoubleSuperEffective:
-	if_random_less_than 80, AI_TryToFaint_End
-	score +2
 	end
 
 AI_TryToFaint_TryToEncourageQuickAttack:
@@ -3423,6 +3430,29 @@ AI_TryToFaint_TryToEncourageQuickAttack:
 	score +2
 AI_TryToFaint_ScoreUp4:
 	score +4
+AI_TryToFaint_AccuracyBonus:
+	get_considered_move_accuracy
+	if_equal 100, AI_TryToFaint_AccuracyBonus_7
+	if_equal 95, AI_TryToFaint_AccuracyBonus_6
+	if_equal 90, AI_TryToFaint_AccuracyBonus_5
+	if_equal 85, AI_TryToFaint_AccuracyBonus_4
+	if_equal 80, AI_TryToFaint_AccuracyBonus_3
+	if_equal 75, AI_TryToFaint_AccuracyBonus_2
+	if_equal 70, AI_TryToFaint_AccuracyBonus_1
+AI_TryToFaint_AccuracyBonus_7:
+	score +1
+AI_TryToFaint_AccuracyBonus_6:
+	score +1
+AI_TryToFaint_AccuracyBonus_5:
+	score +1
+AI_TryToFaint_AccuracyBonus_4:
+	score +1
+AI_TryToFaint_AccuracyBonus_3:
+	score +1
+AI_TryToFaint_AccuracyBonus_2:
+	score +1
+AI_TryToFaint_AccuracyBonus_1:
+	score +1
 AI_TryToFaint_End:
 	end
 
