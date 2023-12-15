@@ -3432,19 +3432,13 @@ AI_TryToFaint_ScoreUp4:
 	score +4
 AI_TryToFaint_AccuracyBonus:
 	get_considered_move_accuracy
-	if_equal 100, AI_TryToFaint_AccuracyBonus_7
-	if_equal 95, AI_TryToFaint_AccuracyBonus_6
-	if_equal 90, AI_TryToFaint_AccuracyBonus_5
-	if_equal 85, AI_TryToFaint_AccuracyBonus_4
-	if_equal 80, AI_TryToFaint_AccuracyBonus_3
-	if_equal 75, AI_TryToFaint_AccuracyBonus_2
+	if_equal 100, AI_TryToFaint_AccuracyBonus_4
+	if_equal 95, AI_TryToFaint_AccuracyBonus_3
+	if_equal 90, AI_TryToFaint_AccuracyBonus_2
+	if_equal 85, AI_TryToFaint_AccuracyBonus_2
+	if_equal 80, AI_TryToFaint_AccuracyBonus_1
+	if_equal 75, AI_TryToFaint_AccuracyBonus_1
 	if_equal 70, AI_TryToFaint_AccuracyBonus_1
-AI_TryToFaint_AccuracyBonus_7:
-	score +1
-AI_TryToFaint_AccuracyBonus_6:
-	score +1
-AI_TryToFaint_AccuracyBonus_5:
-	score +1
 AI_TryToFaint_AccuracyBonus_4:
 	score +1
 AI_TryToFaint_AccuracyBonus_3:
