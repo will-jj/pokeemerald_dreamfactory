@@ -610,17 +610,7 @@ AI_CBM_Soundproof_MirrorMove:
 
 CheckIfSoundMove_MirrorMove:
 	get_last_used_bank_move AI_TARGET
-	if_equal MOVE_GROWL, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_ROAR, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_SING, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_SUPERSONIC, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_SCREECH, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_SNORE, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_UPROAR, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_METAL_SOUND, CheckIfSoundMove_MirrorMove_Minus10
-	if_equal MOVE_GRASS_WHISTLE, CheckIfSoundMove_MirrorMove_Minus10
-	goto TestWhetherToCheckStatLowerImmunity_MirrorMove
-
+	if_not_in_hwords sMovesTable_SoundMoves, TestWhetherToCheckStatLowerImmunity_MirrorMove
 CheckIfSoundMove_MirrorMove_Minus10:
 	score -10
 TestWhetherToCheckStatLowerImmunity_MirrorMove:
@@ -3668,6 +3658,18 @@ AI_PreferBatonPass_End:
 sMovesTable_ProtectMoves:
 	.2byte MOVE_PROTECT
 	.2byte MOVE_DETECT
+	.2byte -1
+
+sMovesTable_SoundMoves:
+	.2byte MOVE_GROWL
+	.2byte MOVE_ROAR
+	.2byte MOVE_SING
+	.2byte MOVE_SUPERSONIC
+	.2byte MOVE_SCREECH
+	.2byte MOVE_SNORE
+	.2byte MOVE_UPROAR
+	.2byte MOVE_METAL_SOUND
+	.2byte MOVE_GRASS_WHISTLE
 	.2byte -1
 
 AI_PreferBatonPass_EncourageIfHighStats:
