@@ -101,7 +101,7 @@ static void Cmd_get_ability(void);
 static void Cmd_get_highest_type_effectiveness(void);
 static void Cmd_if_type_effectiveness(void);
 static void Cmd_if_target(void);
-static void Cmd_nop_33(void);
+static void Cmd_get_fainted_previous_turn(void);
 static void Cmd_if_status_in_party(void);
 static void Cmd_if_status_not_in_party(void);
 static void Cmd_get_weather(void);
@@ -134,7 +134,7 @@ static void Cmd_get_move_effect_from_result(void);
 static void Cmd_get_protect_count(void);
 static void Cmd_get_move_target_from_result(void);
 static void Cmd_if_type_effectiveness_from_result(void);
-static void Cmd_nop_54(void);
+static void Cmd_get_considered_move_second_eff_chance_from_result(void);
 static void Cmd_nop_55(void);
 static void Cmd_nop_56(void);
 static void Cmd_nop_57(void);
@@ -210,7 +210,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_highest_type_effectiveness,             // 0x30
     Cmd_if_type_effectiveness,                      // 0x31
     Cmd_if_target,                                  // 0x32
-    Cmd_nop_33,                                     // 0x33
+    Cmd_get_fainted_previous_turn,                   // 0x33
     Cmd_if_status_in_party,                         // 0x34
     Cmd_if_status_not_in_party,                     // 0x35
     Cmd_get_weather,                                // 0x36
@@ -243,7 +243,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_protect_count,                          // 0x51
     Cmd_get_move_target_from_result,                // 0x52
     Cmd_if_type_effectiveness_from_result,          // 0x53
-    Cmd_nop_54,                                     // 0x54
+    Cmd_get_considered_move_second_eff_chance_from_result,                                     // 0x54
     Cmd_nop_55,                                     // 0x55
     Cmd_nop_56,                                     // 0x56
     Cmd_nop_57,                                     // 0x57
@@ -1561,8 +1561,11 @@ static void Cmd_if_target(void)
         gAIScriptPtr += 6;
 }
 
-static void Cmd_nop_33(void)
+static void Cmd_get_fainted_previous_turn(void)
 {
+    AI_THINKING_STRUCT->funcResult = GetBattlerSide(gBattlerFainted);
+
+    gAIScriptPtr += 2;
 }
 
 static void Cmd_if_status_in_party(void)
@@ -2190,8 +2193,10 @@ static void Cmd_if_type_effectiveness_from_result(void)
         gAIScriptPtr += 6;
 }
 
-static void Cmd_nop_54(void)
+static void Cmd_get_considered_move_second_eff_chance_from_result(void)
 {
+    AI_THINKING_STRUCT->funcResult = gBattleMoves[AI_THINKING_STRUCT->funcResult].secondaryEffectChance;
+    gAIScriptPtr += 1;
 }
 
 static void Cmd_nop_55(void)

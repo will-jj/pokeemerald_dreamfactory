@@ -293,7 +293,7 @@
 	.4byte \param1
 	.endm
 
-	.macro nop_33
+	.macro get_fainted_previous_turn
 	.byte 0x33
 	.endm
 
@@ -479,7 +479,7 @@
 	.4byte \param1
 	.endm
 
-	.macro nop_54
+	.macro get_considered_move_second_eff_chance_from_result
 	.byte 0x54
 	.endm
 
