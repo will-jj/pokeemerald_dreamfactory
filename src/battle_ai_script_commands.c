@@ -210,7 +210,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_highest_type_effectiveness,             // 0x30
     Cmd_if_type_effectiveness,                      // 0x31
     Cmd_if_target,                                  // 0x32
-    Cmd_get_fainted_previous_turn,                   // 0x33
+    Cmd_get_fainted_previous_turn,                  // 0x33
     Cmd_if_status_in_party,                         // 0x34
     Cmd_if_status_not_in_party,                     // 0x35
     Cmd_get_weather,                                // 0x36
@@ -1563,6 +1563,8 @@ static void Cmd_if_target(void)
 
 static void Cmd_get_fainted_previous_turn(void)
 {
+    gBattlerFainted = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+
     AI_THINKING_STRUCT->funcResult = GetBattlerSide(gBattlerFainted);
 
     gAIScriptPtr += 2;
