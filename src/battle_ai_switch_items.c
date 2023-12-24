@@ -450,7 +450,7 @@ static bool8 ShouldSwitch(void)
     if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_ARENA_TRAP))
     {
         if (IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING)
-            || ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE))
+            | ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE))
         )
             return TRUE;
         else
