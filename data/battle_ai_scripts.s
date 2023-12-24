@@ -191,7 +191,7 @@ AI_CBM_TestWhetherToCheckTypeMatchup_Speed:
 AI_CBM_CheckTypeMatchup_Resists:
 	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_Minus9
 	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_Minus30
-	if_status2 STATUS2_SUBSTITUTE AI_USER, AI_CBM_CheckTypeMatchup_Weaknesses
+	if_status2 STATUS2_SUBSTITUTE, AI_USER, AI_CBM_CheckTypeMatchup_Weaknesses
 	if_effect EFFECT_SEMI_INVULNERABLE, CheckSTAB
 	if_effect EFFECT_FOCUS_PUNCH, CheckSTAB
 	if_effect EFFECT_SKULL_BASH, CheckSTAB
