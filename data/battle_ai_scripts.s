@@ -382,8 +382,6 @@ AI_CBM_MirrorMove:
 	if_equal TRUE, AI_CBM_MirrorMovePenalty
 	is_first_turn_for AI_USER
 	if_equal FALSE, AI_CBM_MirrorMoveCheckSpeed
-	get_fainted_previous_turn
-	if_equal B_SIDE_OPPONENT, AI_CBM_MirrorMovePenalty
 AI_CBM_MirrorMoveCheckSpeed:
 	if_user_faster AI_CBM_MirrorMoveCheckTarget
 	goto AI_CBM_MirrorMovePenalty
