@@ -166,48 +166,59 @@ AI_CBM_TestWhetherToCheckTypeMatchup:
 	if_effect EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck
 	if_effect EFFECT_THIEF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck
 	if_effect EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Speed
-	goto AI_CBM_CheckTypeMatchup
+	goto AI_CBM_CheckTypeMatchup_Resists
 
 AI_CBM_TestWhetherToCheckTypeMatchup_Status:
-	if_status AI_TARGET, STATUS1_ANY, AI_CBM_CheckTypeMatchup
+	if_status AI_TARGET, STATUS1_ANY, AI_CBM_CheckTypeMatchup_Resists
 	get_considered_move_second_eff_chance
-	if_less_than 25, AI_CBM_CheckTypeMatchup
+	if_less_than 25, AI_CBM_CheckTypeMatchup_Resists
 	goto CheckSoundproof
 
 AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck:
 	get_ability AI_TARGET
-	if_equal ABILITY_STICKY_HOLD, AI_CBM_CheckTypeMatchup
+	if_equal ABILITY_STICKY_HOLD, AI_CBM_CheckTypeMatchup_Resists
 	get_hold_effect AI_TARGET
-	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_CheckTypeMatchup
+	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_CheckTypeMatchup_Resists
 	goto CheckSoundproof
 
 AI_CBM_TestWhetherToCheckTypeMatchup_Speed:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_CheckTypeMatchup
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_CheckTypeMatchup
-	if_equal ABILITY_SPEED_BOOST, AI_CBM_CheckTypeMatchup
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_CheckTypeMatchup
+	if_equal ABILITY_CLEAR_BODY, AI_CBM_CheckTypeMatchup_Resists
+	if_equal ABILITY_WHITE_SMOKE, AI_CBM_CheckTypeMatchup_Resists
+	if_equal ABILITY_SPEED_BOOST, AI_CBM_CheckTypeMatchup_Resists
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_CheckTypeMatchup_Resists
 	if_target_faster CheckSoundproof
-AI_CBM_CheckTypeMatchup:
-	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Minus9
-	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Minus30
-	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_CheckTypeMatchup_Plus2
-	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_CBM_CheckTypeMatchup_Plus3
+AI_CBM_CheckTypeMatchup_Resists:
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_Minus9
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_Minus30
+	if_status2 STATUS2_SUBSTITUTE AI_USER, AI_CBM_CheckTypeMatchup_Weaknesses
+	if_effect EFFECT_SEMI_INVULNERABLE, CheckSTAB
+	if_effect EFFECT_FOCUS_PUNCH, CheckSTAB
+	if_effect EFFECT_SKULL_BASH, CheckSTAB
+	if_effect EFFECT_SKY_ATTACK, CheckSTAB
+	if_effect EFFECT_RAZOR_WIND, CheckSTAB
+	if_effect EFFECT_RECHARGE, CheckSTAB
+	get_weather
+	if_equal AI_WEATHER_SUN, AI_CBM_CheckTypeMatchup_Weaknesses
+	if_effect EFFECT_SOLAR_BEAM, CheckSTAB
+AI_CBM_CheckTypeMatchup_Weaknesses:
+	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_CheckTypeMatchup_Resists_Plus1
+	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_CBM_CheckTypeMatchup_Resists_Plus2
 	goto CheckSTAB
 
-AI_CBM_CheckTypeMatchup_Plus2:
+AI_CBM_CheckTypeMatchup_Resists_Plus1:
+	score +1
+	goto CheckSTAB
+
+AI_CBM_CheckTypeMatchup_Resists_Plus2:
 	score +2
 	goto CheckSTAB
 
-AI_CBM_CheckTypeMatchup_Plus3:
-	score +3
-	goto CheckSTAB
-
-AI_CBM_CheckTypeMatchup_Minus9:
+AI_CBM_CheckTypeMatchup_Resists_Minus9:
 	score -9
 	goto CheckSTAB
 
-AI_CBM_CheckTypeMatchup_Minus30:
+AI_CBM_CheckTypeMatchup_Resists_Minus30:
 	score -30
 CheckSTAB:
 	get_curr_move_type
@@ -548,50 +559,50 @@ AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove:
 	if_equal EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck_MirrorMove
 	if_equal EFFECT_THIEF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck_MirrorMove
 	if_equal EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Speed_MirrorMove
-	goto AI_CBM_CheckTypeMatchup_MirrorMove
+	goto AI_CBM_CheckTypeMatchup_Resists_MirrorMove
 
 AI_CBM_TestWhetherToCheckTypeMatchup_Status_MirrorMove:
-	if_status AI_TARGET, STATUS1_ANY, AI_CBM_CheckTypeMatchup_MirrorMove
+	if_status AI_TARGET, STATUS1_ANY, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
 	get_last_used_bank_move AI_TARGET
 	get_considered_move_second_eff_chance_from_result
-	if_less_than 25, AI_CBM_CheckTypeMatchup_MirrorMove
+	if_less_than 25, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
 	goto AI_CBM_Soundproof_MirrorMove
 
 AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_STICKY_HOLD, AI_CBM_CheckTypeMatchup_MirrorMove
+	if_equal ABILITY_STICKY_HOLD, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
 	get_hold_effect AI_TARGET
-	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_CheckTypeMatchup_MirrorMove
+	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
 	goto AI_CBM_Soundproof_MirrorMove
 
 AI_CBM_TestWhetherToCheckTypeMatchup_Speed_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_CheckTypeMatchup_MirrorMove
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_CheckTypeMatchup_MirrorMove
-	if_equal ABILITY_SPEED_BOOST, AI_CBM_CheckTypeMatchup_MirrorMove
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_CheckTypeMatchup_MirrorMove
+	if_equal ABILITY_CLEAR_BODY, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_equal ABILITY_WHITE_SMOKE, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_equal ABILITY_SPEED_BOOST, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
 	if_target_faster AI_CBM_Soundproof_MirrorMove
-AI_CBM_CheckTypeMatchup_MirrorMove:
+AI_CBM_CheckTypeMatchup_Resists_MirrorMove:
 	get_last_used_bank_move AI_TARGET
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_MirrorMove_Minus8
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_MirrorMove_Minus30
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_CheckTypeMatchup_MirrorMove_Plus2
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_CheckTypeMatchup_MirrorMove_Plus3
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus8
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus30
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus2
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus3
 	goto AI_CBM_CheckSTAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_MirrorMove_Plus2:
+AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus2:
 	score +2
 	goto AI_CBM_CheckSTAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_MirrorMove_Plus3:
+AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus3:
 	score +3
 	goto AI_CBM_CheckSTAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_MirrorMove_Minus8:
+AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus8:
 	score -8
 	goto AI_CBM_CheckSTAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_MirrorMove_Minus30:
+AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus30:
 	score -30
 AI_CBM_CheckSTAB_MirrorMove:
 	get_last_used_bank_move AI_TARGET
