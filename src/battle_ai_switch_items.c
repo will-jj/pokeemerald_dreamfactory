@@ -449,12 +449,15 @@ static bool8 ShouldSwitch(void)
         return FALSE;
     if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_ARENA_TRAP))
     {
-        if (IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING)
-            | ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE))
-        )
+        if (IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING))
             return TRUE;
         else
-            return FALSE;
+        {
+            if (ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE))
+                return TRUE;
+            else
+                return FALSE;
+        }
     }
     if (ABILITY_ON_FIELD2(ABILITY_MAGNET_PULL))
     {
