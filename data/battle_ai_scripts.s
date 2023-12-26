@@ -4185,6 +4185,3 @@ AI_FirstBattle_Flee:
 
 AI_End:
 	end
-
-AI_End:
-	end
