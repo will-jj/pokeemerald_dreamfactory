@@ -751,7 +751,6 @@ AI_CBM_MirrorMove_CheckEffect:
 	if_equal EFFECT_HELPING_HAND, AI_CBM_HelpingHand
 	if_equal EFFECT_TRICK, AI_CBM_TrickAndKnockOff
 	if_equal EFFECT_INGRAIN, AI_CBM_Ingrain
-	if_equal EFFECT_SUPERPOWER, AI_CBM_HighRiskForDamage
 	if_equal EFFECT_RECYCLE, AI_CBM_Recycle
 	if_equal EFFECT_KNOCK_OFF, AI_CBM_TrickAndKnockOff
 	if_equal EFFECT_IMPRISON, AI_CBM_Imprison
@@ -3025,10 +3024,10 @@ AI_CV_SemiInvulnerable:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
 	if_equal EFFECT_WISH, AI_CV_SemiInvulnerable_AfterWish
-	goto AI_CV_SemiInvulnerable_CheckCurse
+	goto AI_CV_SemiInvulnerable_CheckTargetCurse
 
 AI_CV_SemiInvulnerable_AfterWish:
-	if_hp_more_than AI_USER, 80, AI_CV_SemiInvulnerable_CheckCurse
+	if_hp_more_than AI_USER, 80, AI_CV_SemiInvulnerable_CheckTargetCurse
 	score +2
 AI_CV_SemiInvulnerable_CheckTargetCurse:
 	if_status2 AI_TARGET, STATUS2_CURSED, AI_CV_SemiInvulnerable_TargetCursed
@@ -3064,7 +3063,7 @@ AI_CV_SemiInvulnerable_TargetStatused:
 	score +1
 AI_CV_SemiInvulnerable_CheckUserStatused:
 	if_status AI_USER, STATUS1_BURN, AI_CV_SemiInvulnerable_UserStatused
-	if_status AI_USER, STATUS1_PSN_ANY, AI_CV_SemiInvulnerable_UesrStatused
+	if_status AI_USER, STATUS1_PSN_ANY, AI_CV_SemiInvulnerable_UserStatused
 	if_status3 AI_USER, STATUS3_YAWN, AI_CV_SemiInvulnerable_UserStatused
 	goto AI_CV_SemiInvulnerable_CheckUserConfused
 
@@ -3397,8 +3396,8 @@ AI_CV_MudSport_End:
 AI_CV_Overheat:
 	if_holds_item AI_USER, ITEM_WHITE_HERB, AI_CV_Overheat_End
 	get_curr_move_type
-	if_equal FIRE, AI_CV_CheckOverheat
-	if_equal PSYCHIC, AI_CV_CheckPsychoBoost
+	if_equal TYPE_FIRE, AI_CV_CheckOverheat
+	if_equal TYPE_PSYCHIC, AI_CV_CheckPsychoBoost
 	goto AI_CV_Overheat_End
 
 AI_CV_CheckOverheat:
