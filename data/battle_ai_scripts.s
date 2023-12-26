@@ -870,7 +870,7 @@ AI_CBM_DreamEater:
 	end
 
 AI_CBM_Taunt:
-	if_target_taunted, Score_Minus10
+	if_target_taunted Score_Minus10
 	end
 
 AI_CBM_Torment:
