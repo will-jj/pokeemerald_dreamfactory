@@ -363,6 +363,7 @@ AI_CheckBadMove_CheckEffect:
 	if_effect EFFECT_SPIT_UP, AI_CBM_SpitUpAndSwallow
 	if_effect EFFECT_SWALLOW, AI_CBM_SpitUpAndSwallow
 	if_effect EFFECT_HAIL, AI_CBM_Hail
+	if_effect EFFECT_TAUNT, AI_CBM_Taunt
 	if_effect EFFECT_TORMENT, AI_CBM_Torment
 	if_effect EFFECT_FLATTER, AI_CBM_Confuse
 	if_effect EFFECT_WILL_O_WISP, AI_CBM_WillOWisp
@@ -744,6 +745,7 @@ AI_CBM_MirrorMove_CheckEffect:
 	if_equal EFFECT_SPIT_UP, AI_CBM_SpitUpAndSwallow
 	if_equal EFFECT_SWALLOW, AI_CBM_SpitUpAndSwallow
 	if_equal EFFECT_HAIL, AI_CBM_Hail
+	if_equal EFFECT_TAUNT, AI_CBM_Taunt
 	if_equal EFFECT_TORMENT, AI_CBM_Torment
 	if_equal EFFECT_FLATTER, AI_CBM_Confuse
 	if_equal EFFECT_WILL_O_WISP, AI_CBM_WillOWisp
@@ -833,7 +835,7 @@ AI_CBM_CantEscape:
 	end
 
 AI_CBM_Confuse:
-	if_status2 AI_TARGET, STATUS2_CONFUSION, Score_Minus5
+	if_status2 AI_TARGET, STATUS2_CONFUSION, Score_Minus10
 	get_ability AI_TARGET
 	if_equal ABILITY_OWN_TEMPO, Score_Minus10
 	if_side_affecting AI_TARGET, SIDE_STATUS_SAFEGUARD, Score_Minus10
@@ -865,6 +867,10 @@ AI_CBM_DreamEater:
 	if_not_status AI_TARGET, STATUS1_SLEEP, Score_Minus10
 	if_random_less_than 16, AI_End
 	score +1
+	end
+
+AI_CBM_Taunt:
+	if_target_taunted, Score_Minus10
 	end
 
 AI_CBM_Torment:
@@ -919,7 +925,7 @@ AI_CBM_WaterSport:
 	end
 
 AI_CBM_LightScreen:
-	if_side_affecting AI_USER, SIDE_STATUS_LIGHTSCREEN, Score_Minus8
+	if_side_affecting AI_USER, SIDE_STATUS_LIGHTSCREEN, Score_Minus10
 	end
 
 AI_CBM_Reflect:
