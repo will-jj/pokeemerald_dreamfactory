@@ -122,33 +122,33 @@ AI_CBM_CheckImmunities:
 	if_equal ABILITY_FLASH_FIRE, CheckIfFlashFireCancelsFire
 	if_equal ABILITY_WONDER_GUARD, CheckIfWonderGuardCancelsMove
 	if_equal ABILITY_LEVITATE, CheckIfLevitateCancelsGroundMove
-	goto AI_CBM_TestWhetherToCheckTypeMatchup
+	goto AI_CBM_TestWhetherToTypeMatchup
 
 CheckIfVoltAbsorbCancelsElectric:
 	get_curr_move_type
 	if_equal_ TYPE_ELECTRIC, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup
+	goto AI_CBM_TestWhetherToTypeMatchup
 
 CheckIfWaterAbsorbCancelsWater:
 	get_curr_move_type
 	if_equal_ TYPE_WATER, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup
+	goto AI_CBM_TestWhetherToTypeMatchup
 
 CheckIfFlashFireCancelsFire:
 	get_curr_move_type
 	if_equal_ TYPE_FIRE, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup
+	goto AI_CBM_TestWhetherToTypeMatchup
 
 CheckIfWonderGuardCancelsMove:
-	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_TestWhetherToCheckTypeMatchup
+	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_TestWhetherToTypeMatchup
 	goto Score_Minus30
 
 CheckIfLevitateCancelsGroundMove:
 	get_curr_move_type
 	if_equal_ TYPE_GROUND, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup
+	goto AI_CBM_TestWhetherToTypeMatchup
 
-AI_CBM_TestWhetherToCheckTypeMatchup:
+AI_CBM_TestWhetherToTypeMatchup:
 	if_effect EFFECT_BIDE, CheckSoundproof
 	if_effect EFFECT_COUNTER, CheckSoundproof
 	if_effect EFFECT_ENDEAVOR, CheckSoundproof
@@ -159,135 +159,206 @@ AI_CBM_TestWhetherToCheckTypeMatchup:
 	if_effect EFFECT_RAPID_SPIN, CheckSoundproof
 	if_effect EFFECT_SUPER_FANG, CheckSoundproof
 	if_effect EFFECT_TRAP, CheckSoundproof
-	if_effect EFFECT_PARALYZE_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Status
-	if_effect EFFECT_POISON_FANG, AI_CBM_TestWhetherToCheckTypeMatchup_Status
-	if_effect EFFECT_POISON_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Status
-	if_effect EFFECT_SECRET_POWER, AI_CBM_TestWhetherToCheckTypeMatchup_Status
-	if_effect EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck
-	if_effect EFFECT_THIEF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck
-	if_effect EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Speed
-	goto AI_CBM_CheckTypeMatchup_Resists
+	if_effect EFFECT_PARALYZE_HIT, AI_CBM_TestWhetherToTypeMatchup_Status
+	if_effect EFFECT_POISON_FANG, AI_CBM_TestWhetherToTypeMatchup_Status
+	if_effect EFFECT_POISON_HIT, AI_CBM_TestWhetherToTypeMatchup_Status
+	if_effect EFFECT_SECRET_POWER, AI_CBM_TestWhetherToTypeMatchup_Status
+	if_effect EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck
+	if_effect EFFECT_THIEF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck
+	if_effect EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToTypeMatchup_Speed
+	goto AI_CBM_TypeMatchup_CheckSportAndScreens
 
-AI_CBM_TestWhetherToCheckTypeMatchup_Status:
-	if_status AI_TARGET, STATUS1_ANY, AI_CBM_CheckTypeMatchup_Resists
+AI_CBM_TestWhetherToTypeMatchup_Status:
+	if_status AI_TARGET, STATUS1_ANY, AI_CBM_TypeMatchup_CheckSportAndScreens
 	get_considered_move_second_eff_chance
-	if_less_than 25, AI_CBM_CheckTypeMatchup_Resists
+	if_less_than 25, AI_CBM_TypeMatchup_CheckSportAndScreens
 	goto CheckSoundproof
 
-AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck:
+AI_CBM_TestWhetherToTypeMatchup_ItemCheck:
 	get_ability AI_TARGET
-	if_equal ABILITY_STICKY_HOLD, AI_CBM_CheckTypeMatchup_Resists
+	if_equal ABILITY_STICKY_HOLD, AI_CBM_TypeMatchup_CheckSportAndScreens
 	get_hold_effect AI_TARGET
-	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_CheckTypeMatchup_Resists
+	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_TypeMatchup_CheckSportAndScreens
 	goto CheckSoundproof
 
-AI_CBM_TestWhetherToCheckTypeMatchup_Speed:
+AI_CBM_TestWhetherToTypeMatchup_Speed:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_CheckTypeMatchup_Resists
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_CheckTypeMatchup_Resists
-	if_equal ABILITY_SPEED_BOOST, AI_CBM_CheckTypeMatchup_Resists
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_CheckTypeMatchup_Resists
+	if_equal ABILITY_CLEAR_BODY, AI_CBM_TypeMatchup_CheckSportAndScreens
+	if_equal ABILITY_WHITE_SMOKE, AI_CBM_TypeMatchup_CheckSportAndScreens
+	if_equal ABILITY_SPEED_BOOST, AI_CBM_TypeMatchup_CheckSportAndScreens
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_TypeMatchup_CheckSportAndScreens
 	if_target_faster CheckSoundproof
-AI_CBM_CheckTypeMatchup_Resists:
+
+AI_CBM_TypeMatchup_CheckSportAndScreens:
+	get_curr_move_type
+	if_equal TYPE_BUG, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_DARK, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_DRAGON, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_ELECTRIC, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_FIGHTING, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_FIRE, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_FLYING, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_GHOST, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_GRASS, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_GROUND, AI_CBM_TypeMatchup_Resists_CheckMudSport
+	if_equal TYPE_ICE, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_NORMAL, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_POISON, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_PSYCHIC, AI_CBM_TypeMatchup_Resists_CheckLS
+	if_equal TYPE_ROCK, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_STEEL, AI_CBM_TypeMatchup_Resists_CheckReflect
+	if_equal TYPE_WATER, AI_CBM_TypeMatchup_Resists_CheckWaterSport
+	goto AI_CBM_TypeMatchup_Resists_CheckLS
+
+AI_CBM_TypeMatchup_Resists_CheckMudSport:
+	if_status3 AI_TARGET, STATUS3_MUDSPORT, AI_CBM_TypeMatchup_Resists_MS_CheckReflect
+AI_CBM_TypeMatchup_Resists_CheckReflect:
+	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_Resists_HalfDmg
+	AI_CBM_TypeMatchup_Resists
+
+AI_CBM_TypeMatchup_Resists_MS_CheckReflect:
+	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_Resists_QuarterDmg
+	AI_CBM_TypeMatchup_Resists_HalfDmg
+
+AI_CBM_TypeMatchup_Resists_CheckWaterSport:
+	if_status3 AI_TARGET, STATUS3_WATERSPORT, AI_CBM_TypeMatchup_Resists_WS_CheckLS
+AI_CBM_TypeMatchup_Resists_CheckLS:
+	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_Resists_HalfDmg
+	AI_CBM_TypeMatchup_Resists
+
+AI_CBM_TypeMatchup_Resists_WS_CheckLS:
+	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_Resists_QuarterDmg
+	AI_CBM_TypeMatchup_Resists_HalfDmg
+
+AI_CBM_TypeMatchup_Resists_QuarterDmg:
 	count_usable_party_mons AI_USER
-	if_equal 0, AI_CBM_CheckTypeMatchup_Resists_LastMon
-	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_Minus9
-	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_Minus30
-	goto AI_CBM_CheckTypeMatchup_WeaknessesPreCheck
+	if_equal 0, AI_CBM_TypeMatchup_Resists_QuarterDmg_LastMon
+	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_CBM_STAB
+	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_Resists_Minus9
+	goto AI_CBM_TypeMatchup_Resists_Minus30
 
-AI_CBM_CheckTypeMatchup_Resists_LastMon:
-	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_Minus1
-	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_Minus3
-AI_CBM_CheckTypeMatchup_WeaknessesPreCheck:
-	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_CheckTypeMatchup_Weaknesses
-	if_effect EFFECT_SEMI_INVULNERABLE, CheckSTAB
-	if_effect EFFECT_FOCUS_PUNCH, CheckSTAB
-	if_effect EFFECT_SKULL_BASH, CheckSTAB
-	if_effect EFFECT_SKY_ATTACK, CheckSTAB
-	if_effect EFFECT_RAZOR_WIND, CheckSTAB
-	if_effect EFFECT_RECHARGE, CheckSTAB
+AI_CBM_TypeMatchup_Resists_QuarterDmg_LastMon:
+	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_CBM_STAB
+	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_Resists_Minus1
+	if_type_effectiveness AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_Resists_Minus3
+	goto AI_CBM_TypeMatchup_Resists_Minus5
+
+AI_CBM_TypeMatchup_Resists_HalfDmg:
+	count_usable_party_mons AI_USER
+	if_equal 0, AI_CBM_TypeMatchup_Resists_HalfDmg_LastMon
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_Minus30
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_Minus30
+	if_type_effectiveness AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_Resists_Minus9
+	goto AI_CBM_TypeMatchup_WeaknessesPreCheck
+
+AI_CBM_TypeMatchup_Resists_HalfDmg_LastMon:
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_Minus5
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_Minus3
+	if_type_effectiveness AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_Resists_Minus1
+	goto AI_CBM_TypeMatchup_WeaknessesPreCheck
+
+AI_CBM_TypeMatchup_Resists:
+	count_usable_party_mons AI_USER
+	if_equal 0, AI_CBM_TypeMatchup_Resists_LastMon
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_Minus30
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_Minus9
+	goto AI_CBM_TypeMatchup_WeaknessesPreCheck
+
+AI_CBM_TypeMatchup_Resists_LastMon:
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_Minus3
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_Minus1
+AI_CBM_TypeMatchup_WeaknessesPreCheck:
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_TypeMatchup_Weaknesses
+	if_effect EFFECT_SEMI_INVULNERABLE, AI_CBM_STAB
+	if_effect EFFECT_FOCUS_PUNCH, AI_CBM_STAB
+	if_effect EFFECT_SKULL_BASH, AI_CBM_STAB
+	if_effect EFFECT_SKY_ATTACK, AI_CBM_STAB
+	if_effect EFFECT_RAZOR_WIND, AI_CBM_STAB
+	if_effect EFFECT_RECHARGE, AI_CBM_STAB
 	get_weather
-	if_equal AI_WEATHER_SUN, AI_CBM_CheckTypeMatchup_Weaknesses
-	if_effect EFFECT_SOLAR_BEAM, CheckSTAB
-AI_CBM_CheckTypeMatchup_Weaknesses:
-	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_CheckTypeMatchup_Resists_Plus1
-	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_CBM_CheckTypeMatchup_Resists_Plus2
-	goto CheckSTAB
+	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_Weaknesses
+	if_effect EFFECT_SOLAR_BEAM, AI_CBM_STAB
+AI_CBM_TypeMatchup_Weaknesses:
+	if_type_effectiveness AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_Resists_Plus1
+	if_type_effectiveness AI_EFFECTIVENESS_x4, AI_CBM_TypeMatchup_Resists_Plus2
+	goto AI_CBM_STAB
 
-AI_CBM_CheckTypeMatchup_Resists_Plus1:
+AI_CBM_TypeMatchup_Resists_Plus1:
 	score +1
-	goto CheckSTAB
+	goto AI_CBM_STAB
 
-AI_CBM_CheckTypeMatchup_Resists_Plus2:
+AI_CBM_TypeMatchup_Resists_Plus2:
 	score +2
-	goto CheckSTAB
+	goto AI_CBM_STAB
 
-AI_CBM_CheckTypeMatchup_Resists_Minus1:
+AI_CBM_TypeMatchup_Resists_Minus1:
 	score -1
-	goto CheckSTAB
+	goto AI_CBM_STAB
 
-AI_CBM_CheckTypeMatchup_Resists_Minus3:
+AI_CBM_TypeMatchup_Resists_Minus3:
 	score -3
-	goto CheckSTAB
+	goto AI_CBM_STAB
 
-AI_CBM_CheckTypeMatchup_Resists_Minus9:
+AI_CBM_TypeMatchup_Resists_Minus5:
+	score -5
+	goto AI_CBM_STAB
+
+AI_CBM_TypeMatchup_Resists_Minus9:
 	score -9
-	goto CheckSTAB
+	goto AI_CBM_STAB
 
-AI_CBM_CheckTypeMatchup_Resists_Minus30:
+AI_CBM_TypeMatchup_Resists_Minus30:
 	score -30
-CheckSTAB:
+AI_CBM_STAB:
 	get_curr_move_type
 	if_equal AI_TYPE1_USER, CheckSoundproof
 	if_equal AI_TYPE2_USER, CheckSoundproof
 	score -1
-	goto CheckSoundproof
-
 CheckSoundproof:
 	get_ability AI_TARGET
-	if_equal ABILITY_SOUNDPROOF, CheckIfSoundMove
-	goto TestWhetherToCheckStatLowerImmunity
+	if_equal ABILITY_SOUNDPROOF, AI_CBM_CheckIfSound
+	goto AI_CBM_IfStatLowering
 
-CheckIfSoundMove:
-	if_move MOVE_GROWL, CheckIfSoundMove_Minus10
-	if_move MOVE_ROAR, CheckIfSoundMove_Minus10
-	if_move MOVE_SING, CheckIfSoundMove_Minus10
-	if_move MOVE_SUPERSONIC, CheckIfSoundMove_Minus10
-	if_move MOVE_SCREECH, CheckIfSoundMove_Minus10
-	if_move MOVE_SNORE, CheckIfSoundMove_Minus10
-	if_move MOVE_UPROAR, CheckIfSoundMove_Minus10
-	if_move MOVE_METAL_SOUND, CheckIfSoundMove_Minus10
-	if_move MOVE_GRASS_WHISTLE, CheckIfSoundMove_Minus10
-	goto TestWhetherToCheckStatLowerImmunity
+AI_CBM_CheckIfSound:
+	if_move MOVE_GROWL, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_ROAR, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SING, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SUPERSONIC, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SCREECH, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SNORE, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_UPROAR, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_METAL_SOUND, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_GRASS_WHISTLE, AI_CBM_CheckIfSound_Minus10
+	goto AI_CBM_IfStatLowering
 
-CheckIfSoundMove_Minus10:
+AI_CBM_CheckIfSound_Minus10:
 	score -10
-TestWhetherToCheckStatLowerImmunity:
-	if_effect EFFECT_ATTACK_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_DEFENSE_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_SPEED_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_SPECIAL_ATTACK_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_SPECIAL_DEFENSE_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_ACCURACY_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_EVASION_DOWN, CheckStatLowerImmunity
-	if_effect EFFECT_ATTACK_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_DEFENSE_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_SPEED_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_SPECIAL_ATTACK_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_SPECIAL_DEFENSE_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_ACCURACY_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_EVASION_DOWN_2, CheckStatLowerImmunity
-	if_effect EFFECT_SPEED_DOWN_HIT, CheckStatLowerImmunity
+AI_CBM_IfStatLowering:
+	if_effect EFFECT_ATTACK_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_DEFENSE_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPEED_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPECIAL_ATTACK_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPECIAL_DEFENSE_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_ACCURACY_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_EVASION_DOWN, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPEED_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPECIAL_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_ACCURACY_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_EVASION_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_SPEED_DOWN_HIT, AI_CBM_StatLowerImmunity
 	goto AI_CheckBadMove_CheckEffect
 
-CheckStatLowerImmunity:
+AI_CBM_StatLowerImmunity:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, CheckStatLowerImmunity_Minus10
-	if_equal ABILITY_WHITE_SMOKE, CheckStatLowerImmunity_Minus10
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, CheckStatLowerImmunity_Minus10
+	if_equal ABILITY_CLEAR_BODY, AI_CBM_StatLowerImmunity_Minus10
+	if_equal ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_Minus10
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_Minus10
 	goto AI_CheckBadMove_CheckEffect
 
-CheckStatLowerImmunity_Minus10:
+AI_CBM_StatLowerImmunity_Minus10:
 	score -10
 AI_CheckBadMove_CheckEffect:
 	if_effect EFFECT_SLEEP, AI_CBM_Sleep
@@ -494,38 +565,38 @@ AI_CBM_CheckImmunities_MirrorMove:
 	if_equal ABILITY_FLASH_FIRE, AI_CBM_FlashFire_MirrorMove
 	if_equal ABILITY_WONDER_GUARD, AI_CBM_WGuard_MirrorMove
 	if_equal ABILITY_LEVITATE, AI_CBM_Levitate_MirrorMove
-	goto AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove
+	goto AI_CBM_TestWhetherToTypeMatchup_MirrorMove
 
 AI_CBM_VoltAbs_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_equal_ TYPE_ELECTRIC, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove
+	goto AI_CBM_TestWhetherToTypeMatchup_MirrorMove
 
 AI_CBM_WaterAbs_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_equal_ TYPE_WATER, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove
+	goto AI_CBM_TestWhetherToTypeMatchup_MirrorMove
 
 AI_CBM_FlashFire_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_equal_ TYPE_FIRE, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove
+	goto AI_CBM_TestWhetherToTypeMatchup_MirrorMove
 
 AI_CBM_WGuard_MirrorMove:
 	get_last_used_bank_move AI_TARGET
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TestWhetherToTypeMatchup_MirrorMove
 	goto Score_Minus30
 
 AI_CBM_Levitate_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_equal_ TYPE_GROUND, Score_Minus30
-	goto AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove
+	goto AI_CBM_TestWhetherToTypeMatchup_MirrorMove
 
-AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove:
+AI_CBM_TestWhetherToTypeMatchup_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
 	if_equal EFFECT_BIDE, AI_CBM_Soundproof_MirrorMove
@@ -538,91 +609,168 @@ AI_CBM_TestWhetherToCheckTypeMatchup_MirrorMove:
 	if_equal EFFECT_RAPID_SPIN, AI_CBM_Soundproof_MirrorMove
 	if_equal EFFECT_SUPER_FANG, AI_CBM_Soundproof_MirrorMove
 	if_equal EFFECT_TRAP, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_PARALYZE_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_POISON_FANG, AI_CBM_TestWhetherToCheckTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_POISON_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_SECRET_POWER, AI_CBM_TestWhetherToCheckTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck_MirrorMove
-	if_equal EFFECT_THIEF, AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck_MirrorMove
-	if_equal EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToCheckTypeMatchup_Speed_MirrorMove
-	goto AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_equal EFFECT_PARALYZE_HIT, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
+	if_equal EFFECT_POISON_FANG, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
+	if_equal EFFECT_POISON_HIT, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
+	if_equal EFFECT_SECRET_POWER, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
+	if_equal EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove
+	if_equal EFFECT_THIEF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove
+	if_equal EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToTypeMatchup_Speed_MirrorMove
+	goto AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
 
-AI_CBM_TestWhetherToCheckTypeMatchup_Status_MirrorMove:
-	if_status AI_TARGET, STATUS1_ANY, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove:
+	if_status AI_TARGET, STATUS1_ANY, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
 	get_last_used_bank_move AI_TARGET
 	get_considered_move_second_eff_chance_from_result
-	if_less_than 25, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_less_than 25, AAI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
 	goto AI_CBM_Soundproof_MirrorMove
 
-AI_CBM_TestWhetherToCheckTypeMatchup_ItemCheck_MirrorMove:
+AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_STICKY_HOLD, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_equal ABILITY_STICKY_HOLD, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
 	get_hold_effect AI_TARGET
-	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
 	goto AI_CBM_Soundproof_MirrorMove
 
-AI_CBM_TestWhetherToCheckTypeMatchup_Speed_MirrorMove:
+AI_CBM_TestWhetherToTypeMatchup_Speed_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
-	if_equal ABILITY_SPEED_BOOST, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_CheckTypeMatchup_Resists_MirrorMove
+	if_equal ABILITY_CLEAR_BODY, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
+	if_equal ABILITY_WHITE_SMOKE, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
+	if_equal ABILITY_SPEED_BOOST, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove
 	if_target_faster AI_CBM_Soundproof_MirrorMove
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove:
+AI_CBM_TypeMatchup_CheckSportAndScreens_MirrorMove:
+	get_last_used_bank_move AI_TARGET
+	get_move_type_from_result
+	if_equal TYPE_BUG, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_DARK, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_DRAGON, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_ELECTRIC, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_FIGHTING, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_FIRE, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_FLYING, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_GHOST, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_GRASS, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_GROUND, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckMudSport
+	if_equal TYPE_ICE, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_NORMAL, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_POISON, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_PSYCHIC, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+	if_equal TYPE_ROCK, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_STEEL, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect
+	if_equal TYPE_WATER, AI_CBM_TypeMatchup_Resists_MirrorMove_CheckWaterSport
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_CheckMudSport:
+	if_status3 AI_TARGET, STATUS3_MUDSPORT, AI_CBM_TypeMatchup_Resists_MirrorMove_MS_CheckReflect
+AI_CBM_TypeMatchup_Resists_MirrorMove_CheckReflect:
+	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_MS_CheckReflect:
+	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_Resists_MirrorMove_QuarterDmg
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_CheckWaterSport:
+	if_status3 AI_TARGET, STATUS3_WATERSPORT, AI_CBM_TypeMatchup_Resists_MirrorMove_WS_CheckLS
+AI_CBM_TypeMatchup_Resists_MirrorMove_CheckLS:
+	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_WS_CheckLS:
+	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_Resists_MirrorMove_QuarterDmg
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_QuarterDmg:
 	count_usable_party_mons AI_USER
-	if_equal 0, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_LastMon
+	if_equal 0, AI_CBM_TypeMatchup_Resists_MirrorMove_QuarterDmg_LastMon
 	get_last_used_bank_move AI_TARGET
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus9
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus30
-	goto AI_CBM_CheckTypeMatchup_WeaknessesPreCheck_MirrorMove
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_STAB_MirrorMove
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus9
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove_Minus30
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_LastMon:
+AI_CBM_TypeMatchup_Resists_MirrorMove_QuarterDmg_LastMon:
 	get_last_used_bank_move AI_TARGET
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus1
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus3
-AI_CBM_CheckTypeMatchup_WeaknessesPreCheck_MirrorMove:
-	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_CheckTypeMatchup_Weaknesses_MirrorMove
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_STAB_MirrorMove
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus1
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus3
+	goto AI_CBM_TypeMatchup_Resists_MirrorMove_Minus5
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg:
+	count_usable_party_mons AI_USER
+	if_equal 0, AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg_LastMon
+	get_last_used_bank_move AI_TARGET
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus30
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus30
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus9
+	goto AI_CBM_TypeMatchup_WeaknessesPreCheck_MirrorMove
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_HalfDmg_LastMon:
+	get_last_used_bank_move AI_TARGET
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus5
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus3
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus1
+	goto AI_CBM_TypeMatchup_WeaknessesPreCheck_MirrorMove
+
+AI_CBM_TypeMatchup_Resists_MirrorMove:
+	count_usable_party_mons AI_USER
+	if_equal 0, AI_CBM_TypeMatchup_Resists_MirrorMove_LastMon
+	get_last_used_bank_move AI_TARGET
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus30
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus9
+	goto AI_CBM_TypeMatchup_WeaknessesPreCheck_MirrorMove
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_LastMon:
+	get_last_used_bank_move AI_TARGET
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus3
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Resists_MirrorMove_Minus1
+AI_CBM_TypeMatchup_WeaknessesPreCheck_MirrorMove:
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_TypeMatchup_Weaknesses_MirrorMove
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_SEMI_INVULNERABLE, AI_CBM_CheckSTAB_MirrorMove
-	if_equal EFFECT_FOCUS_PUNCH, AI_CBM_CheckSTAB_MirrorMove
-	if_equal EFFECT_SKULL_BASH, AI_CBM_CheckSTAB_MirrorMove
-	if_equal EFFECT_SKY_ATTACK, AI_CBM_CheckSTAB_MirrorMove
-	if_equal EFFECT_RAZOR_WIND, AI_CBM_CheckSTAB_MirrorMove
-	if_equal EFFECT_RECHARGE, AI_CBM_CheckSTAB_MirrorMove
+	if_equal EFFECT_SEMI_INVULNERABLE, AI_CBM_STAB_MirrorMove
+	if_equal EFFECT_FOCUS_PUNCH, AI_CBM_STAB_MirrorMove
+	if_equal EFFECT_SKULL_BASH, AI_CBM_STAB_MirrorMove
+	if_equal EFFECT_SKY_ATTACK, AI_CBM_STAB_MirrorMove
+	if_equal EFFECT_RAZOR_WIND, AI_CBM_STAB_MirrorMove
+	if_equal EFFECT_RECHARGE, AI_CBM_STAB_MirrorMove
 	get_weather
-	if_equal AI_WEATHER_SUN, AI_CBM_CheckTypeMatchup_Weaknesses_MirrorMove
+	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_Weaknesses_MirrorMove
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_SOLAR_BEAM, AI_CBM_CheckSTAB_MirrorMove
-AI_CBM_CheckTypeMatchup_Weaknesses_MirrorMove:
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus1
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus2
-	goto AI_CBM_CheckSTAB_MirrorMove
+	if_equal EFFECT_SOLAR_BEAM, AI_CBM_STAB_MirrorMove
+AI_CBM_TypeMatchup_Weaknesses_MirrorMove:
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_Resists_MirrorMove_Plus1
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_TypeMatchup_Resists_MirrorMove_Plus2
+	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus1:
+AI_CBM_TypeMatchup_Resists_MirrorMove_Plus1:
 	score +1
-	goto AI_CBM_CheckSTAB_MirrorMove
+	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Plus2:
+AI_CBM_TypeMatchup_Resists_MirrorMove_Plus2:
 	score +2
-	goto AI_CBM_CheckSTAB_MirrorMove
+	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus1:
+AI_CBM_TypeMatchup_Resists_MirrorMove_Minus1:
 	score -1
-	goto AI_CBM_CheckSTAB_MirrorMove
+	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus3:
+AI_CBM_TypeMatchup_Resists_MirrorMove_Minus3:
 	score -3
-	goto AI_CBM_CheckSTAB_MirrorMove
+	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus9:
+AI_CBM_TypeMatchup_Resists_MirrorMove_Minus3:
+	score -5
+	goto AI_CBM_STAB_MirrorMove
+
+AI_CBM_TypeMatchup_Resists_MirrorMove_Minus9:
 	score -9
-	goto AI_CBM_CheckSTAB_MirrorMove
+	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_CheckTypeMatchup_Resists_MirrorMove_Minus30:
+AI_CBM_TypeMatchup_Resists_MirrorMove_Minus30:
 	score -30
-AI_CBM_CheckSTAB_MirrorMove:
+AI_CBM_STAB_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_equal AI_TYPE1_USER, AI_CBM_Soundproof_MirrorMove
@@ -632,42 +780,42 @@ AI_CBM_CheckSTAB_MirrorMove:
 
 AI_CBM_Soundproof_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_SOUNDPROOF, CheckIfSoundMove_MirrorMove
-	goto TestWhetherToCheckStatLowerImmunity_MirrorMove
+	if_equal ABILITY_SOUNDPROOF, AI_CBM_CheckIfSound_MirrorMove
+	goto AI_CBM_IfStatLowering_MirrorMove
 
-CheckIfSoundMove_MirrorMove:
+AI_CBM_CheckIfSound_MirrorMove:
 	get_last_used_bank_move AI_TARGET
-	if_not_in_hwords sMovesTable_SoundMoves, TestWhetherToCheckStatLowerImmunity_MirrorMove
-CheckIfSoundMove_MirrorMove_Minus10:
+	if_not_in_hwords sMovesTable_SoundMoves, AI_CBM_IfStatLowering_MirrorMove
+AI_CBM_CheckIfSound_MirrorMove_Minus10:
 	score -10
-TestWhetherToCheckStatLowerImmunity_MirrorMove:
+AI_CBM_IfStatLowering_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_ATTACK_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_DEFENSE_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPEED_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_ATTACK_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_DEFENSE_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_ACCURACY_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_EVASION_DOWN, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_ATTACK_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_DEFENSE_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPEED_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_ATTACK_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_DEFENSE_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_ACCURACY_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_EVASION_DOWN_2, CheckStatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPEED_DOWN_HIT, CheckStatLowerImmunity_MirrorMove
+	if_equal EFFECT_ATTACK_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_DEFENSE_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPEED_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPECIAL_ATTACK_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPECIAL_DEFENSE_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_ACCURACY_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_EVASION_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPEED_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPECIAL_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_ACCURACY_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_EVASION_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_SPEED_DOWN_HIT, AI_CBM_StatLowerImmunity_MirrorMove
 	goto AI_CBM_MirrorMove_CheckEffect
 
-CheckStatLowerImmunity_MirrorMove:
+AI_CBM_StatLowerImmunity_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, CheckStatLowerImmunity_MirrorMove_Minus10
-	if_equal ABILITY_WHITE_SMOKE, CheckStatLowerImmunity_MirrorMove_Minus10
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, CheckStatLowerImmunity_MirrorMove_Minus10
+	if_equal ABILITY_CLEAR_BODY, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
+	if_equal ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
 	goto AI_CBM_MirrorMove_CheckEffect
 
-CheckStatLowerImmunity_MirrorMove_Minus10:
+AI_CBM_StatLowerImmunity_MirrorMove_Minus10:
 	score -10
 AI_CBM_MirrorMove_CheckEffect:
 	get_last_used_bank_move AI_TARGET
@@ -1609,7 +1757,7 @@ AI_CV_DefenseUp4:
 	if_equal 0, AI_CV_DefenseUp5
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_CV_PhysicalTypeList, AI_CV_DefenseUp_ScoreDown2
+	if_not_in_bytes AI_PhysicalTypeList, AI_CV_DefenseUp_ScoreDown2
 	if_random_less_than 60, AI_CV_DefenseUp_End
 AI_CV_DefenseUp5:
 	if_random_less_than 60, AI_CV_DefenseUp_End
@@ -1668,7 +1816,7 @@ AI_CV_SpDefUp4:
 	if_equal 0, AI_CV_SpDefUp5
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_SpDefUp_ScoreDown2
+	if_in_bytes AI_PhysicalTypeList, AI_CV_SpDefUp_ScoreDown2
 	if_random_less_than 60, AI_CV_SpDefUp_End
 AI_CV_SpDefUp5:
 	if_random_less_than 60, AI_CV_SpDefUp_End
@@ -1754,9 +1902,9 @@ AI_CV_AttackDown3:
 	score -2
 AI_CV_AttackDown4:
 	get_target_type1
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_AttackDown_End
+	if_in_bytes AI_PhysicalTypeList, AI_CV_AttackDown_End
 	get_target_type2
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_AttackDown_End
+	if_in_bytes AI_PhysicalTypeList, AI_CV_AttackDown_End
 	if_random_less_than 50, AI_CV_AttackDown_End
 	score -2
 AI_CV_AttackDown_End:
@@ -1805,9 +1953,9 @@ AI_CV_SpAtkDown3:
 	score -2
 AI_CV_SpAtkDown4:
 	get_target_type1
-	if_in_bytes AI_CV_SpecialTypeList, AI_CV_SpAtkDown_End
+	if_in_bytes AI_SpecialTypeList, AI_CV_SpAtkDown_End
 	get_target_type2
-	if_in_bytes AI_CV_SpecialTypeList, AI_CV_SpAtkDown_End
+	if_in_bytes AI_SpecialTypeList, AI_CV_SpAtkDown_End
 	if_random_less_than 50, AI_CV_SpAtkDown_End
 	score -2
 AI_CV_SpAtkDown_End:
@@ -2022,9 +2170,9 @@ AI_CV_Toxic_End:
 AI_CV_LightScreen:
 	if_hp_less_than AI_USER, 50, AI_CV_LightScreen_ScoreDown2
 	get_target_type1
-	if_in_bytes AI_CV_SpecialTypeList, AI_CV_LightScreen_End
+	if_in_bytes AI_SpecialTypeList, AI_CV_LightScreen_End
 	get_target_type2
-	if_in_bytes AI_CV_SpecialTypeList, AI_CV_LightScreen_End
+	if_in_bytes AI_SpecialTypeList, AI_CV_LightScreen_End
 	if_random_less_than 50, AI_CV_LightScreen_End
 AI_CV_LightScreen_ScoreDown2:
 	score -2
@@ -2130,9 +2278,9 @@ AI_CV_SwaggerHasPsychUp_End:
 AI_CV_Reflect:
 	if_hp_less_than AI_USER, 50, AI_CV_Reflect_ScoreDown2
 	get_target_type1
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_Reflect_End
+	if_in_bytes AI_PhysicalTypeList, AI_CV_Reflect_End
 	get_target_type2
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_Reflect_End
+	if_in_bytes AI_PhysicalTypeList, AI_CV_Reflect_End
 	if_random_less_than 50, AI_CV_Reflect_End
 AI_CV_Reflect_ScoreDown2:
 	score -2
@@ -2928,15 +3076,15 @@ AI_CV_Counter:
 	if_not_equal 0, AI_CV_Counter_PhysCheck
 	if_target_not_taunted AI_CV_CounterCoatMinus
 	get_target_type1
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
 	get_target_type2
-	if_in_bytes AI_CV_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_PhysicalTypeList, AI_CV_CounterCoat_StatusCheck
 	goto AI_CV_CounterCoatMinus
 
 AI_CV_Counter_PhysCheck:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_CV_PhysicalTypeList, AI_CV_CounterCoatMinus
+	if_not_in_bytes AI_PhysicalTypeList, AI_CV_CounterCoatMinus
 	if_target_taunted AI_CV_CounterCoatPlus
 	goto AI_CV_CounterCoat_StatusCheck
 
@@ -2946,15 +3094,15 @@ AI_CV_MirrorCoat:
 	if_not_equal 0, AI_CV_MirrorCoat_SpcCheck
 	if_target_not_taunted AI_CV_CounterCoatMinus
 	get_target_type1
-	if_in_bytes AI_CV_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
 	get_target_type2
-	if_in_bytes AI_CV_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
+	if_in_bytes AI_SpecialTypeList, AI_CV_CounterCoat_StatusCheck
 	goto AI_CV_CounterCoatMinus
 
 AI_CV_MirrorCoat_SpcCheck:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_not_in_bytes AI_CV_SpecialTypeList, AI_CV_CounterCoatMinus
+	if_not_in_bytes AI_SpecialTypeList, AI_CV_CounterCoatMinus
 	if_target_taunted AI_CV_CounterCoatPlus
 	goto AI_CV_CounterCoat_StatusCheck
 
@@ -3491,7 +3639,7 @@ AI_CV_SuicideCheck:
 AI_CV_SuicideCheckEnd:
 	end
 
-AI_CV_SpecialTypeList:
+AI_SpecialTypeList:
 	.byte TYPE_FIRE
 	.byte TYPE_WATER
 	.byte TYPE_GRASS
@@ -3502,7 +3650,7 @@ AI_CV_SpecialTypeList:
 	.byte TYPE_DARK
 	.byte -1
 
-AI_CV_PhysicalTypeList:
+AI_PhysicalTypeList:
 	.byte TYPE_NORMAL
 	.byte TYPE_FIGHTING
 	.byte TYPE_GROUND
@@ -3748,9 +3896,9 @@ AI_PreferBatonPassEnd:
 AI_DoubleBattle:
 	if_target_is_ally AI_TryOnAlly
 	if_move MOVE_SKILL_SWAP, AI_DoubleBattleSkillSwap
-	get_curr_move_type
 	if_move MOVE_EARTHQUAKE, AI_DoubleBattleAllHittingGroundMove
 	if_move MOVE_MAGNITUDE, AI_DoubleBattleAllHittingGroundMove
+	get_curr_move_type
 	if_equal TYPE_ELECTRIC, AI_DoubleBattleElectricMove
 	if_equal TYPE_FIRE, AI_DoubleBattleFireMove
 	get_ability AI_USER
