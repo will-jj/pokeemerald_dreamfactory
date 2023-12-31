@@ -878,7 +878,7 @@ AI_CBM_TypeMatchup_MirrorMove_DoubleDmg_LastMon:
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_MirrorMove_Minus1
 	goto AI_CBM_TypeMatchup_MirrorMove_Plus2
 
-AI_CBM_TypeMatchup:
+AI_CBM_TypeMatchup_MirrorMove:
 	count_usable_party_mons AI_USER
 	if_equal 0, AI_CBM_TypeMatchup_MirrorMove_LastMon
 	get_last_used_bank_move AI_TARGET
@@ -926,7 +926,7 @@ AI_CBM_TypeMatchup_MirrorMove_Minus3:
 	score -3
 	goto AI_CBM_STAB_MirrorMove
 
-AI_CBM_TypeMatchup_MirrorMove_Minus3:
+AI_CBM_TypeMatchup_MirrorMove_Minus5:
 	score -5
 	goto AI_CBM_STAB_MirrorMove
 
