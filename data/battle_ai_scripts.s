@@ -996,7 +996,7 @@ AI_CBM_StatLowerImmunity_Hit_MirrorMove:
 	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_MirrorMove_Minus1
 	goto AI_CBM_MirrorMove_CheckEffect
 
-AI_CBM_StatLowerImmunity_Minus1:
+AI_CBM_StatLowerImmunity_MirrorMove_Minus1:
 	score -1
 	goto AI_CBM_MirrorMove_CheckEffect
 
@@ -3540,7 +3540,7 @@ AI_CV_Eruption_TypeMatchup:
 	get_curr_move_type
 	if_equal TYPE_FIRE, AI_CV_Eruption_TypeMatchup_Fire
 	if_equal TYPE_WATER, AI_CV_Eruption_TypeMatchup_Water
-	AI_CV_End
+	goto AI_End
 
 AI_CV_Eruption_TypeMatchup_UserFire:
 	get_target_type1
