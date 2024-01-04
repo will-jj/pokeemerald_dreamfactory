@@ -2946,7 +2946,7 @@ AI_CV_KnockOff_End:
 AI_CV_Recycle:
 	get_used_held_item AI_USER
 	if_not_in_bytes AI_CV_Recycle_ItemsToEncourage, AI_CV_Recycle_Minus2
-	if_random_less_than 50, AI_CV_End
+	if_random_less_than 50, AI_End
 	score +1
 	goto AI_End
 
