@@ -2741,7 +2741,7 @@ AI_CV_Foresight:
 	goto AI_End
 
 AI_CV_Foresight2:
-	if_random_less_than 80, AI_CV_Foresight_End
+	if_random_less_than 80, AI_End
 	score +1
 	goto AI_End
 
@@ -2946,13 +2946,13 @@ AI_CV_KnockOff_End:
 AI_CV_Recycle:
 	get_used_held_item AI_USER
 	if_not_in_bytes AI_CV_Recycle_ItemsToEncourage, AI_CV_Recycle_Minus2
-	if_random_less_than 50, AI_CV_Recycle_End
+	if_random_less_than 50, AI_CV_End
 	score +1
 	goto AI_End
 
 AI_CV_Recycle_Minus2:
 	score -2
-	end
+	goto AI_End
 
 AI_CV_Protect:
 	is_first_turn_for AI_USER
@@ -3542,24 +3542,24 @@ AI_CV_Eruption_TypeMatchup:
 	if_equal TYPE_WATER, AI_CV_Eruption_TypeMatchup_Water
 	goto AI_End
 
-AI_CV_Eruption_TypeMatchup_UserFire:
+AI_CV_Eruption_TypeMatchup_Fire:
 	get_target_type1
-	if_equal TYPE_WATER, AI_CV_Eruption_TypeMatchup
-	if_equal TYPE_ROCK, AI_CV_Eruption_TypeMatchup
-	if_equal TYPE_GROUND, AI_CV_Eruption_TypeMatchup
+	if_equal TYPE_WATER, AI_CV_Eruption_BadMatchup
+	if_equal TYPE_ROCK, AI_CV_Eruption_BadMatchup
+	if_equal TYPE_GROUND, AI_CV_Eruption_BadMatchup
 	get_target_type2
-	if_equal TYPE_WATER, AI_CV_Eruption_TypeMatchup
-	if_equal TYPE_ROCK, AI_CV_Eruption_TypeMatchup
-	if_equal TYPE_GROUND, AI_CV_Eruption_TypeMatchup
+	if_equal TYPE_WATER, AI_CV_Eruption_BadMatchup
+	if_equal TYPE_ROCK, AI_CV_Eruption_BadMatchup
+	if_equal TYPE_GROUND, AI_CV_Eruption_BadMatchup
 	goto AI_CV_Eruption_CheckHP
 
-AI_CV_Eruption_TypeMatchup_UserWater:
+AI_CV_Eruption_TypeMatchup_Water:
 	get_target_type1
-	if_equal TYPE_GRASS, AI_CV_Eruption_TypeMatchup
-	if_equal TYPE_ELECTRIC, AI_CV_Eruption_TypeMatchup
+	if_equal TYPE_GRASS, AI_CV_Eruption_BadMatchup
+	if_equal TYPE_ELECTRIC, AI_CV_Eruption_BadMatchup
 	get_target_type2
-	if_equal TYPE_GRASS, AI_CV_Eruption_TypeMatchup
-	if_equal TYPE_ELECTRIC, AI_CV_Eruption_TypeMatchup
+	if_equal TYPE_GRASS, AI_CV_Eruption_BadMatchup
+	if_equal TYPE_ELECTRIC, AI_CV_Eruption_BadMatchup
 	goto AI_CV_Eruption_CheckHP
 
 AI_CV_Eruption_BadMatchup:
