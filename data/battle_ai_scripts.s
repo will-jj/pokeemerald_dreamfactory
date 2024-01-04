@@ -2486,7 +2486,7 @@ AI_CV_Transform:
 AI_CV_Transform_TargetFaster_ScorePlus1:
 	score +1
 AI_CV_Transform_StatusCheck:
-	if_status1 AI_TARGET, STATUS1_SLEEP | STATUS1_FREEZE AI_TARGET, AI_CV_Transform_Status_ScorePlus1
+	if_status1 AI_TARGET, STATUS1_SLEEP | STATUS1_FREEZE, AI_CV_Transform_Status_ScorePlus1
 	goto AI_CV_Transform_EncoreCheck
 
 AI_CV_Transform_Status_ScorePlus1:
