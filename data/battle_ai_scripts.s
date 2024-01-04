@@ -1686,7 +1686,7 @@ AI_CV_MirrorMove2:
 	if_equal MOVE_TARGET_RANDOM, AI_CV_CheckViability_MirrorMove
 	if_equal MOVE_TARGET_SELECTED, AI_CV_CheckViability_MirrorMove
 	score -2
-	goto AI_CV_MirrorMoveEnd
+	goto AI_End
 
 AI_CV_CheckViability_MirrorMove:
 	get_last_used_bank_move AI_TARGET
@@ -2492,13 +2492,13 @@ AI_CV_Transform_StatusCheck:
 AI_CV_Transform_Status_ScorePlus1:
 	score +1
 AI_CV_Transform_EncoreCheck:
-	if_any_move_encored AI_TARGET, AI_CV_Transform_ScorePlus1
+	if_any_move_encored AI_TARGET, AI_CV_Transform_Encore_ScorePlus1
 	goto AI_CV_Transform_ScreenCheck
 
 AI_CV_Transform_Encore_ScorePlus1:
 	score +1
 AI_CV_Transform_ScreenCheck:
-	if_side_affecting AI_USER, SIDE_STATUS_REFLECT | SIDE_STATUS_LIGHTSCREEN, AI_CV_Transform_ScorePlus1
+	if_side_affecting AI_USER, SIDE_STATUS_REFLECT | SIDE_STATUS_LIGHTSCREEN, AI_CV_Transform_Screen_ScorePlus1
 	goto AI_CV_Transform_HPCheck
 
 AI_CV_Transform_Screen_ScorePlus1:
