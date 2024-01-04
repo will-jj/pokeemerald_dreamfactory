@@ -1670,7 +1670,7 @@ AI_CheckViability:
 	if_effect EFFECT_NIGHTMARE, AI_CV_End
 	if_effect EFFECT_THAW_HIT, AI_CV_ThawUser
 	if_effect EFFECT_TRANSFORM, AI_CV_Transform
-	if_effectEFFECT_CAMOUFLAGE, AI_CV_Camouflage
+	if_effect EFFECT_CAMOUFLAGE, AI_CV_Camouflage
 	end
 
 AI_CV_MirrorMove:
@@ -2486,7 +2486,7 @@ AI_CV_Transform:
 AI_CV_Transform_TargetFaster_ScorePlus1:
 	score +1
 AI_CV_Transform_StatusCheck:
-	if_status1 STATUS1_SLEEP | STATUS1_FREEZE AI_TARGET, AI_CV_Transform_Status_ScorePlus1
+	if_status1 AI_TARGET, STATUS1_SLEEP | STATUS1_FREEZE AI_TARGET, AI_CV_Transform_Status_ScorePlus1
 	goto AI_CV_Transform_EncoreCheck
 
 AI_CV_Transform_Status_ScorePlus1:
@@ -2516,10 +2516,10 @@ AI_CV_Camouflage:
 	if_equal TYPE_FIGHTING, AI_CV_Camouflage_Fighting_ScoreMinus1
 	get_target_type2
 	if_equal TYPE_FIGHTING, AI_CV_Camouflage_Fighting_ScoreMinus1
-	get_last_used_bank_move
+	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_not_equal TYPE_FIGHTING, AI_CV_Camouflage_CheckTypeMatchup
-	get_last_used_bank_move
+	get_last_used_bank_move AI_TARGET
 	get_move_power_from_result
 	if_equal 0, AI_CV_Camouflage_CheckTypeMatchup
 	goto AI_CV_Camouflage_Fighting_ScoreMinus1
@@ -2556,7 +2556,7 @@ AI_CV_ThawUser_ScorePlus32:
 AI_CV_Substitute:
 	if_status AI_USER, STATUS1_POISON | STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_TOXIC_POISON, AI_CV_Substitute_ScoreMinus5
 	if_user_faster AI_CV_Substitute_UserFaster
-	if_hp_more_than 70, AI_CV_Substitute_SlowHighHP
+	if_hp_more_than AI_USER, 70, AI_CV_Substitute_SlowHighHP
 	goto AI_CV_Substitute_ScoreMinus1
 
 AI_CV_Substitute_UserFaster:
@@ -2577,12 +2577,12 @@ AI_CV_Substitute_UserFaster:
 	goto AI_CV_Substitute_ScorePlus1
 
 AI_CV_Substitute_SlowHighHP:
-	if_random_more_than 128, AI_End
+	if_random_less_than 128, AI_End
 	score -1
 	goto AI_End
 
 AI_CV_Substitute_TargetRoared:
-	if_random_more_than 224, AI_End
+	if_random_less_than 224, AI_End
 	score -1
 	goto AI_End
 
@@ -2637,7 +2637,8 @@ AI_CV_Disable_End:
 
 AI_CV_Encore:
 	if_target_faster AI_CV_Encore_Minus2
-	is_first_turn_for AI_TARGET, AI_CV_Encore_Minus2
+	is_first_turn_for AI_TARGET
+	if_equal 0, AI_CV_Encore_Minus2
 	get_last_used_bank_move AI_TARGET
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0, AI_CV_Encore_Plus3
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0_25, AI_CV_Encore_Plus3
