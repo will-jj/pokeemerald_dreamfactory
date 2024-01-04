@@ -392,14 +392,14 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .nature = NATURE_TIMID
     },
     [FRONTIER_MON_FARFETCHD_1] = {
-        .species = SPECIES_FARFETCH'D,
+        .species = SPECIES_FARFETCHD,
         .moves = {MOVE_FRUSTRATION, MOVE_AERIAL_ACE, MOVE_STEEL_WING, MOVE_QUICK_ATTACK},
         .itemTableId = BATTLE_FRONTIER_ITEM_STICK,
         .evSpread = F_EV_SPREAD_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_ADAMANT
     },
     [FRONTIER_MON_FARFETCHD_2] = {
-        .species = SPECIES_FARFETCH'D,
+        .species = SPECIES_FARFETCHD,
         .moves = {MOVE_SWORDS_DANCE, MOVE_FLY, MOVE_STEEL_WING, MOVE_WISH},
         .itemTableId = BATTLE_FRONTIER_ITEM_LEFTOVERS,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SPEED,
