@@ -101,6 +101,7 @@ AI_CBM_CheckImmunities_PreCheck:
 	if_effect EFFECT_FRUSTRATION, AI_CBM_CheckImmunities
 	if_effect EFFECT_FOCUS_PUNCH, AI_CBM_CheckImmunities
 	if_effect EFFECT_HIDDEN_POWER, AI_CBM_CheckImmunities
+	if_effect EFFECT_LEVEL_DAMAGE, AI_CBM_CheckImmunities
 	if_effect EFFECT_LOW_KICK, AI_CBM_CheckImmunities
 	if_effect EFFECT_MAGNITUDE, AI_CBM_CheckImmunities
 	if_effect EFFECT_OVERHEAT, AI_CBM_CheckImmunities
@@ -220,13 +221,13 @@ AI_CBM_TypeMatchup_WaterSport:
 
 AI_CBM_TypeMatchup_ThickFat_Fire:
 	get_ability AI_TARGET
-	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_Weather_Fire_QuarterDmg
-	goto AI_CBM_TypeMatchup_Weather_Fire_HalfDmg
+	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_Weather_Fire_HalfDmg
+	goto AI_CBM_TypeMatchup_Weather_Fire
 
 AI_CBM_TypeMatchup_ThickFat_Fire_HalfDmg:
 	get_ability AI_TARGET
 	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_Weather_Fire_HalfDmg
-	goto AI_CBM_TypeMatchup_Weather_Fire
+	goto AI_CBM_TypeMatchup_Weather_Fire_HalfDmg
 
 AI_CBM_TypeMatchup_Weather_Fire:
 	get_weather
@@ -549,6 +550,7 @@ AI_CheckBadMove_CheckEffect:
 	if_effect EFFECT_DRAGON_DANCE, AI_CBM_DragonDance
 	if_effect EFFECT_WISH, AI_CBM_Wish
 	if_effect EFFECT_CAMOUFLAGE, AI_CBM_Camouflage
+	if_effect EFFECT_TRAP, AI_CBM_Trap
 	if_effect EFFECT_MIRROR_MOVE, AI_CBM_MirrorMove
 	end
 
@@ -765,13 +767,13 @@ AI_CBM_TypeMatchup_MirrorMove_WaterSport:
 
 AI_CBM_TypeMatchup_MirrorMove_ThickFat_Fire:
 	get_ability AI_TARGET
-	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_QuarterDmg
-	goto AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_HalfDmg
+	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_HalfDmg
+	goto AI_CBM_TypeMatchup_MirrorMove_Weather_Fire
 
 AI_CBM_TypeMatchup_MirrorMove_ThickFat_Fire_HalfDmg:
 	get_ability AI_TARGET
-	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_HalfDmg
-	goto AI_CBM_TypeMatchup_MirrorMove_Weather_Fire
+	if_equal ABILITY_THICK_FAT, AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_QuarterDmg
+	goto AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_HalfDmg
 
 AI_CBM_TypeMatchup_MirrorMove_Weather_Fire:
 	get_weather
@@ -1107,6 +1109,7 @@ AI_CBM_MirrorMove_CheckEffect:
 	if_equal EFFECT_DRAGON_DANCE, AI_CBM_DragonDance
 	if_equal EFFECT_WISH, AI_CBM_Wish
 	if_equal EFFECT_CAMOUFLAGE, AI_CBM_Camouflage
+	if_equal EFFECT_TRAP, AI_CBM_Trap
 	goto AI_CBM_MirrorMoveEnd
 
 AI_CBM_MirrorMovePenalty:
@@ -1173,6 +1176,10 @@ AI_CBM_Attract_CheckIfTargetIsMale:
 
 AI_CBM_CantEscape:
 	if_status2 AI_TARGET, STATUS2_ESCAPE_PREVENTION, Score_Minus10
+	end
+
+AI_CBM_Trap:
+	if_status2 AI_USER, STATUS2_WRAPPED, Score_Minus10
 	end
 
 AI_CBM_Confuse:
@@ -1250,7 +1257,7 @@ AI_CBM_Substitute:
 	end
 
 AI_CBM_Substitute_CheckSpeed:
-	if_user_faster Score_Minus10
+	if_user_faster Score_Minus30
 	if_random_less_than 128, Score_Minus1
 	end
 
@@ -2610,14 +2617,8 @@ AI_CV_Substitute2:
 	goto AI_CV_Substitute_ScoreMinus1
 
 AI_CV_Substitute_UserFaster:
-	if_has_move_with_effect AI_USER, EFFECT_FLAIL, AI_CV_Substitute_ScorePlus10
-	if_has_move_with_effect AI_USER, EFFECT_ENDEAVOR, AI_CV_Substitute_ScorePlus10
-	if_holds_item AI_USER, ITEM_APICOT_BERRY, AI_CV_Substitute_ScorePlus1
-	if_holds_item AI_USER, ITEM_GANLON_BERRY, AI_CV_Substitute_ScorePlus1
-	if_holds_item AI_USER, ITEM_LIECHI_BERRY, AI_CV_Substitute_ScorePlus1
-	if_holds_item AI_USER, ITEM_PETAYA_BERRY, AI_CV_Substitute_ScorePlus1
-	if_holds_item AI_USER, ITEM_SALAC_BERRY, AI_CV_Substitute_ScorePlus1
-	if_holds_item AI_USER, ITEM_STARF_BERRY, AI_CV_Substitute_ScorePlus1
+	if_has_move_with_effect AI_USER, EFFECT_FLAIL | EFFECT_ENDEAVOR, AI_CV_Substitute_ScorePlus10
+	if_holds_item AI_USER, ITEM_APICOT_BERRY | ITEM_GANLON_BERRY | ITEM_LIECHI_BERRY | ITEM_PETAYA_BERRY | ITEM_SALAC_BERRY | ITEM_STARF_BERRY, AI_CV_Substitute_ScorePlus1
 	if_hp_more_than AI_USER, 33, AI_CV_Substitute_AbilityCheck
 	goto AI_CV_Substitute_MoveCheck
 
@@ -2646,11 +2647,9 @@ AI_CV_Substitute_Torrent:
 
 AI_CV_Substitute_MoveCheck:
 	get_last_used_bank_move AI_TARGET
-	get_move_power_from_result
-	if_not_equal 0, AI_CV_Substitute_TargetAttacked
-	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
 	if_equal EFFECT_ROAR, AI_CV_Substitute_TargetRoared
+	if_has_move_with_effect AI_TARGET, EFFECT_LEECH_SEED | EFFECT_PARALYZE | EFFECT_SLEEP | EFFECT_TOXIC | EFFECT_WILL_O_WISP | EFFECT_YAWN, AI_CV_Substitute_ScoreRandomPlus2
 	goto AI_CV_Substitute_ScorePlus1
 
 AI_CV_Substitute_SlowHighHP:
@@ -2678,6 +2677,11 @@ AI_CV_Substitute_ScoreMinus1:
 
 AI_CV_Substitute_ScorePlus1:
 	score +1
+	goto AI_End
+
+AI_CV_Substitute_ScoreRandomPlus2:
+	if_random_less_than 64, AI_End
+	score +2
 	goto AI_End
 
 AI_CV_Substitute_ScorePlus10:
@@ -3182,7 +3186,7 @@ AI_CV_RainDance_WeatherCheck:
 	goto AI_CV_Weather_LowHP_Check
 
 AI_CV_SunnyDay:
-	if_has_move_with_effect AI_TARGET, EFFECT_SOLAR_BEAM, AI_CV_SunnyDay_SB_Found
+	if_has_move_with_effect AI_USER, EFFECT_SOLAR_BEAM, AI_CV_SunnyDay_SB_Found
 	goto AI_CV_SunnyDay_CheckUserFireWeak
 
 AI_CV_SunnyDay_SB_Found:
