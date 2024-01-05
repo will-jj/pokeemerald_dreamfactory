@@ -559,6 +559,8 @@ AI_CBM_MirrorMove:
 	if_equal TRUE, AI_CBM_MirrorMovePenalty
 	is_first_turn_for AI_USER
 	if_equal FALSE, AI_CBM_MirrorMoveCheckSpeed
+	goto AI_CBM_MirrorMovePenalty
+
 AI_CBM_MirrorMoveCheckSpeed:
 	if_user_faster AI_CBM_MirrorMoveCheckTarget
 	goto AI_CBM_MirrorMovePenalty
@@ -570,11 +572,9 @@ AI_CBM_MirrorMoveCheckTarget:
 	if_equal MOVE_TARGET_FOES_AND_ALLY, AI_CheckBadMove_MirrorMove
 	if_equal MOVE_TARGET_RANDOM, AI_CheckBadMove_MirrorMove
 	if_equal MOVE_TARGET_SELECTED, AI_CheckBadMove_MirrorMove
-	score -2
-	goto AI_CBM_MirrorMoveEnd
+	goto AI_CBM_MirrorMovePenalty
 
 AI_CheckBadMove_MirrorMove:
-	if_target_is_ally AI_End
 	if_status2 AI_TARGET, STATUS2_SUBSTITUTE, AI_CBM_VS_Substitute_MirrorMove
 	goto AI_CBM_CheckImmunities_PreCheck_MirrorMove
 
@@ -759,7 +759,7 @@ AI_CBM_TypeMatchup_MirrorMove_Modifiers:
 
 AI_CBM_TypeMatchup_MirrorMove_Reflect:
 	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_MirrorMove_HalfDmg
-	goto AI_CBM_TypeMatchup
+	goto AI_CBM_TypeMatchup_MirrorMove
 
 AI_CBM_TypeMatchup_MirrorMove_WaterSport:
 	if_status3 AI_TARGET, STATUS3_WATERSPORT, AI_CBM_TypeMatchup_MirrorMove_ThickFat_Fire_HalfDmg
@@ -808,7 +808,7 @@ AI_CBM_TypeMatchup_MirrorMove_MudSport:
 	if_status3 AI_TARGET, STATUS3_MUDSPORT, AI_CBM_TypeMatchup_MirrorMove_LS_HalfDmg
 AI_CBM_TypeMatchup_MirrorMove_LS:
 	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_MirrorMove_HalfDmg
-	goto AI_CBM_TypeMatchup
+	goto AI_CBM_TypeMatchup_MirrorMove
 
 AI_CBM_TypeMatchup_MirrorMove_LS_DoubleDmg:
 	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup
@@ -853,13 +853,13 @@ AI_CBM_TypeMatchup_MirrorMove_QuarterDmg:
 	count_usable_party_mons AI_USER
 	if_equal 0, AI_CBM_TypeMatchup_MirrorMove_QuarterDmg_LastMon
 	get_last_used_bank_move AI_TARGET
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_STAB
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_STAB_MirrorMove
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_MirrorMove_Minus9
 	goto AI_CBM_TypeMatchup_MirrorMove_Minus30
 
 AI_CBM_TypeMatchup_MirrorMove_QuarterDmg_LastMon:
 	get_last_used_bank_move AI_TARGET
-	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_STAB
+	if_type_effectiveness_from_result AI_EFFECTIVENESS_x4, AI_CBM_STAB_MirrorMove
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x2, AI_CBM_TypeMatchup_MirrorMove_Minus1
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x1, AI_CBM_TypeMatchup_MirrorMove_Minus3
 	goto AI_CBM_TypeMatchup_MirrorMove_Minus5
@@ -1110,11 +1110,10 @@ AI_CBM_MirrorMove_CheckEffect:
 	if_equal EFFECT_WISH, AI_CBM_Wish
 	if_equal EFFECT_CAMOUFLAGE, AI_CBM_Camouflage
 	if_equal EFFECT_TRAP, AI_CBM_Trap
-	goto AI_CBM_MirrorMoveEnd
+	goto AI_End
 
 AI_CBM_MirrorMovePenalty:
-	score -2
-AI_CBM_MirrorMoveEnd:
+	score -7
 	end
 
 AI_CBM_Sleep:
