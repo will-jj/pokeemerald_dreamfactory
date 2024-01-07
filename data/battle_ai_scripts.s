@@ -56,9 +56,7 @@ AI_CheckBadMove:
 AI_CBM_VS_Substitute:
 	get_considered_move_power
 	if_equal 0, AI_CBM_VS_Substitute_CheckTarget
-	if_effect EFFECT_EXPLOSION, AI_CBM_SubstituteBlocks
-	if_effect EFFECT_DREAM_EATER, AI_CBM_SubstituteBlocks
-	if_effect EFFECT_TRAP, AI_CBM_SubstituteBlocks
+	if_effect EFFECT_DREAM_EATER | EFFECT_EXPLOSION | EFFECT_TRAP, AI_CBM_SubstituteBlocks
 	if_effect EFFECT_CURSE, AI_CBM_VS_Substitute_CurseTypeCheck
 	goto AI_CBM_CheckImmunities
 
@@ -116,22 +114,9 @@ CheckIfLevitateCancelsGroundMove:
 	goto AI_CBM_TestWhetherToTypeMatchup
 
 AI_CBM_TestWhetherToTypeMatchup:
-	if_effect EFFECT_BIDE, CheckSoundproof
-	if_effect EFFECT_COUNTER, CheckSoundproof
-	if_effect EFFECT_ENDEAVOR, CheckSoundproof
-	if_effect EFFECT_FAKE_OUT, CheckSoundproof
-	if_effect EFFECT_LEVEL_DAMAGE, CheckSoundproof
-	if_effect EFFECT_MIRROR_COAT, CheckSoundproof
-	if_effect EFFECT_OHKO, CheckSoundproof
-	if_effect EFFECT_RAPID_SPIN, CheckSoundproof
-	if_effect EFFECT_SUPER_FANG, CheckSoundproof
-	if_effect EFFECT_TRAP, CheckSoundproof
-	if_effect EFFECT_PARALYZE_HIT, AI_CBM_TestWhetherToTypeMatchup_Status
-	if_effect EFFECT_POISON_FANG, AI_CBM_TestWhetherToTypeMatchup_Status
-	if_effect EFFECT_POISON_HIT, AI_CBM_TestWhetherToTypeMatchup_Status
-	if_effect EFFECT_SECRET_POWER, AI_CBM_TestWhetherToTypeMatchup_Status
-	if_effect EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck
-	if_effect EFFECT_THIEF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck
+	if_effect EFFECT_BIDE | EFFECT_COUNTER | EFFECT_ENDEAVOR | EFFECT_FAKE_OUT | EFFECT_LEVEL_DAMAGE| EFFECT_MIRROR_COAT | EFFECT_OHKO | EFFECT_RAPID_SPIN | EFFECT_SUPER_FANG | EFFECT_TRAP, AI_CBM_CheckSoundproof
+	if_effect EFFECT_PARALYZE_HIT | EFFECT_POISON_FANG | EFFECT_POISON_HIT | EFFECT_SECRET_POWER, AI_CBM_TestWhetherToTypeMatchup_Status
+	if_effect EFFECT_KNOCK_OFF | EFFECT_THIEF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck
 	if_effect EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToTypeMatchup_Speed
 	goto AI_CBM_TypeMatchup_Modifiers
 
@@ -150,30 +135,16 @@ AI_CBM_TestWhetherToTypeMatchup_ItemCheck:
 
 AI_CBM_TestWhetherToTypeMatchup_Speed:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_TypeMatchup_Modifiers
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_TypeMatchup_Modifiers
-	if_equal ABILITY_SHIELD_DUST, AI_CBM_TypeMatchup_Modifiers
-	if_equal ABILITY_SPEED_BOOST, AI_CBM_TypeMatchup_Modifiers
+	if_equal ABILITY_CLEAR_BODY | ABILITY_SHIELD_DUST | ABILITY_SPEED_BOOST | ABILITY_WHITE_SMOKE, AI_CBM_TypeMatchup_Modifiers
 	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_TypeMatchup_Modifiers
 	if_target_faster CheckSoundproof
 AI_CBM_TypeMatchup_Modifiers:
 	get_curr_move_type
-	if_equal TYPE_BUG, AI_CBM_TypeMatchup_Reflect
-	if_equal TYPE_DARK, AI_CBM_TypeMatchup_LS
-	if_equal TYPE_DRAGON, AI_CBM_TypeMatchup_LS
+	if_equal TYPE_BUG | TYPE_FIGHTING | TYPE_FLYING | TYPE_GHOST | TYPE_GROUND | TYPE_NORMAL | TYPE_POISON | TYPE_ROCK | TYPE_STEEL, AI_CBM_TypeMatchup_Reflect
+	if_equal TYPE_DARK | TYPE_DRAGON | TYPE_GRASS | TYPE_PSYCHIC, AI_CBM_TypeMatchup_LS
 	if_equal TYPE_ELECTRIC, AI_CBM_TypeMatchup_MudSport
-	if_equal TYPE_FIGHTING, AI_CBM_TypeMatchup_Reflect
 	if_equal TYPE_FIRE, AI_CBM_TypeMatchup_WaterSport
-	if_equal TYPE_FLYING, AI_CBM_TypeMatchup_Reflect
-	if_equal TYPE_GHOST, AI_CBM_TypeMatchup_Reflect
-	if_equal TYPE_GRASS, AI_CBM_TypeMatchup_LS
-	if_equal TYPE_GROUND, AI_CBM_TypeMatchup_MudSport
 	if_equal TYPE_ICE, AI_CBM_TypeMatchup_ThickFat
-	if_equal TYPE_NORMAL, AI_CBM_TypeMatchup_Reflect
-	if_equal TYPE_POISON, AI_CBM_TypeMatchup_Reflect
-	if_equal TYPE_PSYCHIC, AI_CBM_TypeMatchup_LS
-	if_equal TYPE_ROCK, AI_CBM_TypeMatchup_Reflect
-	if_equal TYPE_STEEL, AI_CBM_TypeMatchup_Reflect
 	if_equal TYPE_WATER, AI_CBM_TypeMatchup_Weather_Water
 	goto AI_CBM_TypeMatchup_LS
 
@@ -317,12 +288,7 @@ AI_CBM_TypeMatchup_LastMon:
 	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Minus1
 AI_CBM_TypeMatchup_WeaknessesPreCheck:
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_TypeMatchup_Weaknesses
-	if_effect EFFECT_SEMI_INVULNERABLE, AI_CBM_STAB
-	if_effect EFFECT_FOCUS_PUNCH, AI_CBM_STAB
-	if_effect EFFECT_SKULL_BASH, AI_CBM_STAB
-	if_effect EFFECT_SKY_ATTACK, AI_CBM_STAB
-	if_effect EFFECT_RAZOR_WIND, AI_CBM_STAB
-	if_effect EFFECT_RECHARGE, AI_CBM_STAB
+	if_effect EFFECT_FOCUS_PUNCH | EFFECT_RAZOR_WIND | EFFECT_RECHARGE | EFFECT_SEMI_INVULNERABLE | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_CBM_STAB
 	get_weather
 	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_Weaknesses
 	if_effect EFFECT_SOLAR_BEAM, AI_CBM_STAB
@@ -359,8 +325,7 @@ AI_CBM_TypeMatchup_Minus30:
 	score -30
 AI_CBM_STAB:
 	get_curr_move_type
-	if_equal AI_TYPE1_USER, CheckSoundproof
-	if_equal AI_TYPE2_USER, CheckSoundproof
+	if_equal AI_TYPE1_USER | AI_TYPE2_USER, CheckSoundproof
 	score -1
 CheckSoundproof:
 	get_ability AI_TARGET
@@ -368,54 +333,27 @@ CheckSoundproof:
 	goto AI_CBM_IfStatLowering
 
 AI_CBM_CheckIfSound:
-	if_move MOVE_GROWL, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_ROAR, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_SING, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_SUPERSONIC, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_SCREECH, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_SNORE, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_UPROAR, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_METAL_SOUND, AI_CBM_CheckIfSound_Minus10
-	if_move MOVE_GRASS_WHISTLE, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_GRASS_WHISTLE | MOVE_GROWL | MOVE_METAL_SOUND | MOVE_ROAR | MOVE_SCREECH, | MOVE_SING | MOVE_SNORE | MOVE_SUPERSONIC | MOVE_UPROAR AI_CBM_CheckIfSound_Minus10
 	goto AI_CBM_IfStatLowering
 
 AI_CBM_CheckIfSound_Minus10:
 	score -10
 AI_CBM_IfStatLowering:
-	if_effect EFFECT_ATTACK_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_DEFENSE_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPEED_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPECIAL_ATTACK_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPECIAL_DEFENSE_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_ACCURACY_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_EVASION_DOWN, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPEED_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPECIAL_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_ACCURACY_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_EVASION_DOWN_2, AI_CBM_StatLowerImmunity
-	if_effect EFFECT_SPEED_DOWN_HIT, AI_CBM_StatLowerImmunity_Hit
+	if_effect EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2 | EFFECT_ATTACK_DOWN | EFFECT_ATTACK_DOWN_2 | EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2 | EFFECT_EVASION_DOWN | EFFECT_EVASION_DOWN_2 | EFFECT_SPECIAL_ATTACK_DOWN | EFFECT_SPECIAL_ATTACK_DOWN_2 | EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2 | EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2, AI_CBM_StatLowerImmunity
+	if_effect EFFECT_ATTACK_DOWN_HIT | EFFECT_DEFENSE_DOWN_HIT | EFFECT_SPECIAL_ATTACK_DOWN_HIT | EFFECT_SPECIAL_DEFENSE_DOWN_HIT | EFFECT_SPEED_DOWN_HIT, AI_CBM_StatLowerImmunity_Hit
 	goto AI_CheckBadMove_CheckEffect
 
 AI_CBM_StatLowerImmunity_Hit:
 	get_ability AI_TARGET
 	if_equal ABILITY_SHIELD_DUST, AI_CBM_StatLowerImmunity_Minus1
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_StatLowerImmunity_Minus1
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_Minus1
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_Minus1
+AI_CBM_StatLowerImmunity:
+	get_ability AI_TARGET
+	if_equal ABILITY_CLEAR_BODY | ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_Minus10
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_Minus10
 	goto AI_CheckBadMove_CheckEffect
 
 AI_CBM_StatLowerImmunity_Minus1:
 	score -1
-	goto AI_CheckBadMove_CheckEffect
-
-AI_CBM_StatLowerImmunity:
-	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_StatLowerImmunity_Minus10
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_Minus10
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_Minus10
 	goto AI_CheckBadMove_CheckEffect
 
 AI_CBM_StatLowerImmunity_Minus10:
@@ -510,10 +448,7 @@ AI_CBM_MirrorMoveCheckSpeed:
 AI_CBM_MirrorMoveCheckTarget:
 	get_last_used_bank_move AI_TARGET
 	get_move_target_from_result
-	if_equal MOVE_TARGET_BOTH, AI_CheckBadMove_MirrorMove
-	if_equal MOVE_TARGET_FOES_AND_ALLY, AI_CheckBadMove_MirrorMove
-	if_equal MOVE_TARGET_RANDOM, AI_CheckBadMove_MirrorMove
-	if_equal MOVE_TARGET_SELECTED, AI_CheckBadMove_MirrorMove
+	if_equal MOVE_TARGET_BOTH | MOVE_TARGET_FOES_AND_ALLY | MOVE_TARGET_RANDOM | MOVE_TARGET_SELECTED, AI_CheckBadMove_MirrorMove
 	goto AI_CBM_MirrorMovePenalty
 
 AI_CheckBadMove_MirrorMove:
@@ -526,9 +461,7 @@ AI_CBM_VS_Substitute_MirrorMove:
 	if_equal 0, AI_CBM_VS_Substitute_CheckTarget_MirrorMove
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_EXPLOSION, AI_CBM_SubstituteBlocks_MirrorMove
-	if_equal EFFECT_DREAM_EATER, AI_CBM_SubstituteBlocks_MirrorMove
-	if_equal EFFECT_TRAP, AI_CBM_SubstituteBlocks_MirrorMove
+	if_equal EFFECT_DREAM_EATER | EFFECT_EXPLOSION | EFFECT_TRAP, AI_CBM_SubstituteBlocks_MirrorMove
 	if_equal EFFECT_CURSE, AI_CBM_VS_Substitute_CurseTypeCheck_MirrorMove
 	goto AI_CBM_CheckImmunities_MirrorMove
 
@@ -554,36 +487,7 @@ AI_CBM_SubstituteBlocks_MirrorMove:
 	score -10
 AI_CBM_CheckImmunities_PreCheck_MirrorMove:
 	get_considered_move_power
-	if_equal 0, CheckSoundproof
-AI_CBM_CheckImmunities_MirrorMove:
-	get_last_used_bank_move AI_TARGET
-	if_equal MOVE_FISSURE, AI_CBM_CheckImmunities_MirrorMove
-	if_equal MOVE_GUILLOTINE, AI_CBM_CheckImmunities_MirrorMove
-	if_equal MOVE_HORN_DRILL, AI_CBM_CheckImmunities_MirrorMove
-	get_last_used_bank_move AI_TARGET
-	get_move_effect_from_result
-	if_equal EFFECT_DREAM_EATER, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_ERUPTION, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_EXPLOSION, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_FLAIL, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_FRUSTRATION, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_FOCUS_PUNCH, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_HIDDEN_POWER, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_LOW_KICK, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_MAGNITUDE, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_OVERHEAT, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_RAZOR_WIND, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_RECHARGE, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_RETURN, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_SKULL_BASH, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_SKY_ATTACK, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_SOLAR_BEAM, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_SPIT_UP, AI_CBM_CheckImmunities_MirrorMove
-	if_equal EFFECT_SUPERPOWER, AI_CBM_CheckImmunities_MirrorMove
-	get_last_used_bank_move AI_TARGET
-	get_move_power_from_result
 	if_equal 0, AI_CBM_Soundproof_MirrorMove
-	if_equal 1, AI_CBM_Soundproof_MirrorMove
 AI_CBM_CheckImmunities_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	if_type_effectiveness_from_result AI_EFFECTIVENESS_x0, Score_Minus30
@@ -627,22 +531,9 @@ AI_CBM_Levitate_MirrorMove:
 AI_CBM_TestWhetherToTypeMatchup_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_BIDE, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_COUNTER, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_ENDEAVOR, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_FAKE_OUT, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_LEVEL_DAMAGE, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_MIRROR_COAT, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_OHKO, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_RAPID_SPIN, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_SUPER_FANG, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_TRAP, AI_CBM_Soundproof_MirrorMove
-	if_equal EFFECT_PARALYZE_HIT, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_POISON_FANG, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_POISON_HIT, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_SECRET_POWER, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
-	if_equal EFFECT_KNOCK_OFF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove
-	if_equal EFFECT_THIEF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove
+	if_equal EFFECT_BIDE | EFFECT_COUNTER | EFFECT_ENDEAVOR | EFFECT_FAKE_OUT | EFFECT_LEVEL_DAMAGE| EFFECT_MIRROR_COAT | EFFECT_OHKO | EFFECT_RAPID_SPIN | EFFECT_SUPER_FANG | EFFECT_TRAP, AI_CBM_Soundproof_MirrorMove
+	if_equal EFFECT_PARALYZE_HIT | EFFECT_POISON_FANG | EFFECT_POISON_HIT | EFFECT_SECRET_POWER, AI_CBM_TestWhetherToTypeMatchup_Status_MirrorMove
+	if_equal EFFECT_KNOCK_OFF | EFFECT_THIEF, AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove
 	if_equal EFFECT_SPEED_DOWN_HIT, AI_CBM_TestWhetherToTypeMatchup_Speed_MirrorMove
 	goto AI_CBM_TypeMatchup_MirrorMove_Modifiers
 
@@ -662,31 +553,17 @@ AI_CBM_TestWhetherToTypeMatchup_ItemCheck_MirrorMove:
 
 AI_CBM_TestWhetherToTypeMatchup_Speed_MirrorMove:
 	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_TypeMatchup_MirrorMove_Modifiers
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_TypeMatchup_MirrorMove_Modifiers
-	if_equal ABILITY_SHIELD_DUST, AI_CBM_TypeMatchup_MirrorMove_Modifiers
-	if_equal ABILITY_SPEED_BOOST, AI_CBM_TypeMatchup_MirrorMove_Modifiers
+	if_equal ABILITY_CLEAR_BODY | ABILITY_SHIELD_DUST | ABILITY_SPEED_BOOST | ABILITY_WHITE_SMOKE, AI_CBM_TypeMatchup_MirrorMove_Modifiers
 	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_TypeMatchup_MirrorMove_Modifiers
 	if_target_faster AI_CBM_Soundproof_MirrorMove
 AI_CBM_TypeMatchup_MirrorMove_Modifiers:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_equal TYPE_BUG, AI_CBM_TypeMatchup_MirrorMove_Reflect
-	if_equal TYPE_DARK, AI_CBM_TypeMatchup_MirrorMove_LS
-	if_equal TYPE_DRAGON, AI_CBM_TypeMatchup_MirrorMove_LS
+	if_equal TYPE_BUG | TYPE_FIGHTING | TYPE_FLYING | TYPE_GHOST | TYPE_GROUND | TYPE_NORMAL | TYPE_POISON | TYPE_ROCK | TYPE_STEEL, AI_CBM_TypeMatchup_MirrorMove_Reflect
+	if_equal TYPE_DARK | TYPE_DRAGON | TYPE_GRASS | TYPE_PSYCHIC, AI_CBM_TypeMatchup_MirrorMove_LS
 	if_equal TYPE_ELECTRIC, AI_CBM_TypeMatchup_MirrorMove_MudSport
-	if_equal TYPE_FIGHTING, AI_CBM_TypeMatchup_MirrorMove_Reflect
 	if_equal TYPE_FIRE, AI_CBM_TypeMatchup_MirrorMove_WaterSport
-	if_equal TYPE_FLYING, AI_CBM_TypeMatchup_MirrorMove_Reflect
-	if_equal TYPE_GHOST, AI_CBM_TypeMatchup_MirrorMove_Reflect
-	if_equal TYPE_GRASS, AI_CBM_TypeMatchup_MirrorMove_LS
-	if_equal TYPE_GROUND, AI_CBM_TypeMatchup_MirrorMove_MudSport
 	if_equal TYPE_ICE, AI_CBM_TypeMatchup_MirrorMove_ThickFat
-	if_equal TYPE_NORMAL, AI_CBM_TypeMatchup_MirrorMove_Reflect
-	if_equal TYPE_POISON, AI_CBM_TypeMatchup_MirrorMove_Reflect
-	if_equal TYPE_PSYCHIC, AI_CBM_TypeMatchup_MirrorMove_LS
-	if_equal TYPE_ROCK, AI_CBM_TypeMatchup_MirrorMove_Reflect
-	if_equal TYPE_STEEL, AI_CBM_TypeMatchup_MirrorMove_Reflect
 	if_equal TYPE_WATER, AI_CBM_TypeMatchup_MirrorMove_Weather_Water
 	goto AI_CBM_TypeMatchup_MirrorMove_LS
 
@@ -843,12 +720,7 @@ AI_CBM_TypeMatchup_MirrorMove_WeaknessesPreCheck:
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_TypeMatchup_MirrorMove_Weaknesses
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_SEMI_INVULNERABLE, AI_CBM_STAB_MirrorMove
-	if_equal EFFECT_FOCUS_PUNCH, AI_CBM_STAB_MirrorMove
-	if_equal EFFECT_SKULL_BASH, AI_CBM_STAB_MirrorMove
-	if_equal EFFECT_SKY_ATTACK, AI_CBM_STAB_MirrorMove
-	if_equal EFFECT_RAZOR_WIND, AI_CBM_STAB_MirrorMove
-	if_equal EFFECT_RECHARGE, AI_CBM_STAB_MirrorMove
+	if_equal EFFECT_FOCUS_PUNCH | EFFECT_RAZOR_WIND | EFFECT_RECHARGE | EFFECT_SEMI_INVULNERABLE | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_CBM_STAB_MirrorMove
 	get_weather
 	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_MirrorMove_Weaknesses
 	get_last_used_bank_move AI_TARGET
@@ -888,8 +760,7 @@ AI_CBM_TypeMatchup_MirrorMove_Minus30:
 AI_CBM_STAB_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
-	if_equal AI_TYPE1_USER, AI_CBM_Soundproof_MirrorMove
-	if_equal AI_TYPE2_USER, AI_CBM_Soundproof_MirrorMove
+	if_equal AI_TYPE1_USER | AI_TYPE2_USER, AI_CBM_Soundproof_MirrorMove
 	score -1
 	goto AI_CBM_Soundproof_MirrorMove
 
@@ -906,40 +777,21 @@ AI_CBM_CheckIfSound_MirrorMove_Minus10:
 AI_CBM_IfStatLowering_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_ATTACK_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_DEFENSE_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPEED_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_ATTACK_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_DEFENSE_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_ACCURACY_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_EVASION_DOWN, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPEED_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_ATTACK_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_ACCURACY_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_EVASION_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
-	if_equal EFFECT_SPEED_DOWN_HIT, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2 | EFFECT_ATTACK_DOWN | EFFECT_ATTACK_DOWN_2 | EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2 | EFFECT_EVASION_DOWN | EFFECT_EVASION_DOWN_2 | EFFECT_SPECIAL_ATTACK_DOWN | EFFECT_SPECIAL_ATTACK_DOWN_2 | EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2 | EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2, AI_CBM_StatLowerImmunity_MirrorMove
+	if_equal EFFECT_ATTACK_DOWN_HIT | EFFECT_DEFENSE_DOWN_HIT | EFFECT_SPECIAL_ATTACK_DOWN_HIT | EFFECT_SPECIAL_DEFENSE_DOWN_HIT | EFFECT_SPEED_DOWN_HIT, AI_CBM_StatLowerImmunity_Hit_MirrorMove
 	goto AI_CBM_MirrorMove_CheckEffect
 
 AI_CBM_StatLowerImmunity_Hit_MirrorMove:
 	get_ability AI_TARGET
 	if_equal ABILITY_SHIELD_DUST, AI_CBM_StatLowerImmunity_MirrorMove_Minus1
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_StatLowerImmunity_MirrorMove_Minus1
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_MirrorMove_Minus1
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_MirrorMove_Minus1
+AI_CBM_StatLowerImmunity_MirrorMove:
+	get_ability AI_TARGET
+	if_equal ABILITY_CLEAR_BODY | ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
+	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
 	goto AI_CBM_MirrorMove_CheckEffect
 
 AI_CBM_StatLowerImmunity_MirrorMove_Minus1:
 	score -1
-	goto AI_CBM_MirrorMove_CheckEffect
-
-AI_CBM_StatLowerImmunity_MirrorMove:
-	get_ability AI_TARGET
-	if_equal ABILITY_CLEAR_BODY, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
-	if_equal ABILITY_WHITE_SMOKE, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
-	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_StatLowerImmunity_MirrorMove_Minus10
 	goto AI_CBM_MirrorMove_CheckEffect
 
 AI_CBM_StatLowerImmunity_MirrorMove_Minus10:
@@ -1019,7 +871,7 @@ AI_CBM_MirrorMove_CheckEffect:
 	if_equal EFFECT_WATER_SPORT, AI_CBM_WaterSport
 	if_equal EFFECT_WISH, AI_CBM_Wish
 	if_equal EFFECT_CAMOUFLAGE, AI_CBM_Camouflage
-	goto AI_End
+	end
 
 AI_CBM_MirrorMovePenalty:
 	score -7
@@ -1220,7 +1072,7 @@ AI_CBM_Disable:
 AI_CBM_Encore:
 	if_any_move_encored AI_TARGET, Score_Minus10
 	if_target_faster AI_CBM_Encore_FirstTurnCheck
-	goto AI_End
+	end
 
 AI_CBM_Encore_FirstTurnCheck:
 	is_first_turn_for AI_TARGET
@@ -1489,30 +1341,17 @@ Score_Plus10:
 AI_CheckViability:
 	if_target_is_ally AI_End
 	if_effect EFFECT_MIRROR_MOVE, AI_CV_MirrorMove
-	if_effect EFFECT_SLEEP | EFFECT_YAWN, AI_CV_Sleep
 	if_effect EFFECT_EXPLOSION, AI_CV_SelfKO
-	if_effect EFFECT_ATTACK_UP | EFFECT_ATTACK_UP_2, AI_CV_AttackUp
-	if_effect EFFECT_DEFENSE_UP | EFFECT_DEFENSE_UP_2, AI_CV_DefenseUp
-	if_effect EFFECT_SPEED_UP | EFFECT_SPEED_UP_2, AI_CV_SpeedUp
-	if_effect EFFECT_SPECIAL_ATTACK_UP | EFFECT_SPECIAL_ATTACK_UP_2, AI_CV_SpAtkUp
-	if_effect EFFECT_SPECIAL_DEFENSE_UP | EFFECT_SPECIAL_DEFENSE_UP_2, AI_CV_SpDefUp
-	if_effect EFFECT_ACCURACY_UP | EFFECT_ACCURACY_UP_2, AI_CV_AccuracyUp
-	if_effect EFFECT_EVASION_UP | EFFECT_EVASION_UP_2 | EFFECT_MINIMIZE, AI_CV_EvasionUp
-	if_effect EFFECT_ATTACK_DOWN | EFFECT_ATTACK_DOWN_2, AI_CV_AttackDown
-	if_effect EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2, AI_CV_DefenseDown
-	if_effect EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2, AI_CV_SpeedDown
+	if_effect EFFECT_CURSE, AI_CV_Curse
+	if_effect EFFECT_BULK_UP | EFFECT_DEFENSE_CURL | EFFECT_DEFENSE_UP | EFFECT_DEFENSE_UP_2, AI_CV_DefenseUp
+	if_effect EFFECT_CALM_MIND | EFFECT_SPECIAL_DEFENSE_UP | EFFECT_SPECIAL_DEFENSE_UP_2, AI_CV_SpDefUp
+	if_effect EFFECT_COSMIC_POWER | EFFECT_DRAGON_DANCE | EFFECT_MINIMIZE | EFFECT_ATTACK_UP | EFFECT_ATTACK_UP_2 | EFFECT_EVASION_UP | EFFECT_EVASION_UP_2 | EFFECT_SPECIAL_ATTACK_UP | EFFECT_SPECIAL_ATTACK_UP_2 | EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2 | EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2 | EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CV_Stats
+	if_effect EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2 | EFFECT_SPEED_UP | EFFECT_SPEED_UP_2, AI_CV_Speed
+	if_effect EFFECT_ATTACK_DOWN | EFFECT_ATTACK_DOWN_2 | EFFECT_TICKLE, AI_CV_AttackDown
 	if_effect EFFECT_SPECIAL_ATTACK_DOWN | EFFECT_SPECIAL_ATTACK_DOWN_2, AI_CV_SpAtkDown
-	if_effect EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CV_SpDefDown
-	if_effect EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2, AI_CV_AccuracyDown
 	if_effect EFFECT_EVASION_DOWN | EFFECT_EVASION_DOWN_2, AI_CV_EvasionDown
 	if_effect EFFECT_SPEED_DOWN_HIT, AI_CV_SpeedDownFromChance
-	if_effect EFFECT_COSMIC_POWER, AI_CV_SpDefUp
 	if_effect EFFECT_BELLY_DRUM, AI_CV_BellyDrum
-	if_effect EFFECT_BULK_UP, AI_CV_DefenseUp
-	if_effect EFFECT_CALM_MIND, AI_CV_SpDefUp
-	if_effect EFFECT_DRAGON_DANCE, AI_CV_DragonDance
-	if_effect EFFECT_TICKLE, AI_CV_DefenseDown
-	if_effect EFFECT_CURSE, AI_CV_Curse
 	if_effect EFFECT_HAZE, AI_CV_Haze
 	if_effect EFFECT_ROAR, AI_CV_Phazing
 	if_effect EFFECT_PSYCH_UP, AI_CV_PsychUp
@@ -1520,14 +1359,14 @@ AI_CheckViability:
 	if_effect EFFECT_MOONLIGHT | EFFECT_MORNING_SUN | EFFECT_SYNTHESIS, AI_CV_HealWeather
 	if_effect EFFECT_PAIN_SPLIT, AI_CV_PainSplit
 	if_effect EFFECT_REST, AI_CV_Rest
-	if_effect EFFECT_HEAL_BELL, AI_CV_HealBell
+	if_effect EFFECT_WISH, AI_CV_Wish
+	if_effect EFFECT_HEAL_BELL | EFFECT_REFRESH, AI_CV_ClearStatus
 	if_effect EFFECT_BRICK_BREAK, AI_CV_BrickBreak
-	if_effect EFFECT_REFRESH, AI_CV_Refresh
 	if_effect EFFECT_LIGHT_SCREEN, AI_CV_LightScreen
 	if_effect EFFECT_REFLECT, AI_CV_Reflect
+	if_effect EFFECT_SLEEP | EFFECT_YAWN, AI_CV_Sleep
 	if_effect EFFECT_PARALYZE, AI_CV_Paralyze
-	if_effect EFFECT_POISON | EFFECT_TOXIC, AI_CV_Poison
-	if_effect EFFECT_LEECH_SEED, AI_CV_Toxic
+	if_effect EFFECT_LEECH_SEED | EFFECT_POISON | EFFECT_TOXIC, AI_CV_Toxic
 	if_effect EFFECT_SOLAR_BEAM, AI_CV_SolarBeam
 	if_effect EFFECT_RAZOR_WIND | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_CV_ChargeUpMove
 	if_effect EFFECT_RECHARGE, AI_CV_Recharge
@@ -1576,6 +1415,7 @@ AI_CheckViability:
 	if_effect EFFECT_OVERHEAT, AI_CV_Overheat
 	if_effect EFFECT_RAPID_SPIN, AI_CV_RapidSpin
 	if_effect EFFECT_REVENGE, AI_CV_Revenge
+	if_effect EFFECT_ROLLOUT, AI_CV_Rollout
 	if_effect EFFECT_SEMI_INVULNERABLE, AI_CV_SemiInvulnerable
 	if_effect EFFECT_SMELLINGSALT, AI_CV_SmellingSalt
 	if_effect EFFECT_SPIT_UP, AI_CV_SpitUp
@@ -1596,35 +1436,23 @@ AI_CV_MirrorMove2:
 	if_equal MOVE_TARGET_RANDOM, AI_CV_CheckViability_MirrorMove
 	if_equal MOVE_TARGET_SELECTED, AI_CV_CheckViability_MirrorMove
 	score -2
-	goto AI_End
+	end
 
 AI_CV_CheckViability_MirrorMove:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_SLEEP | EFFECT_YAWN, AI_CV_Sleep
 	if_equal EFFECT_EXPLOSION, AI_CV_SelfKO
-	if_equal EFFECT_ATTACK_UP | EFFECT_ATTACK_UP_2, AI_CV_AttackUp
-	if_equal EFFECT_DEFENSE_UP | EFFECT_DEFENSE_UP_2, AI_CV_DefenseUp
-	if_equal EFFECT_SPEED_UP | EFFECT_SPEED_UP_2, AI_CV_SpeedUp
-	if_equal EFFECT_SPECIAL_ATTACK_UP | EFFECT_SPECIAL_ATTACK_UP_2, AI_CV_SpAtkUp
-	if_equal EFFECT_SPECIAL_DEFENSE_UP | EFFECT_SPECIAL_DEFENSE_UP_2, AI_CV_SpDefUp
-	if_equal EFFECT_ACCURACY_UP | EFFECT_ACCURACY_UP_2, AI_CV_AccuracyUp
-	if_equal EFFECT_EVASION_UP | EFFECT_EVASION_UP_2 | EFFECT_MINIMIZE, AI_CV_EvasionUp
-	if_equal EFFECT_ATTACK_DOWN | EFFECT_ATTACK_DOWN_2, AI_CV_AttackDown
-	if_equal EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2, AI_CV_DefenseDown
-	if_equal EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2, AI_CV_SpeedDown
+	if_equal EFFECT_CURSE, AI_CV_Curse
+	if_equal EFFECT_BULK_UP | EFFECT_DEFENSE_CURL | EFFECT_DEFENSE_UP | EFFECT_DEFENSE_UP_2, AI_CV_DefenseUp
+	if_equal EFFECT_CALM_MIND | EFFECT_SPECIAL_DEFENSE_UP | EFFECT_SPECIAL_DEFENSE_UP_2, AI_CV_SpDefUp
+	if_effect , AI_CV_Stats
+	if_equal EFFECT_COSMIC_POWER | EFFECT_DRAGON_DANCE | EFFECT_MINIMIZE | EFFECT_ATTACK_UP | EFFECT_ATTACK_UP_2 | EFFECT_EVASION_UP | EFFECT_EVASION_UP_2 | EFFECT_SPECIAL_ATTACK_UP | EFFECT_SPECIAL_ATTACK_UP_2 | EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2 | EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2 | EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CV_Stats
+	if_equal EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2 | EFFECT_SPEED_UP | EFFECT_SPEED_UP_2, AI_CV_Speed
+	if_equal EFFECT_ATTACK_DOWN | EFFECT_ATTACK_DOWN_2 | EFFECT_TICKLE, AI_CV_AttackDown
 	if_equal EFFECT_SPECIAL_ATTACK_DOWN | EFFECT_SPECIAL_ATTACK_DOWN_2, AI_CV_SpAtkDown
-	if_equal EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2, AI_CV_SpDefDown
-	if_equal EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2, AI_CV_AccuracyDown
 	if_equal EFFECT_EVASION_DOWN | EFFECT_EVASION_DOWN_2, AI_CV_EvasionDown
 	if_equal EFFECT_SPEED_DOWN_HIT, AI_CV_SpeedDownFromChance
-	if_equal EFFECT_COSMIC_POWER, AI_CV_SpDefUp
 	if_equal EFFECT_BELLY_DRUM, AI_CV_BellyDrum
-	if_equal EFFECT_BULK_UP, AI_CV_DefenseUp
-	if_equal EFFECT_CALM_MIND, AI_CV_SpDefUp
-	if_equal EFFECT_DRAGON_DANCE, AI_CV_DragonDance
-	if_equal EFFECT_TICKLE, AI_CV_DefenseDown
-	if_equal EFFECT_CURSE, AI_CV_Curse
 	if_equal EFFECT_HAZE, AI_CV_Haze
 	if_equal EFFECT_ROAR, AI_CV_Phazing
 	if_equal EFFECT_PSYCH_UP, AI_CV_PsychUp
@@ -1632,14 +1460,14 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_MOONLIGHT | EFFECT_MORNING_SUN | EFFECT_SYNTHESIS, AI_CV_HealWeather
 	if_equal EFFECT_PAIN_SPLIT, AI_CV_PainSplit
 	if_equal EFFECT_REST, AI_CV_Rest
-	if_equal EFFECT_HEAL_BELL, AI_CV_HealBell
+	if_equal EFFECT_WISH, AI_CV_Wish
+	if_equal EFFECT_HEAL_BELL | EFFECT_REFRESH, AI_CV_ClearStatus
 	if_equal EFFECT_BRICK_BREAK, AI_CV_BrickBreak
-	if_equal EFFECT_REFRESH, AI_CV_Refresh
 	if_equal EFFECT_LIGHT_SCREEN, AI_CV_LightScreen
 	if_equal EFFECT_REFLECT, AI_CV_Reflect
+	if_equal EFFECT_SLEEP | EFFECT_YAWN, AI_CV_Sleep
 	if_equal EFFECT_PARALYZE, AI_CV_Paralyze
-	if_equal EFFECT_POISON | EFFECT_TOXIC, AI_CV_Poison
-	if_equal EFFECT_LEECH_SEED, AI_CV_Toxic
+	if_equal EFFECT_LEECH_SEED | EFFECT_POISON | EFFECT_TOXIC, AI_CV_Toxic
 	if_equal EFFECT_SOLAR_BEAM, AI_CV_SolarBeam
 	if_equal EFFECT_RAZOR_WIND | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_CV_ChargeUpMove
 	if_equal EFFECT_RECHARGE, AI_CV_Recharge
@@ -1691,21 +1519,22 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_PERISH_SONG, AI_CV_SuicideCheck
 	if_equal EFFECT_RAPID_SPIN, AI_CV_RapidSpin
 	if_equal EFFECT_REVENGE, AI_CV_Revenge
+	if_equal EFFECT_ROLLOUT, AI_CV_Rollout
 	if_equal EFFECT_SMELLINGSALT, AI_CV_SmellingSalt
 	if_equal EFFECT_SUPERPOWER, AI_CV_Superpower
-	goto AI_End
+	end
 
 AI_CV_MirrorMovePenalty:
 	score -10
-	goto AI_End
+	end
 
 AI_CV_MultiHit:
 	if_status2 AI_TARGET, STATUS2_SUBSTITUTE, AI_MultiHit_ScorePlus3
-	goto AI_End
+	end
 
 AI_MultiHit_ScorePlus3:
 	score +3
-	goto AI_End
+	end
 
 AI_CV_Sleep:
 	get_last_used_bank_move AI_USER
@@ -1725,31 +1554,25 @@ AI_CV_Sleep_End:
 	end
 
 AI_CV_Toxic:
-	if_user_has_no_attacking_moves AI_CV_Toxic3
-	if_hp_more_than AI_USER, 50, AI_CV_Toxic2
-	if_random_less_than 50, AI_CV_Toxic2
-	score -3
-AI_CV_Toxic2:
-	if_hp_more_than AI_TARGET, 50, AI_CV_Toxic3
-	if_random_less_than 50, AI_CV_Toxic3
-	score -3
-AI_CV_Toxic3:
-	if_has_move_with_effect AI_USER, EFFECT_SPECIAL_DEFENSE_UP, AI_CV_Toxic4
-	if_has_move_with_effect AI_USER, EFFECT_PROTECT, AI_CV_Toxic4
-	goto AI_CV_Toxic_End
+	is_first_turn_for AI_USER
+	if_equal FALSE, AI_CV_Toxic_StatBoosts
+	score +1
+AI_CV_Toxic_StatBoosts:
+	if_has_move_with_effect AI_TARGET, EFFECT_BULK_UP | EFFECT_DEFENSE_CURL | EFFECT_DEFENSE_UP | EFFECT_DEFENSE_UP_2 | EFFECT_CALM_MIND | EFFECT_SPECIAL_DEFENSE_UP | EFFECT_SPECIAL_DEFENSE_UP_2 | EFFECT_COSMIC_POWER | EFFECT_DRAGON_DANCE | EFFECT_MINIMIZE | EFFECT_ATTACK_UP | EFFECT_ATTACK_UP_2 | EFFECT_EVASION_UP | EFFECT_EVASION_UP_2 | EFFECT_SPECIAL_ATTACK_UP | EFFECT_SPECIAL_ATTACK_UP_2 | EFFECT_SPEED_UP | EFFECT_SPEED_UP_2, AI_CV_Toxic_StatBoosts_Plus1
+	goto AI_CV_LeechOverToxic
 
-AI_CV_Toxic4:
-	if_random_less_than 60, AI_CV_Toxic_End
-	score +2
-AI_CV_Toxic_End:
+AI_CV_Toxic_StatBoosts_Plus1:
+	score +1
+AI_CV_LeechOverToxic:
+	if_effect EFFECT_LEECH_SEED, AI_CV_LeechOverToxic2
 	end
 
-AI_CV_Poison:
-	if_hp_less_than AI_USER, 50, AI_CV_Poison_Minus1
-	if_hp_more_than AI_TARGET, 50, AI_CV_Poison_End
-AI_CV_Poison_Minus1:
-	score -1
-AI_CV_Poison_End:
+AI_CV_LeechOverToxic2:
+	if_has_move_with_effect AI_USER, EFFECT_POISON | EFFECT_TOXIC, AI_CV_LeechOverToxic_Plus1
+	end
+
+AI_CV_LeechOverToxic_Plus1:
+	score +1
 	end
 
 AI_CV_Paralyze:
@@ -1789,383 +1612,203 @@ AI_CV_SleepTalk3:
 
 AI_CV_Asleep_ScorePlus2:
 	score +2
-	goto AI_End
+	end
 
 AI_CV_Awake:
 	score -10
-	goto AI_End
+	end
 
-AI_CV_DragonDance:
-	if_target_faster AI_CV_DragonDance2
-	if_hp_more_than AI_USER, 50, AI_CV_DragonDance_End
-	if_random_less_than 70, AI_CV_DragonDance_End
-	score -1
-	goto AI_CV_DragonDance_End
+AI_CV_EvasionDown:
+	if_stat_level_less_than AI_TARGET, STAT_EVASION, 5, AI_CV_Evasion_ScoreMinus10
+	goto AI_CV_Stats
 
-AI_CV_DragonDance2:
-	if_random_less_than 128, AI_CV_DragonDance_End
-	score +1
-AI_CV_DragonDance_End:
+AI_CV_Evasion_ScoreMinus10:
+	score -10
+	end
+
+AI_CV_AttackDown:
+	if_in_bytes AI_CV_FightingAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_GhostAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_GroundAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_NormalAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_PoisonAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_OtherPhysicalAttacks, AI_CV_Stats
+	if_has_move AI_TARGET, MOVE_DOOM_DESIRE | MOVE_FURY_CUTTER | MOVE_ROLLOUT | MOVE_SNORE, AI_CV_Stats
+	score -10
+	end
+
+AI_CV_SpAtkDown:
+	if_in_bytes AI_CV_ElectricAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_FireAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_PsychicAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_WaterAttacks, AI_CV_Stats
+	if_in_bytes AI_CV_OtherSpecialAttacks, AI_CV_Stats
+	if_has_move AI_TARGET, MOVE_DREAM_EATER | MOVE_FUTURE_SIGHT | MOVE_ICE_BALL | MOVE_WEATHER_BALL, AI_CV_Stats
+	score -10
 	end
 
 AI_CV_Curse:
 	get_user_type1
-	if_equal TYPE_GHOST, AI_CV_Curse4
+	if_equal TYPE_GHOST, AI_CV_CurseGhost
 	get_user_type2
-	if_equal TYPE_GHOST, AI_CV_Curse4
-	if_stat_level_more_than AI_USER, STAT_DEF, 9, AI_CV_Curse_End
-	if_random_less_than 128, AI_CV_Curse2
-	score +1
-AI_CV_Curse2:
-	if_stat_level_more_than AI_USER, STAT_DEF, 7, AI_CV_Curse_End
-	if_random_less_than 128, AI_CV_Curse3
-	score +1
-AI_CV_Curse3:
-	if_stat_level_more_than AI_USER, STAT_DEF, DEFAULT_STAT_STAGE, AI_CV_Curse_End
-	if_random_less_than 128, AI_CV_Curse_End
-	score +1
-	goto AI_CV_Curse_End
+	if_equal TYPE_GHOST, AI_CV_CurseGhost
+AI_CV_DefenseUp:
+	if_in_bytes AI_CV_FightingAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_GhostAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_GroundAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_NormalAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_PoisonAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_OtherPhysicalAttacks, AI_CV_DefensesUp_Plus1
+	if_has_move AI_TARGET, MOVE_DOOM_DESIRE | MOVE_FURY_CUTTER | MOVE_ROLLOUT | MOVE_SNORE, AI_CV_DefensesUp_Plus1
+	goto AI_CV_Stats
 
-AI_CV_Curse4:
+AI_CV_SpDefUp:
+	if_in_bytes AI_CV_ElectricAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_FireAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_PsychicAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_WaterAttacks, AI_CV_DefensesUp_Plus1
+	if_in_bytes AI_CV_OtherSpecialAttacks, AI_CV_DefensesUp_Plus1
+	if_has_move AI_TARGET, MOVE_DREAM_EATER | MOVE_FUTURE_SIGHT | MOVE_ICE_BALL | MOVE_WEATHER_BALL, AI_CV_DefensesUp_Plus1
+	goto AI_CV_Stats
+
+AI_CV_DefensesUp_Plus1:
+	score +1
+AI_CV_Stats:
+	if_hp_not_equal AI_USER, 100, AI_CV_Stats2
+	if_has_move_with_effect AI_USER, EFFECT_SUBSTITUTE, AI_CV_Stats_Minus2_Random
+AI_CV_Stats2:
+	if_status3 AI_USER, STATUS3_YAWN, AI_CV_Stats_Minus2
+	if_target_faster AI_CV_Stats_Cautious
+	if_status AI_USER, STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_POISON | STATUS1_TOXIC_POISON, AI_CV_Stats_Statused
+	if_status2 AI_USER, STATUS2_CONFUSION | STATUS2_INFATUATION, AI_CV_Stats_Statused
+	if_status3 AI_USER, STATUS3_LEECHSEED, AI_CV_Stats_Statused
+	if_hp_less_than AI_USER, 37, AI_CV_Stats_Minus2
+	if_hp_more_than AI_USER, 73, AI_CV_Stats_Plus1
+	if_hp_less_than AI_USER, 54, AI_CV_Stats_Minus2_Random
+	if_hp_more_than AI_USER, 62, AI_CV_Stats_Plus1_Random
+	if_random_less_than 128, AI_CV_Stats_Plus1
+	if_random_less_than 64, AI_CV_Stats_Minus2
+	goto AI_CV_Stats_StatusCheck
+
+AI_CV_Stats_Cautious:
+	if_status AI_USER, STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_POISON | STATUS1_TOXIC_POISON, AI_CV_Stats_Cautious_Statused
+	if_status2 AI_USER, STATUS2_CONFUSION | STATUS2_CURSED | STATUS2_INFATUATION, AI_CV_Stats_Cautious_Statused
+	if_status3 AI_USER, STATUS3_LEECHSEED, AI_CV_Stats_Cautious_Statused
+AI_CV_Stats_Statused:
+	if_hp_less_than AI_USER, 50, AI_CV_Stats_Minus2
+	if_hp_more_than AI_USER, 90, AI_CV_Stats_Plus1
+	if_hp_less_than AI_USER, 62, AI_CV_Stats_Minus2_Random
+	if_hp_more_than AI_USER, 73, AI_CV_Stats_Plus1_Random
+	if_random_less_than 96, AI_CV_Stats_Plus1
+	if_random_less_than 128, AI_CV_Stats_Minus2
+	goto AI_CV_Stats_StatusCheck
+
+AI_CV_Stats_Cautious_Statused:
+	if_hp_less_than AI_USER, 62, AI_CV_Stats_Minus2
+	if_hp_equal AI_USER, 100, AI_CV_Stats_Plus1
+	if_hp_less_than AI_USER, 73, AI_CV_Stats_Minus2_Random
+	if_hp_more_than AI_USER, 90, AI_CV_Stats_Plus1_Random
+	if_random_less_than 64, AI_CV_Stats_Plus1
+	if_random_less_than 160, AI_CV_Stats_Minus2
+	goto AI_CV_Stats_StatusCheck
+
+AI_CV_Stats_Plus1_Random:
+	if_random_less_than 96, AI_End
+AI_CV_Stats_Plus1:
+	score +1
+	end
+
+AI_CV_Stats_Minus2_Random:
+	if_random_less_than 96, AI_End
+AI_CV_Stats_Minus2:
+	score -2
+	end
+
+AI_CV_CurseGhost:
 	if_hp_more_than AI_USER, 90, AI_CV_Curse_End
 	score -2
 	if_hp_more_than AI_USER, 50, AI_CV_Curse_End
 	score -30
-AI_CV_Curse_End:
 	end
 
 AI_CV_BellyDrum:
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_BellyDrum_Plus1
+	if_hp_less_than AI_USER, 74, AI_CV_BellyDrum_Minus2
+	if_stat_level_more_than AI_USER, STAT_DEF, 9, AI_CV_BellyDrum_Plus1
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 9, AI_CV_BellyDrum_Plus1
+	if_hp_less_than AI_USER, 78, AI_CV_BellyDrum_Minus2
+	if_stat_level_more_than AI_USER, STAT_DEF, 8, AI_CV_BellyDrum_Plus1
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 8, AI_CV_BellyDrum_Plus1
+	if_hp_less_than AI_USER, 85, AI_CV_BellyDrum_Minus2
+	if_stat_level_more_than AI_USER, STAT_DEF, 7, AI_CV_BellyDrum_Plus1
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 7, AI_CV_BellyDrum_Plus1
 	if_hp_less_than AI_USER, 90, AI_CV_BellyDrum_Minus2
-	goto AI_CV_BellyDrum_End
+	if_stat_level_more_than AI_USER, STAT_DEF, 6, AI_CV_BellyDrum_Plus1
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 6, AI_CV_BellyDrum_Plus1
+	if_hp_less_than AI_USER, 94, AI_CV_BellyDrum_Minus2
+	end
+
+AI_CV_BellyDrum_Plus1:
+	score +1
+	end
 
 AI_CV_BellyDrum_Minus2:
 	score -2
-AI_CV_BellyDrum_End:
-	end
-
-AI_CV_AttackUp:
-	if_stat_level_less_than AI_USER, STAT_ATK, 9, AI_CV_AttackUp2
-	if_random_less_than 100, AI_CV_AttackUp3
-	score -1
-	goto AI_CV_AttackUp3
-
-AI_CV_AttackUp2:
-	if_hp_not_equal AI_USER, 100, AI_CV_AttackUp3
-	if_random_less_than 128, AI_CV_AttackUp3
-	score +2
-AI_CV_AttackUp3:
-	if_hp_more_than AI_USER, 70, AI_CV_AttackUp_End
-	if_hp_less_than AI_USER, 40, AI_CV_AttackUp_Minus2
-	if_random_less_than 40, AI_CV_AttackUp_End
-AI_CV_AttackUp_Minus2:
-	score -2
-AI_CV_AttackUp_End:
-	end
-
-AI_CV_DefenseUp:
-	if_stat_level_less_than AI_USER, STAT_DEF, 9, AI_CV_DefenseUp2
-	if_random_less_than 100, AI_CV_DefenseUp3
-	score -1
-	goto AI_CV_DefenseUp3
-
-AI_CV_DefenseUp2:
-	if_hp_not_equal AI_USER, 100, AI_CV_DefenseUp3
-	if_random_less_than 128, AI_CV_DefenseUp3
-	score +2
-AI_CV_DefenseUp3:
-	if_hp_less_than AI_USER, 70, AI_CV_DefenseUp4
-	if_random_less_than 200, AI_CV_DefenseUp_End
-AI_CV_DefenseUp4:
-	if_hp_less_than AI_USER, 40, AI_CV_DefenseUp_Minus2
-	get_last_used_bank_move AI_TARGET
-	get_move_power_from_result
-	if_equal 0, AI_CV_DefenseUp5
-	get_last_used_bank_move AI_TARGET
-	get_move_type_from_result
-	if_not_in_bytes AI_PhysicalTypeList, AI_CV_DefenseUp_Minus2
-	if_random_less_than 60, AI_CV_DefenseUp_End
-AI_CV_DefenseUp5:
-	if_random_less_than 60, AI_CV_DefenseUp_End
-AI_CV_DefenseUp_Minus2:
-	score -2
-AI_CV_DefenseUp_End:
-	end
-
-AI_CV_SpeedUp:
-	if_target_faster AI_CV_SpeedUp2
-	score -3
-	goto AI_CV_SpeedUp_End
-
-AI_CV_SpeedUp2:
-	if_random_less_than 70, AI_CV_SpeedUp_End
-	score +3
-AI_CV_SpeedUp_End:
-	end
-
-AI_CV_SpAtkUp:
-	if_stat_level_less_than AI_USER, STAT_SPATK, 9, AI_CV_SpAtkUp2
-	if_random_less_than 100, AI_CV_SpAtkUp3
-	score -1
-	goto AI_CV_SpAtkUp3
-
-AI_CV_SpAtkUp2:
-	if_hp_not_equal AI_USER, 100, AI_CV_SpAtkUp3
-	if_random_less_than 128, AI_CV_SpAtkUp3
-	score +2
-AI_CV_SpAtkUp3:
-	if_hp_more_than AI_USER, 70, AI_CV_SpAtkUp_End
-	if_hp_less_than AI_USER, 40, AI_CV_SpAtkUp_Minus2
-	if_random_less_than 70, AI_CV_SpAtkUp_End
-AI_CV_SpAtkUp_Minus2:
-	score -2
-AI_CV_SpAtkUp_End:
-	end
-
-AI_CV_SpDefUp:
-	if_stat_level_less_than AI_USER, STAT_SPDEF, 9, AI_CV_SpDefUp2
-	if_random_less_than 100, AI_CV_SpDefUp3
-	score -1
-	goto AI_CV_SpDefUp3
-
-AI_CV_SpDefUp2:
-	if_hp_not_equal AI_USER, 100, AI_CV_SpDefUp3
-	if_random_less_than 128, AI_CV_SpDefUp3
-	score +2
-AI_CV_SpDefUp3:
-	if_hp_less_than AI_USER, 70, AI_CV_SpDefUp4
-	if_random_less_than 200, AI_CV_SpDefUp_End
-AI_CV_SpDefUp4:
-	if_hp_less_than AI_USER, 40, AI_CV_SpDefUp_Minus2
-	get_last_used_bank_move AI_TARGET
-	get_move_power_from_result
-	if_equal 0, AI_CV_SpDefUp5
-	get_last_used_bank_move AI_TARGET
-	get_move_type_from_result
-	if_in_bytes AI_PhysicalTypeList, AI_CV_SpDefUp_Minus2
-	if_random_less_than 60, AI_CV_SpDefUp_End
-AI_CV_SpDefUp5:
-	if_random_less_than 60, AI_CV_SpDefUp_End
-AI_CV_SpDefUp_Minus2:
-	score -2
-AI_CV_SpDefUp_End:
-	end
-
-AI_CV_AccuracyUp:
-	if_stat_level_less_than AI_USER, STAT_ACC, 9, AI_CV_AccuracyUp2
-	if_random_less_than 50, AI_CV_AccuracyUp2
-	score -2
-AI_CV_AccuracyUp2:
-	if_hp_more_than AI_USER, 70, AI_CV_AccuracyUp_End
-	score -2
-AI_CV_AccuracyUp_End:
-	end
-
-AI_CV_EvasionUp:
-	if_hp_less_than AI_USER, 90, AI_CV_EvasionUp2
-	if_random_less_than 100, AI_CV_EvasionUp2
-	score +3
-AI_CV_EvasionUp2:
-	if_stat_level_less_than AI_USER, STAT_EVASION, 9, AI_CV_EvasionUp3
-	if_random_less_than 128, AI_CV_EvasionUp3
-	score -1
-AI_CV_EvasionUp3:
-	if_not_status AI_TARGET, STATUS1_TOXIC_POISON, AI_CV_EvasionUp5
-	if_hp_more_than AI_USER, 50, AI_CV_EvasionUp4
-	if_random_less_than 80, AI_CV_EvasionUp5
-AI_CV_EvasionUp4:
-	if_random_less_than 50, AI_CV_EvasionUp5
-	score +3
-AI_CV_EvasionUp5:
-	if_not_status3 AI_TARGET, STATUS3_LEECHSEED, AI_CV_EvasionUp6
-	if_random_less_than 70, AI_CV_EvasionUp6
-	score +3
-AI_CV_EvasionUp6:
-	if_not_status3 AI_USER, STATUS3_ROOTED, AI_CV_EvasionUp7
-	if_random_less_than 128, AI_CV_EvasionUp7
-	score +2
-AI_CV_EvasionUp7:
-	if_not_status2 AI_TARGET, STATUS2_CURSED, AI_CV_EvasionUp8
-	if_random_less_than 70, AI_CV_EvasionUp8
-	score +3
-AI_CV_EvasionUp8:
-	if_hp_more_than AI_USER, 70, AI_CV_EvasionUp_End
-	if_stat_level_equal AI_USER, STAT_EVASION, DEFAULT_STAT_STAGE, AI_CV_EvasionUp_End
-	if_hp_less_than AI_USER, 40, AI_CV_EvasionUp_Minus2
-	if_hp_less_than AI_TARGET, 40, AI_CV_EvasionUp_Minus2
-	if_random_less_than 70, AI_CV_EvasionUp_End
-AI_CV_EvasionUp_Minus2:
-	score -2
-AI_CV_EvasionUp_End:
-	end
-
-AI_CV_AttackDown:
-	if_stat_level_equal AI_TARGET, STAT_ATK, DEFAULT_STAT_STAGE, AI_CV_AttackDown3
-	score -1
-	if_hp_more_than AI_USER, 90, AI_CV_AttackDown2
-	score -1
-AI_CV_AttackDown2:
-	if_stat_level_more_than AI_TARGET, STAT_ATK, 3, AI_CV_AttackDown3
-	if_random_less_than 50, AI_CV_AttackDown3
-	score -2
-AI_CV_AttackDown3:
-	if_hp_more_than AI_TARGET, 70, AI_CV_AttackDown4
-	score -2
-AI_CV_AttackDown4:
-	get_target_type1
-	if_in_bytes AI_PhysicalTypeList, AI_CV_AttackDown_End
-	get_target_type2
-	if_in_bytes AI_PhysicalTypeList, AI_CV_AttackDown_End
-	if_random_less_than 50, AI_CV_AttackDown_End
-	score -2
-AI_CV_AttackDown_End:
-	end
-
-AI_CV_DefenseDown:
-	if_hp_less_than AI_USER, 70, AI_CV_DefenseDown2
-	if_stat_level_more_than AI_TARGET, STAT_DEF, 3, AI_CV_DefenseDown3
-AI_CV_DefenseDown2:
-	if_random_less_than 50, AI_CV_DefenseDown3
-	score -2
-AI_CV_DefenseDown3:
-	if_hp_more_than AI_TARGET, 70, AI_CV_DefenseDown_End
-	score -2
-AI_CV_DefenseDown_End:
 	end
 
 AI_CV_SpeedDownFromChance:
 	get_considered_move_second_eff_chance
-	if_more_than 20, AI_CV_SpeedDown
+	if_more_than 20, AI_CV_Speed
 	end
 
-AI_CV_SpeedDown:
-	if_target_faster AI_CV_SpeedDown2
+AI_CV_Speed:
+	if_target_faster AI_CV_Speed2
 	score -3
-	goto AI_CV_SpeedDown_End
+	goto AI_CV_Speed_End
 
-AI_CV_SpeedDown2:
-	if_random_less_than 70, AI_CV_SpeedDown_End
-	score +2
-AI_CV_SpeedDown_End:
-	end
-
-AI_CV_SpAtkDown:
-	if_stat_level_equal AI_TARGET, STAT_ATK, DEFAULT_STAT_STAGE, AI_CV_SpAtkDown3
-	score -1
-	if_hp_more_than AI_USER, 90, AI_CV_SpAtkDown2
-	score -1
-AI_CV_SpAtkDown2:
-	if_stat_level_more_than AI_TARGET, STAT_SPATK, 3, AI_CV_SpAtkDown3
-	if_random_less_than 50, AI_CV_SpAtkDown3
-	score -2
-AI_CV_SpAtkDown3:
-	if_hp_more_than AI_TARGET, 70, AI_CV_SpAtkDown4
-	score -2
-AI_CV_SpAtkDown4:
-	get_target_type1
-	if_in_bytes AI_SpecialTypeList, AI_CV_SpAtkDown_End
-	get_target_type2
-	if_in_bytes AI_SpecialTypeList, AI_CV_SpAtkDown_End
-	if_random_less_than 50, AI_CV_SpAtkDown_End
-	score -2
-AI_CV_SpAtkDown_End:
-	end
-
-AI_CV_SpDefDown:
-	if_hp_less_than AI_USER, 70, AI_CV_SpDefDown2
-	if_stat_level_more_than AI_TARGET, STAT_SPDEF, 3, AI_CV_SpDefDown3
-AI_CV_SpDefDown2:
-	if_random_less_than 50, AI_CV_SpDefDown3
-	score -2
-AI_CV_SpDefDown3:
-	if_hp_more_than AI_TARGET, 70, AI_CV_SpDefDown_End
-	score -2
-AI_CV_SpDefDown_End:
-	end
-
-AI_CV_AccuracyDown:
-	if_hp_less_than AI_USER, 70, AI_CV_AccuracyDown2
-	if_hp_more_than AI_TARGET, 70, AI_CV_AccuracyDown3
-AI_CV_AccuracyDown2:
-	if_random_less_than 100, AI_CV_AccuracyDown3
-	score -1
-AI_CV_AccuracyDown3:
-	if_stat_level_more_than AI_USER, STAT_ACC, 4, AI_CV_AccuracyDown4
-	if_random_less_than 80, AI_CV_AccuracyDown4
-	score -2
-AI_CV_AccuracyDown4:
-	if_not_status AI_TARGET, STATUS1_TOXIC_POISON, AI_CV_AccuracyDown5
-	if_random_less_than 70, AI_CV_AccuracyDown5
-	score +2
-AI_CV_AccuracyDown5:
-	if_not_status3 AI_TARGET, STATUS3_LEECHSEED, AI_CV_AccuracyDown6
-	if_random_less_than 70, AI_CV_AccuracyDown6
-	score +2
-AI_CV_AccuracyDown6:
-	if_not_status3 AI_USER, STATUS3_ROOTED, AI_CV_AccuracyDown7
-	if_random_less_than 128, AI_CV_AccuracyDown7
-	score +1
-AI_CV_AccuracyDown7:
-	if_not_status2 AI_TARGET, STATUS2_CURSED, AI_CV_AccuracyDown8
-	if_random_less_than 70, AI_CV_AccuracyDown8
-	score +2
-AI_CV_AccuracyDown8:
-	if_hp_more_than AI_USER, 70, AI_CV_AccuracyDown_End
-	if_stat_level_equal AI_TARGET, STAT_ACC, DEFAULT_STAT_STAGE, AI_CV_AccuracyDown_End
-	if_hp_less_than AI_USER, 40, AI_CV_AccuracyDown_Minus2
-	if_hp_less_than AI_TARGET, 40, AI_CV_AccuracyDown_Minus2
-	if_random_less_than 70, AI_CV_AccuracyDown_End
-AI_CV_AccuracyDown_Minus2:
-	score -2
-AI_CV_AccuracyDown_End:
-	end
-
-AI_CV_EvasionDown:
-	if_hp_less_than AI_USER, 70, AI_CV_EvasionDown2
-	if_stat_level_more_than AI_TARGET, STAT_EVASION, 2, AI_CV_EvasionDown3
-AI_CV_EvasionDown2:
-	if_random_less_than 50, AI_CV_EvasionDown3
-	score -2
-AI_CV_EvasionDown3:
-	if_hp_more_than AI_TARGET, 70, AI_CV_EvasionDown_End
-	score -2
-AI_CV_EvasionDown_End:
-	end
-
-AI_CV_Haze:
-	if_stat_level_more_than AI_USER, STAT_ATK, 8, AI_CV_Haze2
-	if_stat_level_more_than AI_USER, STAT_DEF, 8, AI_CV_Haze2
-	if_stat_level_more_than AI_USER, STAT_SPATK, 8, AI_CV_Haze2
-	if_stat_level_more_than AI_USER, STAT_SPDEF, 8, AI_CV_Haze2
-	if_stat_level_more_than AI_USER, STAT_EVASION, 8, AI_CV_Haze2
-	if_stat_level_less_than AI_TARGET, STAT_ATK, 4, AI_CV_Haze2
-	if_stat_level_less_than AI_TARGET, STAT_DEF, 4, AI_CV_Haze2
-	if_stat_level_less_than AI_TARGET, STAT_SPATK, 4, AI_CV_Haze2
-	if_stat_level_less_than AI_TARGET, STAT_SPDEF, 4, AI_CV_Haze2
-	if_stat_level_less_than AI_TARGET, STAT_ACC, 4, AI_CV_Haze2
-	goto AI_CV_Haze3
-
-AI_CV_Haze2:
-	if_random_less_than 50, AI_CV_Haze3
-	score -3
-AI_CV_Haze3:
-	if_stat_level_more_than AI_TARGET, STAT_ATK, 8, AI_CV_Haze4
-	if_stat_level_more_than AI_TARGET, STAT_DEF, 8, AI_CV_Haze4
-	if_stat_level_more_than AI_TARGET, STAT_SPATK, 8, AI_CV_Haze4
-	if_stat_level_more_than AI_TARGET, STAT_SPDEF, 8, AI_CV_Haze4
-	if_stat_level_more_than AI_TARGET, STAT_EVASION, 8, AI_CV_Haze4
-	if_stat_level_less_than AI_USER, STAT_ATK, 4, AI_CV_Haze4
-	if_stat_level_less_than AI_USER, STAT_DEF, 4, AI_CV_Haze4
-	if_stat_level_less_than AI_USER, STAT_SPATK, 4, AI_CV_Haze4
-	if_stat_level_less_than AI_USER, STAT_SPDEF, 4, AI_CV_Haze4
-	if_stat_level_less_than AI_USER, STAT_ACC, 4, AI_CV_Haze4
-	if_random_less_than 50, AI_CV_Haze_End
-	score -1
-	goto AI_CV_Haze_End
-
-AI_CV_Haze4:
-	if_random_less_than 50, AI_CV_Haze_End
+AI_CV_Speed2:
+	if_random_less_than 70, AI_CV_Speed_End
 	score +3
-AI_CV_Haze_End:
+AI_CV_Speed_End:
+	end
+
+AI_CV_PsychUp:
+	get_last_used_bank_move AI_USER
+	if_equal MOVE_PSYCH_UP, AI_CV_Haze_ScoreMinus3
+AI_CV_Haze:
+	score -1
+	if_stat_level_more_than AI_USER, STAT_ATK, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_more_than AI_USER, STAT_DEF, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_more_than AI_USER, STAT_SPATK, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_more_than AI_USER, STAT_SPEED, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_more_than AI_USER, STAT_EVASION, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_less_than AI_TARGET, STAT_ATK, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_less_than AI_TARGET, STAT_DEF, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_less_than AI_TARGET, STAT_SPATK, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_less_than AI_TARGET, STAT_SPDEF, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_less_than AI_TARGET, STAT_SPEED, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_less_than AI_TARGET, STAT_ACC, 6, AI_CV_Haze_ScoreMinus3
+	if_stat_level_more_than AI_TARGET, STAT_ATK, 7, AI_CV_Haze_ScorePlus2
+	if_stat_level_more_than AI_TARGET, STAT_DEF, 6, AI_CV_Haze_ScorePlus2
+	if_stat_level_more_than AI_TARGET, STAT_SPATK, 7, AI_CV_Haze_ScorePlus2
+	if_stat_level_more_than AI_TARGET, STAT_SPDEF, 6, AI_CV_Haze_ScorePlus2
+	if_stat_level_more_than AI_TARGET, STAT_SPEED, 6, AI_CV_Haze_ScorePlus2
+	if_stat_level_more_than AI_TARGET, STAT_EVASION, 7, AI_CV_Haze_ScorePlus2
+	if_stat_level_less_than AI_USER, STAT_ATK, 5, AI_CV_Haze_ScorePlus2
+	if_stat_level_less_than AI_USER, STAT_DEF, 6, AI_CV_Haze_ScorePlus2
+	if_stat_level_less_than AI_USER, STAT_SPATK, 5, AI_CV_Haze_ScorePlus2
+	if_stat_level_less_than AI_USER, STAT_SPDEF, 6, AI_CV_Haze_ScorePlus2
+	if_stat_level_less_than AI_USER, STAT_SPEED, 6, AI_CV_Haze_ScorePlus2
+	if_stat_level_less_than AI_USER, STAT_ACC, 5, AI_CV_Haze_ScorePlus2
+	end
+
+AI_CV_Haze_ScorePlus2:
+	score +2
+	end
+
+AI_CV_Haze_ScoreMinus3:
+	score -3
 	end
 
 AI_CV_Phazing:
@@ -2201,34 +1844,6 @@ AI_CV_PhazingEncourage:
 AI_CV_PhazingEnd:
 	end
 
-AI_CV_PsychUp:
-	if_stat_level_more_than AI_TARGET, STAT_ATK, 8, AI_CV_PsychUp2
-	if_stat_level_more_than AI_TARGET, STAT_DEF, 8, AI_CV_PsychUp2
-	if_stat_level_more_than AI_TARGET, STAT_SPATK, 8, AI_CV_PsychUp2
-	if_stat_level_more_than AI_TARGET, STAT_SPDEF, 8, AI_CV_PsychUp2
-	if_stat_level_more_than AI_TARGET, STAT_EVASION, 8, AI_CV_PsychUp2
-	goto AI_CV_PsychUp_Minus2
-
-AI_CV_PsychUp2:
-	if_stat_level_less_than AI_USER, STAT_ATK, 7, AI_CV_PsychUp3
-	if_stat_level_less_than AI_USER, STAT_DEF, 7, AI_CV_PsychUp3
-	if_stat_level_less_than AI_USER, STAT_SPATK, 7, AI_CV_PsychUp3
-	if_stat_level_less_than AI_USER, STAT_SPDEF, 7, AI_CV_PsychUp3
-	if_stat_level_less_than AI_USER, STAT_EVASION, 7, AI_CV_PsychUp_Plus1
-	if_random_less_than 50, AI_CV_PsychUp_End
-	goto AI_CV_PsychUp_Minus2
-
-AI_CV_PsychUp_Plus1:
-	score +1
-AI_CV_PsychUp3:
-	score +1
-	end
-
-AI_CV_PsychUp_Minus2:
-	score -2
-AI_CV_PsychUp_End:
-	end
-
 AI_CV_HealWeather:
 	get_weather
 	if_equal AI_WEATHER_HAIL, AI_CV_HealWeather_Minus2
@@ -2239,63 +1854,75 @@ AI_CV_HealWeather:
 AI_CV_HealWeather_Minus2:
 	score -2
 AI_CV_Heal:
-	if_hp_equal AI_USER, 100, AI_CV_Heal3
-	if_target_faster AI_CV_Heal4
-	score -8
-	goto AI_CV_Heal_End
+	if_hp_more_than AI_USER, 80, AI_CV_Heal_HighHP
+	if_target_faster AI_CV_Heal_Slower
+	if_hp_less_than AI_USER, 48, AI_CV_Heal_Plus2
+	if_hp_less_than AI_USER, 60, AI_CV_Heal_CheckSnatch
+	if_random_less_than 70, AI_CV_Heal_CheckSnatch
+	goto AI_CV_Heal_HighHP
 
-AI_CV_Heal2:
-	if_hp_less_than AI_USER, 50, AI_CV_Heal5
-	if_hp_more_than AI_USER, 80, AI_CV_Heal3
-	if_random_less_than 70, AI_CV_Heal5
-AI_CV_Heal3:
+AI_CV_Heal_Slower:
+	if_hp_less_than AI_USER, 55, AI_CV_Heal_Plus2
+	if_hp_less_than AI_USER, 72, AI_CV_Heal_CheckSnatch
+	if_random_less_than 30, AI_CV_Heal_CheckSnatch
+AI_CV_Heal_HighHP:
 	score -3
-	goto AI_CV_Heal_End
+	end
 
-AI_CV_Heal4:
-	if_hp_less_than AI_USER, 70, AI_CV_Heal5
-	if_random_less_than 30, AI_CV_Heal5
-	score -3
-	goto AI_CV_Heal_End
-
-AI_CV_Heal5:
-	if_doesnt_have_move_with_effect AI_TARGET, EFFECT_SNATCH, AI_CV_Heal6
-	if_random_less_than 100, AI_CV_Heal_End
-AI_CV_Heal6:
-	if_random_less_than 20, AI_CV_Heal_End
+AI_CV_Heal_CheckSnatch:
+	if_doesnt_have_move_with_effect AI_TARGET, EFFECT_SNATCH, AI_CV_Heal_Plus2_Random
+	if_random_less_than 100, AI_End
+AI_CV_Heal_Plus2_Random:
+	if_random_less_than 20, AI_End
+AI_CV_Heal_Plus2:
 	score +2
-AI_CV_Heal_End:
 	end
 
 AI_CV_Rest:
-	if_target_faster AI_CV_Rest4
-	if_hp_not_equal AI_USER, 100, AI_CV_Rest2
-	score -8
-	goto AI_CV_Rest_End
+	if_hp_more_than AI_USER, 70, AI_CV_Rest_HighHP
+	if_target_faster AI_CV_Rest_Slower
+	if_hp_less_than AI_USER, 28, AI_CV_Rest_Plus2
+	if_hp_less_than AI_USER, 40, AI_CV_Rest_CheckSnatch
+	if_random_less_than 70, AI_CV_Rest_CheckSnatch
+	goto AI_CV_Rest_HighHP
 
-AI_CV_Rest2:
-	if_hp_less_than AI_USER, 40, AI_CV_Rest6
-	if_hp_more_than AI_USER, 50, AI_CV_Rest3
-	if_random_less_than 70, AI_CV_Rest6
-AI_CV_Rest3:
+AI_CV_Rest_Slower:
+	if_hp_less_than AI_USER, 40, AI_CV_Rest_Plus2
+	if_hp_less_than AI_USER, 60, AI_CV_Rest_CheckSnatch
+	if_random_less_than 30, AI_CV_Rest_CheckSnatch
+AI_CV_Rest_HighHP:
 	score -3
-	goto AI_CV_Rest_End
+	end
 
-AI_CV_Rest4:
-	if_hp_less_than AI_USER, 60, AI_CV_Rest6
-	if_hp_more_than AI_USER, 70, AI_CV_Rest5
-	if_random_less_than 50, AI_CV_Rest6
-AI_CV_Rest5:
+AI_CV_Rest_CheckSnatch:
+	if_doesnt_have_move_with_effect AI_TARGET, EFFECT_SNATCH, AI_CV_Rest_Plus2_Random
+	if_random_less_than 50, AI_End
+AI_CV_Rest_Plus2_Random:
+	if_random_less_than 10, AI_End
+AI_CV_Rest_Plus2:
+	score +2
+	end
+
+AI_CV_Wish:
+	if_hp_more_than AI_USER, 90, AI_CV_Wish_HighHP
+	if_target_faster AI_CV_Wish_Slower
+	if_hp_less_than AI_USER, 52, AI_CV_Wish_Plus2
+	if_hp_less_than AI_USER, 70, AI_CV_Wish_Plus2_Random
+	if_random_less_than 70, AI_CV_Wish_Plus2_Random
+	goto AI_CV_Wish_HighHP
+
+AI_CV_Wish_Slower:
+	if_hp_less_than AI_USER, 63, AI_CV_Wish_Plus2
+	if_hp_less_than AI_USER, 77, AI_CV_Wish_Plus2_Random
+	if_random_less_than 128, AI_CV_Wish_Plus2_Random
+AI_CV_Wish_HighHP:
 	score -3
-	goto AI_CV_Rest_End
+	end
 
-AI_CV_Rest6:
-	if_doesnt_have_move_with_effect AI_TARGET, EFFECT_SNATCH, AI_CV_Rest7
-	if_random_less_than 50, AI_CV_Rest_End
-AI_CV_Rest7:
-	if_random_less_than 10, AI_CV_Rest_End
-	score +3
-AI_CV_Rest_End:
+AI_CV_Wish_Plus2_Random:
+	if_random_less_than 96, AI_End
+AI_CV_Wish_Plus2:
+	score +2
 	end
 
 AI_CV_PainSplit:
@@ -2316,49 +1943,81 @@ AI_CV_PainSplit_End:
 	end
 
 AI_CV_Reflect:
-	get_target_type1
-	if_in_bytes AI_PhysicalTypeList, AI_End
-	get_target_type2
-	if_in_bytes AI_PhysicalTypeList, AI_End
-	if_random_less_than 50, AI_End
-	score -2
-	goto AI_End
+	if_in_bytes AI_CV_FightingAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_GhostAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_GroundAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_NormalAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_PoisonAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_OtherPhysicalAttacks, AI_CV_UseScreen
+	if_has_move AI_TARGET, MOVE_DOOM_DESIRE | MOVE_FURY_CUTTER | MOVE_ROLLOUT | MOVE_SNORE, AI_CV_UseScreen
+	goto AI_CV_DontUseScreen
 
 AI_CV_LightScreen:
-	get_target_type1
-	if_in_bytes AI_SpecialTypeList, AI_End
-	get_target_type2
-	if_in_bytes AI_SpecialTypeList, AI_End
-	if_random_less_than 50, AI_End
+	if_in_bytes AI_CV_ElectricAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_FireAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_PsychicAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_WaterAttacks, AI_CV_UseScreen
+	if_in_bytes AI_CV_OtherSpecialAttacks, AI_CV_UseScreen
+	if_has_move AI_TARGET, MOVE_DREAM_EATER | MOVE_FUTURE_SIGHT | MOVE_ICE_BALL | MOVE_WEATHER_BALL, AI_CV_UseScreen
+AI_CV_DontUseScreen:
+	if_random_less_than 4, AI_End
 	score -2
-	goto AI_End
+	end
+
+AI_CV_UseScreen:
+	if_has_move_with_effect AI_TARGET, EFFECT_BRICK_BREAK, AI_CV_UseScreen_LowerOdds
+	if_random_less_than 96, AI_End
+	score +1
+	end
+
+AI_CV_UseScreen_LowerOdds:
+	if_random_less_than 192, AI_End
+	score +1
+	end
 
 AI_CV_BrickBreak:
 	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CV_BrickBreak_Plus1
 	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CV_BrickBreak_Plus1
-	goto AI_End
+	end
 
 AI_CV_BrickBreak_Plus1:
 	score +1
-	goto AI_End
+	end
 
 AI_CV_SuperFang:
-	if_hp_more_than AI_TARGET, 50, AI_CV_SuperFang_End
+	if_hp_more_than AI_TARGET, 40, AI_CV_SuperFang_End
 	score -1
 AI_CV_SuperFang_End:
 	end
 
 AI_CV_Trap:
-	if_status AI_TARGET, STATUS1_TOXIC_POISON, AI_CV_Trap2
-	if_status2 AI_TARGET, STATUS2_CURSED, AI_CV_Trap2
-	if_status3 AI_TARGET, STATUS3_PERISH_SONG, AI_CV_Trap2
-	if_status2 AI_TARGET, STATUS2_INFATUATION, AI_CV_Trap2
-	goto AI_CV_Trap_End
+	if_status AI_TARGET, STATUS1_TOXIC_POISON, AI_CV_Trap_Plus2
+	if_status AI_TARGET, STATUS1_BURN | STATUS1_POISON, AI_CV_Trap_Plus2_Random
+	if_status2 AI_TARGET, STATUS2_CURSED, AI_CV_Trap_Plus2
+	if_status3 AI_TARGET, STATUS3_PERISH_SONG, AI_CV_Trap_Plus2
+	goto AI_CV_TrapCombo
 
-AI_CV_Trap2:
-	if_random_less_than 128, AI_CV_Trap_End
-	score +1
-AI_CV_Trap_End:
+AI_CV_Trap_Plus2_Random:
+	if_random_less_than 128, AI_CV_TrapCombo
+AI_CV_Trap_Plus2:
+	score +2
+AI_CV_TrapCombo:
+	if_has_move_with_effect AI_USER, EFFECT_PERISH_SONG, AI_CV_TrapCombo_Plus2
+	get_user_type1
+	if_equal TYPE_GHOST, AI_CV_TrapCombo_Curse
+	get_user_type2
+	if_equal TYPE_GHOST, AI_CV_TrapCombo_Curse
+	goto AI_CV_Trap_Random
+
+AI_CV_TrapCombo_Curse:
+	if_has_move_with_effect AI_USER, EFFECT_CURSE, AI_CV_TrapCombo_Plus2
+	goto AI_CV_Trap_Random
+
+AI_CV_TrapCombo_Plus2:
+	score +2
+AI_CV_Trap_Random:
+	if_random_less_than 16, AI_End
+	score -1
 	end
 
 AI_CV_Transform:
@@ -2387,11 +2046,11 @@ AI_CV_Transform_Screen_ScorePlus1:
 	score +1
 AI_CV_Transform_HPCheck:
 	if_hp_less_than AI_USER, 50, AI_CV_Transform_HP_ScoreMinus1
-	goto AI_End
+	end
 
 AI_CV_Transform_HP_ScoreMinus1:
 	score -1
-	goto AI_End
+	end
 
 AI_CV_Camouflage:
 	get_target_type1
@@ -2421,11 +2080,11 @@ AI_CV_Camouflage_CheckTypeMatchup:
 	if_equal TYPE_ELECTRIC, AI_CV_Camouflage_ImproveTypeMatchup_ScorePlus1
 	if_equal TYPE_GHOST, AI_CV_Camouflage_ImproveTypeMatchup_ScorePlus1
 	if_equal TYPE_GRASS, AI_CV_Camouflage_ImproveTypeMatchup_ScorePlus1
-	goto AI_End
+	end
 
 AI_CV_Camouflage_ImproveTypeMatchup_ScorePlus1:
 	score +1
-	goto AI_End
+	end
 
 AI_CV_ChangeSelfAbility:
 	get_ability AI_USER
@@ -2444,11 +2103,11 @@ AI_CV_ChangeSelfAbility_End:
 
 AI_CV_ThawUser:
 	if_status AI_USER, STATUS1_FREEZE, AI_CV_ThawUser_ScorePlus32
-	goto AI_End
+	end
 
 AI_CV_ThawUser_ScorePlus32:
 	score +32
-	goto AI_End
+	end
 
 AI_CV_Facade:
 	if_not_status AI_USER, STATUS1_POISON | STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_TOXIC_POISON, AI_CV_Facade_End
@@ -2512,51 +2171,42 @@ AI_CV_Substitute_MoveCheck:
 AI_CV_Substitute_SlowHighHP:
 	if_random_less_than 128, AI_End
 	score -1
-	goto AI_End
+	end
 
 AI_CV_Substitute_TargetRoared:
 	if_random_less_than 224, AI_End
 	score -1
-	goto AI_End
+	end
 
 AI_CV_Substitute_TargetAttacked:
 	if_random_less_than 77, AI_End
 	score +1
-	goto AI_End
+	end
 
 AI_CV_Substitute_ScoreMinus2:
 	score -2
-	goto AI_End
+	end
 
 AI_CV_Substitute_ScoreMinus1:
 	score -1
-	goto AI_End
+	end
 
 AI_CV_Substitute_ScorePlus1:
 	score +1
-	goto AI_End
+	end
 
 AI_CV_Substitute_ScoreRandomPlus2:
 	if_random_less_than 64, AI_End
 	score +2
-	goto AI_End
+	end
 
 AI_CV_Substitute_ScorePlus10:
 	score +10
-	goto AI_End
+	end
 
 AI_CV_Disable:
-	if_target_faster AI_CV_Disable_End
-	get_last_used_bank_move AI_TARGET
-	get_move_power_from_result
-	if_equal 0, AI_CV_Disable2
-	score +1
-	goto AI_CV_Disable_End
-
-AI_CV_Disable2:
-	if_random_less_than 100, AI_CV_Disable_End
+	if_random_less_than 160, AI_End
 	score -1
-AI_CV_Disable_End:
 	end
 
 AI_CV_Encore:
@@ -2603,110 +2253,236 @@ AI_CV_Foresight:
 	if_equal TYPE_GHOST, AI_CV_Foresight2
 	if_stat_level_more_than AI_TARGET, STAT_EVASION, 7, AI_CV_Foresight2
 	score -10
-	goto AI_End
+	end
 
 AI_CV_Foresight2:
 	if_random_less_than 80, AI_End
 	score +1
-	goto AI_End
+	end
 
 AI_CV_AlwaysHit:
-	if_stat_level_more_than AI_TARGET, STAT_EVASION, 10, AI_CV_AlwaysHit_Plus1
-	if_stat_level_less_than AI_USER, STAT_ACC, 2, AI_CV_AlwaysHit_Plus1
-	if_stat_level_more_than AI_TARGET, STAT_EVASION, 8, AI_CV_AlwaysHit2
-	if_stat_level_less_than AI_USER, STAT_ACC, 4, AI_CV_AlwaysHit2
-	goto AI_CV_AlwaysHit_End
+	if_stat_level_more_than AI_TARGET, STAT_EVASION, 8, AI_CV_AlwaysHit_Plus1
+	if_stat_level_less_than AI_USER, STAT_ACC, 4, AI_CV_AlwaysHit_Plus1
+	if_stat_level_more_than AI_TARGET, STAT_EVASION, 7, AI_CV_AlwaysHitRandom
+	if_stat_level_less_than AI_USER, STAT_ACC, 5, AI_CV_AlwaysHitRandom
+	end
 
 AI_CV_AlwaysHit_Plus1:
 	score +1
-AI_CV_AlwaysHit2:
-	if_random_less_than 100, AI_CV_AlwaysHit_End
+AI_CV_AlwaysHitRandom:
+	if_random_less_than 100, AI_End
 	score +1
-AI_CV_AlwaysHit_End:
 	end
 
 AI_CV_SelfKO:
-	if_stat_level_less_than AI_TARGET, STAT_EVASION, 7, AI_CV_SelfKO_Encourage1
 	score -1
-	if_stat_level_less_than AI_TARGET, STAT_EVASION, 10, AI_CV_SelfKO_Encourage1
-	if_random_less_than 128, AI_CV_SelfKO_Encourage1
-	score -1
-AI_CV_SelfKO_Encourage1:
-	if_hp_less_than AI_USER, 80, AI_CV_SelfKO_Encourage2
-	if_target_faster AI_CV_SelfKO_Encourage2
-	if_random_less_than 50, AI_CV_SelfKO_End
-	goto Score_Minus3
+	if_stat_level_more_than AI_TARGET, STAT_EVASION, 6, AI_CV_SelfKO_HighRisk
+	goto AI_CV_SuicideCheck
 
-AI_CV_SelfKO_Encourage2:
-	if_hp_more_than AI_USER, 50, AI_CV_SelfKO_Encourage4
-	if_random_less_than 128, AI_CV_SelfKO_Encourage3
-	score +1
-AI_CV_SelfKO_Encourage3:
-	if_hp_more_than AI_USER, 30, AI_CV_SelfKO_End
-	if_random_less_than 50, AI_CV_SelfKO_End
-	score +1
-	goto AI_CV_SelfKO_End
-
-AI_CV_SelfKO_Encourage4:
-	if_random_less_than 50, AI_CV_SelfKO_End
-	score -1
-AI_CV_SelfKO_End:
+AI_CV_SelfKO_HighRisk:
+	if_random_less_than 192, AI_CV_SuicideCheck
+	score -2
 	goto AI_CV_SuicideCheck
 
 AI_CV_Grudge:
-	score -1
-	if_target_faster AI_CV_DestinyBond_End
-	goto AI_CV_DestinyBond2
-
+	count_usable_party_mons AI_USER
+	if_equal 0, AI_CV_Grudge_DontUse
 AI_CV_DestinyBond:
+	if_target_faster, AI_CV_DestinyBond_Minus1
+	if_hp_less_than AI_USER, 10, AI_CV_DestinyBond_Plus1
+	if_hp_less_than AI_USER, 33, AI_CV_DestinyBond_Plus1_HighOdds
+	if_hp_less_than AI_USER, 50, AI_CV_DestinyBond_Plus1_MediumOdds
+	if_hp_less_than AI_USER, 70, AI_CV_DestinyBond_Plus1_LowOdds
+AI_CV_DestinyBond_Minus1:
 	score -1
-	if_target_faster AI_CV_DestinyBond_End
-	count_usable_party_mons AI_TARGET
-	if_not_equal 0, AI_CV_DestinyBond2
-	score +1
-AI_CV_DestinyBond2:
-	if_random_less_than 220, AI_CV_DestinyBond3
-	score +1
-AI_CV_DestinyBond3:
-	if_random_less_than 196, AI_CV_DestinyBond4
-	score +1
-AI_CV_DestinyBond4:
-	if_hp_more_than AI_USER, 70, AI_CV_DestinyBond_End
-	if_random_less_than 128, AI_CV_DestinyBond5
-	score +1
-AI_CV_DestinyBond5:
-	if_hp_more_than AI_USER, 50, AI_CV_DestinyBond_End
-	if_random_less_than 128, AI_CV_DestinyBond6
-	score +1
-AI_CV_DestinyBond6:
-	if_hp_more_than AI_USER, 30, AI_CV_DestinyBond_End
-	if_random_less_than 100, AI_CV_DestinyBond_End
-	score +2
-AI_CV_DestinyBond_End:
 	goto AI_CV_SuicideCheck
 
-AI_CV_Flail:
-	if_target_faster AI_CV_Flail2
-	if_hp_more_than AI_USER, 33, AI_CV_Flail_Minus1
-	if_hp_more_than AI_USER, 20, AI_CV_Flail_End
-	if_hp_less_than AI_USER, 8, AI_CV_Flail_Plus1
-	goto AI_CV_Flail3
+AI_CV_Grudge_DontUse:
+	score -30
+	end
 
-AI_CV_Flail2:
-	if_hp_more_than AI_USER, 60, AI_CV_Flail_Minus1
-	if_hp_more_than AI_USER, 40, AI_CV_Flail_End
-	goto AI_CV_Flail3
+AI_CV_DestinyBond_Plus1_HighOdds:
+	if_random_less_than 160, AI_CV_SuicideCheck
+AI_CV_DestinyBond_Plus1_MediumOdds:
+	if_random_less_than 64, AI_CV_SuicideCheck
+AI_CV_DestinyBond_Plus1_HighOdds:
+	if_random_less_than 32, AI_CV_SuicideCheck
+AI_CV_DestinyBond_Plus1:
+	score +1
+	goto AI_CV_SuicideCheck
+
+AI_CV_Taunt:
+	if_target_faster AI_CV_Taunt_Discourage
+	if_status AI_TARGET, STATUS1_SLEEP, AI_CV_Taunt_Sleep
+	AI_CV_Taunt_LookForElectricMove_PreCheck
+
+AI_CV_Taunt_Sleep:
+	if_has_move AI_TARGET, MOVE_SLEEP_TALK, AI_CV_Taunt_SleepTalk
+	goto AI_CV_Taunt_Discourage
+
+AI_CV_Taunt_SleepTalk:
+	get_user_type1
+	if_equal TYPE_GHOST, AI_CV_Taunt_Encourage
+	get_user_type2
+	if_equal TYPE_GHOST, AI_CV_Taunt_Encourage
+	if_has_move AI_TARGET, MOVE_SNORE, AI_CV_Taunt_Discourage
+	goto AI_CV_Taunt_Encourage
+
+AI_CV_Taunt_LookForElectricMove_PreCheck:
+	get_ability AI_USER
+	if_equal ABILITY_VOLT_ABSORB, AI_CV_Taunt_LookForFightingMove_PreCheck
+	get_user_type1
+	if_equal TYPE_GROUND, AI_CV_Taunt_LookForFightingMove_PreCheck
+	get_user_type2
+	if_equal TYPE_GROUND, AI_CV_Taunt_LookForFightingMove_PreCheck
+AI_CV_Taunt_LookForElectricMove:
+	if_in_bytes AI_CV_ElectricAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForFightingMove_PreCheck:
+	get_user_type1
+	if_equal TYPE_GHOST, AI_CV_Taunt_LookForFireMove_PreCheck
+	get_user_type2
+	if_equal TYPE_GHOST, AI_CV_Taunt_LookForFireMove_PreCheck
+AI_CV_Taunt_LookForFightingMove:
+	if_in_bytes AI_CV_FightingAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForFireMove_PreCheck:
+	get_ability AI_USER
+	if_equal ABILITY_FLASH_FIRE, AI_CV_Taunt_LookForGhostMove_PreCheck
+AI_CV_Taunt_LookForFireMove:
+	if_in_bytes AI_CV_FireAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+	get_weather
+	if_not_equal AI_WEATHER_SUN, AI_CV_Taunt_LookForGhostMove_PreCheck
+	if_has_move AI_TARGET, MOVE_WEATHER_BALL, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForGhostMove_PreCheck:
+	get_user_type1
+	if_equal TYPE_NORMAL, AI_CV_Taunt_LookForGoundMove_PreCheck
+	get_user_type2
+	if_equal TYPE_NORMAL, AI_CV_Taunt_LookForGroundMove_PreCheck
+AI_CV_Taunt_LookForGhostMove:
+	if_in_bytes AI_CV_GhostAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForGroundMove_PreCheck:
+	get_ability AI_USER
+	if_equal ABILITY_LEVITATE, AI_CV_Taunt_LookForNormalMove_PreCheck
+	get_user_type1
+	if_equal TYPE_FLYING, AI_CV_Taunt_LookForNormalMove_PreCheck
+	get_user_type2
+	if_equal TYPE_FLYING, AI_CV_Taunt_LookForNormalMove_PreCheck
+AI_CV_Taunt_LookForGroundMove:
+	if_in_bytes AI_CV_GroundAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+	if_has_move AI_TARGET, MOVE_FISSURE, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForNormalMove_PreCheck:
+	get_user_type1
+	if_equal TYPE_GHOST, AI_CV_Taunt_LookForPoisonMove_PreCheck
+	get_user_type2
+	if_equal TYPE_GHOST, AI_CV_Taunt_LookForPoisonMove_PreCheck
+AI_CV_Taunt_LookForNormalMove:
+	if_in_bytes AI_CV_NormalAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+	if_has_move AI_TARGET, MOVE_GUILLOTINE | MOVE_HORN_DRILL, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForPoisonMove_PreCheck:
+	get_user_type1
+	if_equal TYPE_STEEL, AI_CV_Taunt_LookForPsychicMove_PreCheck
+	get_user_type2
+	if_equal TYPE_STEEL, AI_CV_Taunt_LookForPsychicMove_PreCheck
+AI_CV_Taunt_LookForPoisonMove:
+	if_in_bytes AI_CV_PoisonAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForPsychicMove_PreCheck:
+	get_user_type1
+	if_equal TYPE_DARK, AI_CV_Taunt_LookForPsychicMove_PreCheck
+	get_user_type2
+	if_equal TYPE_DARK, AI_CV_Taunt_LookForPsychicMove_PreCheck
+AI_CV_Taunt_LookForPsychicMove:
+	if_in_bytes AI_CV_PsychicAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForWaterMove_PreCheck:
+	get_ability AI_USER
+	if_equal ABILITY_WATER_ABSORB, AI_CV_Taunt_LookForNormalMove_PreCheck
+AI_CV_Taunt_LookForWaterMove:
+	if_in_bytes AI_CV_WaterAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+	get_weather
+	if_not_equal AI_WEATHER_RAIN, AI_CV_Taunt_LookForOtherAttacks
+	if_has_move AI_TARGET, MOVE_WEATHER_BALL, AI_CV_Taunt_PreventHealing_PreCheck
+AI_CV_Taunt_LookForOtherAttacks:
+	if_in_bytes AI_CV_OtherPhysicalAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+	if_in_bytes AI_CV_OtherSpecialAttacks, AI_CV_Taunt_PreventHealing_PreCheck
+	get_last_used_bank_move AI_TARGET
+	if_equal MOVE_FURY_CUTTER | MOVE_ICE_BALL | MOVE_ROLLOUT, AI_CV_Taunt_PreventHealing_PreCheck
+	if_has_move AI_TARGET, MOVE_SHEER_COLD, AI_CV_Taunt_PreventHealing_PreCheck
+	goto AI_CV_Taunt_Encourage
+
+AI_CV_Taunt_PreventHealing_PreCheck:
+	if_hp_more_than AI_TARGET, 70, AI_CV_Taunt_PreventRefresh_PreCheck
+	if_has_move_with_effect AI_TARGET, EFFECT_MOONLIGHT | EFFECT_MORNING_SUN | EFFECT_RESTORE_HP | EFFECT_SYNTHESIS, AI_CV_Taunt_PreventHealing
+	if_has_move_with_effect AI_TARGET, EFFECT_WISH, AI_CV_Taunt_PreventHealing_Wish
+	if_has_move_with_effect AI_TARGET, EFFECT_REST, AI_CV_Taunt_PreventHealing_Rest
+	goto AI_CV_Taunt_PreventRefresh_PreCheck
+
+AI_CV_Taunt_PreventHealing:
+	if_hp_more_than AI_TARGET, 60, AI_CV_Taunt_PreventRefresh_PreCheck
+	if_hp_more_than AI_TARGET, 33, AI_CV_Taunt_Encourage
+	goto AI_CV_Taunt_PreventHealing_RandomEncourage
+
+AI_CV_Taunt_PreventHealing_Wish:
+	if_hp_more_than AI_TARGET, 72, AI_CV_Taunt_PreventRefresh_PreCheck
+	if_hp_more_than AI_TARGET, 45, AI_CV_Taunt_Encourage
+	goto AI_CV_Taunt_PreventHealing_RandomEncourage
+
+AI_CV_Taunt_PreventHealing_Rest:
+	if_hp_more_than AI_TARGET, 55, AI_CV_Taunt_PreventRefresh_PreCheck
+	if_hp_more_than AI_TARGET, 40, AI_CV_Taunt_Encourage
+AI_CV_Taunt_PreventHealing_RandomEncourage:
+	if_random_less_than 160, AI_CV_Taunt_Encourage
+AI_CV_Taunt_PreventRefresh_PreCheck:
+	if_status AI_TARGET, STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_POISON | STATUS1_TOXIC_POISON, AI_CV_Taunt_PreventRefresh_PreCheck2
+	goto AI_CV_Taunt_Discourage
+
+AI_CV_Taunt_PreventRefresh_PreCheck2:
+	if_has_move_with_effect AI_TARGET, EFFECT_HEAL_BELL | EFFECT_REFRESH, AI_CV_Taunt_PreventRefresh
+	goto AI_CV_Taunt_Discourage
+
+AI_CV_Taunt_PreventRefresh:
+	if_hp_more_than AI_TARGET, 70, AI_End
+	if_hp_less_than AI_TARGET, 30, AI_CV_Taunt_Encourage
+	if_random_less_than 128, AI_End
+AI_CV_Taunt_Encourage:
+	score +2
+	end
+
+AI_CV_Taunt_Discourage:
+	score -2
+	end
+
+AI_CV_Flail:
+	if_target_faster AI_CV_Flail_TargetFaster
+	if_hp_less_than AI_USER, 5, AI_CV_Flail_Plus2
+	if_hp_less_than AI_USER, 10, AI_CV_Flail_Plus1
+	if_hp_less_than AI_USER, 25, AI_End
+	if_hp_less_than AI_USER, 33, AI_CV_Flail_SubCheck
+	goto AI_CV_Flail_Minus10
+
+AI_CV_Flail_SubCheck:
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_End
+	if_has_move AI_USER, MOVE_SUBSTITUTE, AI_CV_Flail_Minus10
+	end
+
+AI_CV_Flail_TargetFaster:
+	if_has_move AI_USER, MOVE_ENDURE, AI_CV_Flail_Endure
+	goto AI_CV_Flail_TargetFaster_CheckHP
+
+AI_CV_Flail_Endure:
+	if_holds_item AI_USER, ITEM_SALAC_BERRY, AI_CV_Flail_Minus10
+AI_CV_Flail_TargetFaster_CheckHP:
+	if_hp_less_than AI_USER, 40, AI_CV_Flail_Minus10
+	if_random_less_than 196, AI_CV_Flail_Minus10
+	end
+
+AI_CV_Flail_Plus2:
+	score +2
+	end
 
 AI_CV_Flail_Plus1:
 	score +1
-AI_CV_Flail3:
-	if_random_less_than 100, AI_CV_Flail_End
-	score +1
-	goto AI_CV_Flail_End
+	end
 
-AI_CV_Flail_Minus1:
-	score -1
-AI_CV_Flail_End:
+AI_CV_Flail_Minus10:
+	score -10
 	end
 
 AI_CV_Endeavor:
@@ -2716,68 +2492,99 @@ AI_CV_Endeavor:
 AI_CV_Endeavor_Slower:
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_Endeavor_CheckHP
 	if_hp_more_than AI_USER, 50, AI_CV_Endeavor_Minus1
-	goto AI_End
+	end
 
 AI_CV_Endeavor_CheckHP:
 	if_hp_more_than AI_USER, 25, AI_CV_Endeavor_Minus1
-	goto AI_End
+	end
 
 AI_CV_Endeavor_Minus1:
 	score -1
 	end
 
 AI_CV_FocusPunch:
-	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CV_FocusPunch2
-	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CV_FocusPunch2
-	if_status AI_TARGET, STATUS1_SLEEP, AI_CV_FocusPunch_Plus1
-	if_status2 AI_TARGET, STATUS2_INFATUATION, AI_CV_FocusPunch3
-	if_status2 AI_TARGET, STATUS2_CONFUSION, AI_CV_FocusPunch3
-	is_first_turn_for AI_USER
-	if_not_equal 0, AI_CV_FocusPunch_End
-	if_random_less_than 100, AI_CV_FocusPunch_End
-	score +1
-	goto AI_CV_FocusPunch_End
-
-AI_CV_FocusPunch2:
 	score -1
-	goto AI_CV_FocusPunch_End
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_FocusPunch_ScorePlus2
+	goto AI_CV_FocusPunch_StatusCheck
 
-AI_CV_FocusPunch3:
-	if_random_less_than 100, AI_CV_FocusPunch_End
-	if_status2 AI_USER, STATUS2_SUBSTITUTE, Score_Plus5
-AI_CV_FocusPunch_Plus1:
+AI_CV_FocusPunch_ScorePlus2:
+	score +2
+AI_CV_FocusPunch_StatusCheck:
+	if_status AI_TARGET, STATUS1_SLEEP | STATUS1_FREEZE, AI_CV_FocusPunch_Status_ScorePlus2
+	if_status AI_TARGET, STATUS1_PARALYSIS, AI_CV_FocusPunch_Status_ScorePlus1
+	if_status AI_TARGET, STATUS3_YAWN, AI_CV_FocusPunch_Status_Yawned
+	goto AI_CV_FocusPunch_Infatuation
+
+AI_CV_FocusPunch_Status_Yawned:
+	if_status AI_TARGET, STATUS2_ESCAPE_PREVENTION | STATUS2_WRAPPED, AI_CV_FocusPunch_Infatuatio
+	if_random_less_than 96, AI_CV_FocusPunch_Infatuation
+AI_CV_FocusPunch_Status_ScorePlus1:
 	score +1
-AI_CV_FocusPunch_End:
+	goto AI_CV_FocusPunch_Infatuation
+
+AI_CV_FocusPunch_Status_ScorePlus2:
+	score +1
+	if_random_less_than 64, AI_CV_FocusPunch_Infatuation
+	score +1
+AI_CV_FocusPunch_Infatuation:
+	if_status2 AI_TARGET, STATUS2_INFATUATION, AI_CV_FocusPunch_Infatuated_ScorePlus1
+	goto AI_CV_FocusPunch_Confusion
+
+AI_CV_FocusPunch_Infatuated_ScorePlus1:
+	score +1
+AI_CV_FocusPunch_Confusion:
+	if_status2 AI_TARGET, STATUS2_CONFUSION, AI_CV_FocusPunch_Confused_ScorePlus1
+	goto AI_CV_FocusPunch_Random
+
+AI_CV_FocusPunch_Confused_ScorePlus1:
+	score +1
+AI_CV_FocusPunch_Seeded:
+	if_status AI_TARGET, STATUS2_ESCAPE_PREVENTION | STATUS2_WRAPPED, AI_CV_FocusPunch_Random
+	if_status AI_TARGET, STATUS3_LEECHSEED, AI_CV_FocusPunch_Status_Seeded_Plus1
+	goto AI_CV_FocusPunch_Curse
+
+AI_CV_FocusPunch_Status_Seeded_Plus1:
+	if_random_less_than 160, AI_CV_FocusPunch_Curse
+	score +1
+AI_CV_FocusPunch_Curse:
+	if_status2 AI_TARGET, STATUS2_CURSED, AI_CV_FocusPunch_Curse_Plus2
+
+AI_CV_FocusPunch_Curse_Plus2:
+	if_random_less_than 16, AI_CV_FocusPunch_PerishSong
+	score +2
+AI_CV_FocusPunch_PerishSong:
+	if_status3 AI_TARGET, STATUS3_PERISH_SONG, AI_CV_FocusPunch_PerishSong_Plus1
+	goto AI_CV_FocusPunch_Random
+
+AI_CV_FocusPunch_PerishSong_Plus1:
+	if_random_less_than 128, AI_CV_FocusPunch_Random
+	score +1
+AI_CV_FocusPunch_Random:
+	if_random_less_than 220, AI_End
+	score +1
 	end
 
-AI_CV_HealBell:
-	if_status_in_party AI_USER, STATUS1_ANY, AI_CV_HealBell_Encourage
-	goto AI_CV_HealBell_End
-
-AI_CV_HealBell_Encourage:
-	score +3
-AI_CV_HealBell_End:
+AI_CV_ClearStatus:
+	if_hp_less_than AI_TARGET, 50, AI_CV_ClearStatus_Minus1
 	end
 
-AI_CV_Refresh:
-	if_hp_less_than AI_TARGET, 50, AI_CV_Refresh_Minus1
-	goto AI_CV_Refresh_End
-
-AI_CV_Refresh_Minus1:
+AI_CV_ClearStatus_Minus1:
 	score -1
-AI_CV_Refresh_End:
 	end
 
 AI_CV_Thief:
+	if_holds_item AI_USER, ITEM_NONE, AI_CV_Thief_CheckTarget
+	goto AI_CV_Thief_Minus2
+
+AI_CV_Thief_CheckTarget:
 	get_hold_effect AI_TARGET
 	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CV_Thief_Minus2
-	if_random_less_than 50, AI_CV_Thief_End
+	if_random_less_than 50, AI_End
 	score +1
-	goto AI_CV_Thief_End
+	end
 
 AI_CV_Thief_Minus2:
 	score -2
-AI_CV_Thief_End:
 	end
 
 AI_CV_Trick:
@@ -2793,19 +2600,21 @@ AI_CV_Trick_Encourage:
 	if_in_bytes AI_CV_Trick_EffectsToEncourage, AI_CV_Trick_ScoreMinus3
 	if_random_less_than 50, AI_End
 	score +2
-	goto AI_End
+	end
 
 AI_CV_Trick_ScoreMinus3:
 	score -3
-	goto AI_End
+	end
 
 AI_CV_KnockOff:
-	if_hp_less_than AI_TARGET, 30, AI_CV_KnockOff_End
-	is_first_turn_for AI_USER
-	if_more_than 0, AI_CV_KnockOff_End
-	if_random_less_than 180, AI_CV_KnockOff_End
+	if_holds_item AI_TARGET, ITEM_NONE, AI_CV_KnockOff_ScoreMinus2
+	if_hp_less_than AI_TARGET, 30, AI_CV_KnockOff_ScoreMinus2
+	if_random_less_than 180, AI_End
 	score +1
-AI_CV_KnockOff_End:
+	end
+
+AI_CV_KnockOff_ScoreMinus2:
+	score -2
 	end
 
 AI_CV_Recycle:
@@ -2813,11 +2622,11 @@ AI_CV_Recycle:
 	if_not_in_bytes AI_CV_Recycle_ItemsToEncourage, AI_CV_Recycle_Minus2
 	if_random_less_than 50, AI_End
 	score +1
-	goto AI_End
+	end
 
 AI_CV_Recycle_Minus2:
 	score -2
-	goto AI_End
+	end
 
 AI_CV_Protect:
 	is_first_turn_for AI_USER
@@ -2954,43 +2763,18 @@ AI_CV_Endure_End:
 	end
 
 AI_CV_BatonPass:
-	if_stat_level_more_than AI_USER, STAT_ATK, 8, AI_CV_BatonPass2
-	if_stat_level_more_than AI_USER, STAT_DEF, 8, AI_CV_BatonPass2
-	if_stat_level_more_than AI_USER, STAT_SPATK, 8, AI_CV_BatonPass2
-	if_stat_level_more_than AI_USER, STAT_SPDEF, 8, AI_CV_BatonPass2
-	if_stat_level_more_than AI_USER, STAT_EVASION, 8, AI_CV_BatonPass2
-	goto AI_CV_BatonPass5
+	if_stat_level_more_than AI_USER, STAT_ATK, 6, AI_CV_BatonPass_Plus1_Random
+	if_stat_level_more_than AI_USER, STAT_DEF, 6, AI_CV_BatonPass_Plus1_Random
+	if_stat_level_more_than AI_USER, STAT_SPATK, 6, AI_CV_BatonPass_Plus1_Random
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 6, AI_CV_BatonPass_Plus1_Random
+	if_stat_level_more_than AI_USER, STAT_SPEED, 6, AI_CV_BatonPass_Plus1_Random
+	if_stat_level_more_than AI_USER, STAT_EVASION, 6, AI_CV_BatonPass_Plus1_Random
+	score -1
+	end
 
-AI_CV_BatonPass2:
-	if_target_faster AI_CV_BatonPass3
-	if_hp_more_than AI_USER, 60, AI_CV_BatonPass_End
-	goto AI_CV_BatonPass4
-
-AI_CV_BatonPass3:
-	if_hp_more_than AI_USER, 70, AI_CV_BatonPass_End
-AI_CV_BatonPass4:
-	if_random_less_than 80, AI_CV_BatonPass_End
-	score +2
-	goto AI_CV_BatonPass_End
-
-AI_CV_BatonPass5:
-	if_stat_level_more_than AI_USER, STAT_ATK, 7, AI_CV_BatonPass7
-	if_stat_level_more_than AI_USER, STAT_DEF, 7, AI_CV_BatonPass7
-	if_stat_level_more_than AI_USER, STAT_SPATK, 7, AI_CV_BatonPass7
-	if_stat_level_more_than AI_USER, STAT_SPDEF, 7, AI_CV_BatonPass7
-	if_stat_level_more_than AI_USER, STAT_EVASION, 7, AI_CV_BatonPass7
-	goto AI_CV_BatonPass_Minus2
-
-AI_CV_BatonPass7:
-	if_target_faster AI_CV_BatonPass8
-	if_hp_more_than AI_USER, 60, AI_CV_BatonPass_Minus2
-	goto AI_CV_BatonPass_End
-
-AI_CV_BatonPass8:
-	if_hp_less_than AI_USER, 70, AI_CV_BatonPass_End
-AI_CV_BatonPass_Minus2:
-	score -2
-AI_CV_BatonPass_End:
+AI_CV_BatonPass_Plus1_Random:
+	if_random_less_than 96, AI_End
+	score +1
 	end
 
 AI_CV_RainDance:
@@ -3195,6 +2979,12 @@ AI_CV_Counter_PhysCheck:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_not_in_bytes AI_PhysicalTypeList, AI_CV_CounterCoatMinus
+	goto AI_CV_Counter_Taunt
+
+AI_CV_Counter_CheckHiddenPower:
+	get_last_used_bank_move AI_TARGET
+	if_not_equal MOVE_HIDDEN_POWER, AI_CV_CounterCoatMinus
+AI_CV_Counter_Taunt:
 	if_target_taunted AI_CV_CounterCoatPlus
 	goto AI_CV_CounterCoat_StatusCheck
 
@@ -3213,6 +3003,8 @@ AI_CV_MirrorCoat_SpcCheck:
 	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_not_in_bytes AI_SpecialTypeList, AI_CV_CounterCoatMinus
+	get_last_used_bank_move AI_TARGET
+	if_equal MOVE_HIDDEN_POWER, AI_CV_CounterCoatMinus
 	if_target_taunted AI_CV_CounterCoatPlus
 	goto AI_CV_CounterCoat_StatusCheck
 
@@ -3260,39 +3052,43 @@ AI_CV_CounterCoat_End:
 	end
 
 AI_CV_Bide:
-	if_hp_more_than AI_USER, 90, AI_CV_Bide_End
+	if_target_faster AI_CV_Bide_Discourage
+	if_hp_more_than AI_USER, 90, AI_Bide_Random
+AI_CV_Bide_Discourage:
 	score -2
-AI_CV_Bide_End:
+	end
+
+AI_Bide_Random:
+	if_random_less_than 128, AI_End
+	score -1
 	end
 
 AI_CV_SolarBeam:
 	get_weather
 	if_equal AI_WEATHER_SUN, AI_End
-	goto AI_CV_ChargeUpMove
-
 AI_CV_ChargeUpMove:
 	if_has_move_with_effect AI_TARGET, EFFECT_PROTECT, AI_CV_ChargeUpMove_Minus5
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_End
 AI_CV_ChargeUpMove_Minus5:
 	score -5
-	goto AI_End
+	end
 
 AI_CV_Recharge:
-	if_type_effectiveness AI_EFFECTIVENESS_x0_25, AI_CV_Recharge_Minus1
-	if_type_effectiveness AI_EFFECTIVENESS_x0_5, AI_CV_Recharge_Minus1
-	if_target_faster AI_CV_Recharge2
-	if_hp_more_than AI_USER, 40, AI_CV_Recharge_Minus1
-	goto AI_CV_Recharge_End
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_End
+	if_target_faster, AI_CV_Recharge_TargetFaster
+	if_hp_less_than AI_USER, 30, AI_End
+	goto AI_CV_Recharge_ScoreMinus5
 
-AI_CV_Recharge2:
-	if_hp_less_than AI_USER, 60, AI_CV_Recharge_End
-AI_CV_Recharge_Minus1:
-	score -1
-AI_CV_Recharge_End:
+AI_CV_Recharge_TargetFaster:
+	if_hp_less_than AI_USER, 50, AI_End
+AI_CV_Recharge_ScoreMinus5:
+	score -5
 	end
 
 AI_CV_SemiInvulnerable:
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_SemiInvulnerable_Wish
 	score -1
+AI_CV_SemiInvulnerable_Wish:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
 	if_equal EFFECT_WISH, AI_CV_SemiInvulnerable_AfterWish
@@ -3355,32 +3151,39 @@ AI_CV_SemiInvulnerable_End:
 
 AI_CV_SpitUp:
 	get_stockpile_count AI_USER
-	if_less_than 2, AI_CV_SpitUp_End
-	if_random_less_than 80, AI_CV_SpitUp_End
-	score +2
-AI_CV_SpitUp_End:
+	if_less_than 2, AI_CV_SpitUp_ScoreMinus2
+	if_less_than 3, AI_CV_SpitUp_HPCheck
+	goto AI_CV_SpitUp_ScorePlus1
+
+AI_CV_SpitUp_HPCheck:
+	if_hp_less_than AI_USER, 50, AI_CV_SpitUp_ScorePlus1
+AI_CV_SpitUp_ScoreMinus2:
+	score -2
+	end
+
+AI_CV_SpitUp_ScorePlus1:
+	score +1
 	end
 
 AI_CV_SmellingSalt:
 	if_status AI_TARGET, STATUS1_PARALYSIS, AI_CV_SmellingSalt_Plus1
-	goto AI_CV_SmellingSalt_End
+	end
 
 AI_CV_SmellingSalt_Plus1:
 	score +1
-AI_CV_SmellingSalt_End:
 	end
 
 AI_CV_Superpower:
 	if_stat_level_less_than AI_USER, STAT_ATK, DEFAULT_STAT_STAGE, AI_CV_Superpower_Minus1
-	if_target_faster AI_CV_Superpower2
-	if_hp_more_than AI_USER, 40, AI_CV_Superpower_Minus1
-	goto AI_CV_Superpower_End
+	end
 
-AI_CV_Superpower2:
-	if_hp_less_than AI_USER, 60, AI_CV_Superpower_End
 AI_CV_Superpower_Minus1:
 	score -1
-AI_CV_Superpower_End:
+	if_stat_level_less_than AI_USER, STAT_ATK, 5, AI_CV_Superpower_Minus10
+	end
+
+AI_CV_Superpower_Minus10:
+	score -10
 	end
 
 AI_CV_Revenge:
@@ -3389,23 +3192,23 @@ AI_CV_Revenge:
 AI_CV_Revenge_CheckStatus:
 	if_status AI_TARGET, STATUS1_SLEEP | STATUS1_FREEZE, AI_CV_Revenge_Minus2
 	if_status2 AI_TARGET, STATUS2_INFATUATION | STATUS2_CONFUSION, AI_CV_Revenge_Minus2
-	goto AI_End
+	end
 
 AI_CV_Revenge_Minus2:
 	score -2
-	goto AI_End
+	end
 
 AI_CV_Eruption:
 	if_target_faster AI_CV_Eruption_TypeMatchup
 	if_hp_less_than AI_USER, 70, AI_CV_Eruption_Minus1
 	score +1
-	goto AI_End
+	end
 
 AI_CV_Eruption_TypeMatchup:
 	get_curr_move_type
 	if_equal TYPE_FIRE, AI_CV_Eruption_TypeMatchup_Fire
 	if_equal TYPE_WATER, AI_CV_Eruption_TypeMatchup_Water
-	goto AI_End
+	end
 
 AI_CV_Eruption_TypeMatchup_Fire:
 	get_target_type1
@@ -3461,59 +3264,146 @@ AI_CV_Overheat_End:
 	end
 
 AI_CV_MagicCoat:
-	if_hp_more_than AI_TARGET, 30, AI_CV_MagicCoat2
-	if_random_less_than 100, AI_CV_MagicCoat2
 	score -1
-AI_CV_MagicCoat2:
-	is_first_turn_for AI_USER
-	if_equal FALSE, AI_CV_MagicCoat4
-	if_random_less_than 150, AI_CV_MagicCoat_End
-	score +1
-	goto AI_CV_MagicCoat_End
+	if_has_move_with_effect AI_TARGET, EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2, AI_CV_MagicCoat_SpeedLowering
+	goto AI_CV_MagicCoat_StatLowering
 
-AI_CV_MagicCoat3:
-	if_random_less_than 50, AI_CV_MagicCoat_End
-AI_CV_MagicCoat4:
-	if_random_less_than 30, AI_CV_MagicCoat_End
-	score -1
-AI_CV_MagicCoat_End:
+AI_CV_MagicCoat_SpeedLowering:
+	if_target_faster AI_CV_MagicCoat_StatLowering
+	get_last_used_bank_move
+	get_move_effect_from_result
+	if_equal EFFECT_SPEED_DOWN | EFFECT_SPEED_DOWN_2, AI_CV_MagicCoat_StatLowering
+	if_random_less_than 96, AI_CV_MagicCoat_StatLowering
+	score +2
+AI_CV_MagicCoat_StatLowering:
+	if_has_move_with_effect AI_TARGET, EFFECT_ACCURACY_DOWN | EFFECT_ACCURACY_DOWN_2 | EFFECT_ATTACK_DOWN | EFFECT_ATTACK_2 | EFFECT_DEFENSE_DOWN | EFFECT_DEFENSE_DOWN_2 | EFFECT_SPECIAL_ATTACK_DOWN | EFFECT_SPECIAL_ATTACK_DOWN_2 | EFFECT_SPECIAL_DEFENSE_DOWN | EFFECT_SPECIAL_DEFENSE_DOWN_2 | EFFECT_EVASION_DOWN | EFFECT_EVASION_DOWN_2 | EFFECT_TICKLE, AI_CV_MagicCoat_StatLowering_Plus2
+	goto AI_CV_MagicCoat_LeechSeed
+
+AI_CV_MagicCoat_StatLowering_Plus2:
+	if_has_move AI_TARGET, MOVE_KINESIS, AI_CV_MagicCoat_LeechSeed
+	if_random_less_than 96, AI_CV_MagicCoat_LeechSeed
+	score +2
+AI_CV_MagicCoat_LeechSeed:
+	if_status3 AI_USER, STATUS3_LEECHSEED, AI_CV_MagicCoat_Status
+	if_has_move_with_effect AI_TARGET, EFFECT_LEECH_SEED, AI_CV_MagicCoat_LeechSeed_Plus2
+	goto AI_CV_MagicCoat_Status
+
+AI_CV_MagicCoat_LeechSeed_Plus2:
+	if_random_less_than 64, AI_CV_MagicCoat_LeechSeed
+	score +2
+AI_CV_MagicCoat_Status:
+	if_status AI_USER, STATUS1_ANY, AI_CV_MagicCoat_Random
+	if_has_move_with_effect AI_TARGET, EFFECT_PARALYZE | EFFECT_POISON | EFFECT_SLEEP | EFFECT_TOXIC | EFFECT_WILL_O_WISP, AI_CV_MagicCoat_Status_TargetCheck
+	goto AI_CV_MagicCoat_Random
+
+AI_CV_MagicCoat_Status_TargetCheck:
+	if_status AI_TARGET, STATUS1_ANY, AI_CV_MagicCoat_Status_Plus2_LowerOdds
+	if_random_less_than 220, AI_End
+	score +2
+	goto AI_CV_MagicCoat_Random
+
+AI_CV_MagicCoat_Status_Plus2_LowerOdds:
+	if_random_less_than 128, AI_End
+	score +2
+AI_CV_MagicCoat_Random:
+	if_hp_less_than 50, AI_CV_MagicCoat_Random_LowHP
+	if_random_less_than 96, AI_CV_MagicCoat_Random_Minus2
+	end
+
+AI_CV_MagicCoat_Random_LowHP:
+	if_random_less_than 220, AI_CV_MagicCoat_Random_Minus2
+	end
+
+AI_CV_MagicCoat_Random_Minus2:
+	score -2
 	end
 
 AI_CV_Imprison:
-	if_random_less_than 128, AI_End
+	if_has_move AI_TARGET, MOVE_SHADOW_BALL, AI_CV_ImprisonWontFail
+	if_has_move AI_USER, MOVE_WILL_O_WISP, AI_CV_ImprisonDusclops
+	goto AI_CV_ImprisonMisdreavus
+
+AI_CV_ImprisonDusclops:
+	if_has_move AI_TARGET, MOVE_WILL_O_WISP, AI_CV_ImprisonWontFail
+	if_has_move AI_TARGET, MOVE_REST, AI_CV_ImprisonWontFail
+	goto AI_CV_ImprisonFails
+
+AI_CV_ImprisonMisdreavus:
+	if_has_move AI_TARGET, MOVE_DESTINY_BOND, AI_CV_ImprisonWontFail
+	if_has_move AI_TARGET, MOVE_TAUNT, AI_CV_ImprisonWontFail
+	goto AI_CV_ImprisonFails
+
+AI_CV_ImprisonWontFail:
+	if_random_less_than 196, AI_End
 	score -1
 	end
 
+AI_CV_ImprisonFails:
+	score -30
+	end
+
 AI_CV_Snatch:
-	is_first_turn_for AI_USER
-	if_equal TRUE, AI_CV_Snatch3
-	if_random_less_than 30, AI_CV_Snatch_End
-	if_target_faster AI_CV_Snatch2
-	if_hp_not_equal AI_USER, 100, AI_CV_Snatch5
-	if_hp_less_than AI_TARGET, 70, AI_CV_Snatch5
-	if_random_less_than 60, AI_CV_Snatch_End
-	goto AI_CV_Snatch5
+	score -1
+	if_status AI_TARGET, STATUS1_ANY, AI_CV_Snatch_StatusRemoval
+	AI_CV_Snatch_RecoveryMoves
 
-AI_CV_Snatch2:
-	if_hp_more_than AI_TARGET, 25, AI_CV_Snatch5
-	if_has_move_with_effect AI_TARGET, EFFECT_RESTORE_HP, AI_CV_Snatch3
-	if_has_move_with_effect AI_TARGET, EFFECT_DEFENSE_CURL, AI_CV_Snatch3
-	goto AI_CV_Snatch4
+AI_CV_Snatch_StatusRemoval:
+	if_has_move_with_effect AI_TARGET, EFFECT_HEAL_BELL | EFFECT_REFRESH, AI_CV_Snatch_StatusRemoval_Plus2
+	AI_CV_Snatch_RecoveryMoves
 
-AI_CV_Snatch3:
-	if_random_less_than 150, AI_CV_Snatch_End
+AI_CV_Snatch_StatusRemoval_Plus2:
+	if_random_less_than 128, AI_CV_Snatch_RecoveryMoves
 	score +2
-	goto AI_CV_Snatch_End
 
-AI_CV_Snatch4:
-	if_random_less_than 230, AI_CV_Snatch5
-	score +1
-	goto AI_CV_Snatch_End
+AI_CV_Snatch_RecoveryMoves:
+	if_has_move_with_effect AI_TARGET, EFFECT_MOONLIGHT | EFFECT_MORNING_SUN | EFFECT_REST | EFFECT_RESTORE_HP | EFFECT_SYNTHESIS, AI_CV_Snatch_RecoveryMoves_HPCheck
+	goto AI_CV_Snatch_BoostingMoves
 
-AI_CV_Snatch5:
-	if_random_less_than 30, AI_CV_Snatch_End
+AI_CV_Snatch_RecoveryMoves_HPCheck:
+	if_hp_less_than AI_TARGET, 30, AI_CV_Snatch_RecoveryMoves_ScorePlus2
+	if_user_faster AI_CV_Snatch_RecoveryMoves_HPCheck_TargetSlower
+	if_hp_less_than AI_TARGET, 55, AI_CV_Snatch_RecoveryMoves_ScorePlus2_Random
+	goto AI_CV_Snatch_BoostingMoves
+
+AI_CV_Snatch_RecoveryMoves_HPCheck_TargetFaster:
+	if_hp_less_than AI_TARGET, 75, AI_CV_Snatch_RecoveryMoves_ScorePlus2_Random
+	goto AI_CV_Snatch_BoostingMoves
+
+AI_CV_Snatch_RecoveryMoves_ScorePlus2_Random:
+	if_random_less_than 128, AI_CV_Snatch_BoostingMoves
+AI_CV_Snatch_RecoveryMoves_ScorePlus2:
+	score +2
+AI_CV_Snatch_BoostingMoves:
+	if_has_move_with_effect AI_TARGET, EFFECT_ATTACK_UP | EFFECT_ATTACK_UP_2 | EFFECT_DEFENSE_UP | EFFECT_DEFENSE_UP_2 | EFFECT_DEFENSE_CURL | EFFECT_SPECIAL_ATTACK_UP | EFFECT_SPECIAL_ATTACK_UP_2 | EFFECT_SPECIAL_DEFENSE_UP | EFFECT_SPECIAL_DEFENSE_UP_2 | EFFECT_SPEED_UP | EFFECT_SPEED_UP_2 | EFFECT_EVASION_UP | EFFECT_EVASION_UP_2 | EFFECT_BULK_UP | EFFECT_CALM_MIND | EFFECT_COSMIC_POWER | EFFECT_DRAGON_DANCE | EFFECT_MINIMIZE, AI_CV_Snatch_BoostingMove_ScorePlus2_Random
+	if_has_move_with_effect AI_TARGET, EFFECT_CURSE, AI_CV_Snatch_BoostingMove_CurseTypeCheck
+	goto AI_CV_Snatch_UserHP
+
+AI_CV_Snatch_BoostingMove_CurseTypeCheck:
+	get_target_type1
+	if_equal TYPE_GHOST, AI_CV_Snatch_OtherMoves
+	get_target_type2
+	if_equal TYPE_GHOST, AI_CV_Snatch_OtherMoves
+	get_user_type1
+	if_equal TYPE_GHOST, AI_CV_Snatch_OtherMoves
+	get_user_type2
+	if_equal TYPE_GHOST, AI_CV_Snatch_OtherMoves
+AI_CV_Snatch_BoostingMove_ScorePlus2_Random:
+	if_random_less_than 128, AI_CV_Snatch_OtherMoves
+	score +2
+AI_CV_Snatch_OtherMoves:
+	if_has_move_with_effect AI_TARGET, EFFECT_CHARGE | EFFECT_INGRAIN | EFFECT_PSYCH_UP | EFFECT_SAFEGUARD | EFFECT_STOCKPILE | EFFECT_SWALLOW, AI_CV_Snatch_OtherMoves_RandomChance_Plus1
+	goto AI_CV_Snatch_UserHP
+
+AI_CV_Snatch_OtherMoves_RandomChance_Plus1:
+	if_random_less_than 240, AI_End
+	score +2
+AI_CV_Snatch_UserHP:
+	if_hp_less_than AI_USER, 35, AI_CV_Snatch_UserHP_ScoreMinus2_Random
+	end
+
+AI_CV_Snatch_UserHP_ScoreMinus2_Random:
+	if_random_less_than 64, AI_End
 	score -2
-AI_CV_Snatch_End:
 	end
 
 AI_CV_MudSport:
@@ -3534,11 +3424,11 @@ AI_CV_WaterSport:
 
 AI_CV_Sport_Plus1:
 	score +1
-	goto AI_End
+	end
 
 AI_CV_Sport_Minus1:
 	score -1
-	goto AI_End
+	end
 
 AI_CV_RapidSpin:
 	score -1
@@ -3562,6 +3452,30 @@ AI_CV_RapidSpin3:
 AI_CV_RapidSpinEnd:
 	end
 
+AI_CV_Rollout:
+	if_stat_level_more_than AI_USER, STAT_DEF, 7, AI_CV_Rollout_Possible
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 7, AI_CV_Rollout_Possible
+	score -3
+	end
+
+AI_CV_Rollout_Possible:
+	if_stat_level_more_than AI_USER, STAT_DEF, 9, AI_CV_Rollout_Plus1
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 9, AI_CV_Rollout_Plus1
+	if_stat_level_more_than AI_USER, STAT_DEF, 8, AI_CV_Rollout_Plus1_Random
+	if_stat_level_more_than AI_USER, STAT_SPDEF, 8, AI_CV_Rollout_Plus1_Random
+	get_last_used_bank_move AI_USER
+	get_move_effect_from_result
+	if_equal EFFECT_DEFENSE_CURL, AI_CV_Rollout_Plus1_Random
+	if_random_less_than 48, AI_End
+	score -1
+	end
+
+AI_CV_Rollout_Plus1_Random:
+	if_random_less_than 160, AI_End
+AI_CV_Rollout_Plus1:
+	score +1
+	end
+
 AI_CV_SuicideCheck:
 	count_usable_party_mons AI_USER
 	if_more_than 0, AI_CV_SuicideCheckEnd
@@ -3570,6 +3484,237 @@ AI_CV_SuicideCheck:
 	score -40
 AI_CV_SuicideCheckEnd:
 	end
+
+AI_CV_ElectricAttacks:
+	.byte MOVE_SHOCK_WAVE
+	.byte MOVE_SPARK
+	.byte MOVE_THUNDER
+	.byte MOVE_THUNDERBOLT
+	.byte MOVE_THUNDER_PUNCH
+	.byte MOVE_THUNDER_SHOCK
+	.byte MOVE_VOLT_TACKLE
+	.byte MOVE_ZAP_CANNON
+	.byte -1
+
+AI_CV_FireAttacks:
+	.byte MOVE_BLAST_BURN
+	.byte MOVE_BLAZE_KICK
+	.byte MOVE_EMBER
+	.byte MOVE_ERUPTION
+	.byte MOVE_FIRE_BLAST
+	.byte MOVE_FIRE_PUNCH
+	.byte MOVE_FIRE_SPIN
+	.byte MOVE_FLAME_WHEEL
+	.byte MOVE_FLAMETHROWER
+	.byte MOVE_HEAT_WAVE
+	.byte MOVE_OVERHEAT
+	.byte MOVE_SACRED_FIRE
+	.byte -1
+
+AI_CV_FightingAttacks:
+	.byte MOVE_ARM_THRUST
+	.byte MOVE_BRICK_BREAK
+	.byte MOVE_CROSS_CHOP
+	.byte MOVE_DOUBLE_KICK
+	.byte MOVE_DYNAMIC_PUNCH
+	.byte MOVE_FOCUS_PUNCH
+	.byte MOVE_HIGH_JUMP_KICK
+	.byte MOVE_JUMP_KICK
+	.byte MOVE_KARATE_CHOP
+	.byte MOVE_LOW_KICK
+	.byte MOVE_MACH_PUNCH
+	.byte MOVE_REVENGE
+	.byte MOVE_REVERSAL
+	.byte MOVE_ROCK_SMASH
+	.byte MOVE_ROLLING_KICK
+	.byte MOVE_SEISMIC_TOSS
+	.byte MOVE_SKY_UPPERCUT
+	.byte MOVE_SUBMISSION
+	.byte MOVE_SUPERPOWER
+	.byte MOVE_TRIPLE_KICK
+	.byte MOVE_VITAL_THROW
+	.byte -1
+
+AI_CV_GhostAttacks:
+	.byte MOVE_ASTONISH
+	.byte MOVE_LICK
+	.byte MOVE_NIGHT_SHADE
+	.byte MOVE_SHADOW_BALL
+	.byte MOVE_SHADOW_PUNCH
+	.byte -1
+
+AI_CV_GroundAttacks:
+	.byte MOVE_BONE_CLUB
+	.byte MOVE_BONE_RUSH
+	.byte MOVE_BONEMERANG
+	.byte MOVE_DIG
+	.byte MOVE_EARTHQUAKE
+	.byte MOVE_MAGNITUDE
+	.byte MOVE_MUD_SHOT
+	.byte MOVE_MUD_SLAP
+	.byte MOVE_SAND_TOMB
+	.byte -1
+
+AI_CV_NormalAttacks:
+	.byte MOVE_BARRAGE
+	.byte MOVE_BIDE
+	.byte MOVE_BIND
+	.byte MOVE_BODY_SLAM
+	.byte MOVE_COMET_PUNCH
+	.byte MOVE_COVET
+	.byte MOVE_CRUSH_CLAW
+	.byte MOVE_CUT
+	.byte MOVE_DIZZY_PUNCH
+	.byte MOVE_DOUBLE_EDGE
+	.byte MOVE_DOUBLE_SLAP
+	.byte MOVE_EGG_BOMB
+	.byte MOVE_ENDEAVOR
+	.byte MOVE_EXPLOSION
+	.byte MOVE_EXTREME_SPEED
+	.byte MOVE_FACADE
+	.byte MOVE_FAKE_OUT
+	.byte MOVE_FALSE_SWIPE
+	.byte MOVE_FLAIL
+	.byte MOVE_FRUSTRATION
+	.byte MOVE_FURY_ATTACK
+	.byte MOVE_FURY_SWIPES
+	.byte MOVE_HEADBUTT
+	.byte MOVE_HORN_ATTACK
+	.byte MOVE_HYPER_BEAM
+	.byte MOVE_HYPER_FANG
+	.byte MOVE_HYPER_VOICE
+	.byte MOVE_MEGA_KICK
+	.byte MOVE_MEGA_PUNCH
+	.byte MOVE_PAY_DAY
+	.byte MOVE_POUND
+	.byte MOVE_PRESENT
+	.byte MOVE_QUICK_ATTACK
+	.byte MOVE_RAGE
+	.byte MOVE_RAZOR_WIND
+	.byte MOVE_RETURN
+	.byte MOVE_SCRATCH
+	.byte MOVE_SECRET_POWER
+	.byte MOVE_SELF_DESTRUCT
+	.byte MOVE_SKULL_BASH
+	.byte MOVE_SLAM
+	.byte MOVE_SLASH
+	.byte MOVE_SMELLING_SALTS
+	.byte MOVE_SNORE
+	.byte MOVE_SPIKE_CANNON
+	.byte MOVE_SPIT_UP
+	.byte MOVE_STOMP
+	.byte MOVE_STRENGTH
+	.byte MOVE_SUPER_FANG
+	.byte MOVE_SWIFT
+	.byte MOVE_TACKLE
+	.byte MOVE_TAKE_DOWN
+	.byte MOVE_THRASH
+	.byte MOVE_TRI_ATTACK
+	.byte MOVE_UPROAR
+	.byte MOVE_VICE_GRIP
+	.byte MOVE_WRAP
+	.byte -1
+
+AI_CV_PoisonAttacks:
+	.byte MOVE_ACID
+	.byte MOVE_POISON_FANG
+	.byte MOVE_POISON_STING
+	.byte MOVE_POISON_TAIL
+	.byte MOVE_SLUDGE
+	.byte MOVE_SLUDGE_BOMB
+	.byte MOVE_SMOG
+	.byte -1
+
+AI_CV_PsychicAttacks:
+	.byte MOVE_CONFUSION
+	.byte MOVE_EXTRASENSORY
+	.byte MOVE_LUSTER_PURGE
+	.byte MOVE_MIST_BALL
+	.byte MOVE_PSYBEAM
+	.byte MOVE_PSYCHIC
+	.byte MOVE_PSYCHO_BOOST
+	.byte MOVE_PSYWAVE
+	.byte -1
+
+AI_CV_WaterAttacks:
+	.byte MOVE_BUBBLE
+	.byte MOVE_BUBBLE_BEAM
+	.byte MOVE_CLAMP
+	.byte MOVE_CRABHAMMER
+	.byte MOVE_DIVE
+	.byte MOVE_HYDRO_CANNON
+	.byte MOVE_HYDRO_PUMP
+	.byte MOVE_MUDDY_WATER
+	.byte MOVE_OCTAZOOKA
+	.byte MOVE_SURF
+	.byte MOVE_WATER_GUN
+	.byte MOVE_WATER_PULSE
+	.byte MOVE_WATER_SPOUT
+	.byte MOVE_WATERFALL
+	.byte MOVE_WHIRLPOOL
+	.byte -1
+
+AI_CV_OtherPhysicalAttacks:
+	.byte MOVE_LEECH_LIFE
+	.byte MOVE_MEGAHORN
+	.byte MOVE_PIN_MISSILE
+	.byte MOVE_SIGNAL_BEAM
+	.byte MOVE_SILVER_WIND
+	.byte MOVE_TWINEEDLE
+	.byte MOVE_AERIAL_ACE
+	.byte MOVE_AEROBLAST
+	.byte MOVE_AIR_CUTTER
+	.byte MOVE_BOUNCE
+	.byte MOVE_DRILL_PECK
+	.byte MOVE_FLY
+	.byte MOVE_GUST
+	.byte MOVE_PECK
+	.byte MOVE_SKY_ATTACK
+	.byte MOVE_WING_ATTACK
+	.byte MOVE_ANCIENT_POWER
+	.byte MOVE_ROCK_BLAST
+	.byte MOVE_ROCK_SLIDE
+	.byte MOVE_ROCK_THROW
+	.byte MOVE_ROCK_TOMB
+	.byte MOVE_IRON_TAIL
+	.byte MOVE_METAL_CLAW
+	.byte MOVE_METEOR_MASH
+	.byte MOVE_STEEL_WING
+	.byte -1
+
+AI_CV_OtherSpecialAttacks:
+	.byte MOVE_BITE
+	.byte MOVE_CRUNCH
+	.byte MOVE_FEINT_ATTACK
+	.byte MOVE_HIDDEN_POWER
+	.byte MOVE_KNOCK_OFF
+	.byte MOVE_PURSUIT
+	.byte MOVE_THIEF
+	.byte MOVE_DRAGON_BREATH
+	.byte MOVE_DRAGON_CLAW
+	.byte MOVE_DRAGON_RAGE
+	.byte MOVE_OUTRAGE
+	.byte MOVE_TWISTER
+	.byte MOVE_ABSORB
+	.byte MOVE_BULLET_SEED
+	.byte MOVE_FRENZY_PLANT
+	.byte MOVE_GIGA_DRAIN
+	.byte MOVE_LEAF_BLADE
+	.byte MOVE_MAGICAL_LEAF
+	.byte MOVE_MEGA_DRAIN
+	.byte MOVE_NEEDLE_ARM
+	.byte MOVE_PETAL_DANCE
+	.byte MOVE_RAZOR_LEAF
+	.byte MOVE_SOLAR_BEAM
+	.byte MOVE_VINE_WHIP
+	.byte MOVE_AURORA_BEAM
+	.byte MOVE_BLIZZARD
+	.byte MOVE_ICE_BEAM
+	.byte MOVE_ICE_PUNCH
+	.byte MOVE_ICICLE_SPEAR
+	.byte MOVE_ICY_WIND
+	.byte MOVE_POWDER_SNOW
+	.byte -1
 
 AI_CV_SandstormResistantTypes:
 	.byte TYPE_GROUND
@@ -3777,14 +3922,25 @@ AI_SpecialTypeList:
 
 AI_TryToFaint:
 	if_target_is_ally AI_End
-	if_can_faint AI_TryToFaint_TryToEncourageQuickAttack
+	if_can_faint AI_TryToFaint_TryToEncouragePriority
 	get_how_powerful_move_is
 	if_equal MOVE_NOT_MOST_POWERFUL, Score_Minus1
 	end
 
-AI_TryToFaint_TryToEncourageQuickAttack:
-	if_effect EFFECT_EXPLOSION, AI_TryToFaint_End
-	if_not_effect EFFECT_QUICK_ATTACK, AI_TryToFaint_Plus4
+AI_TryToFaint_TryToEncouragePriority:
+	if_effect EFFECT_FOCUS_PUNCH, AI_End
+	if_effect EFFECT_FAKE_OUT | EFFECT_QUICK_ATTACK, AI_TryToFaint_Plus6
+	if_effect EFFECT_REVENGE | EFFECT_VITAL_THROW, AI_TryToFaint_AccBonus_1
+	if_effect EFFECT_EXPLOSION, AI_TryToFaint_AccBonus_2
+	if_effect EFFECT_RAZOR_WIND | EFFECT_RECHARGE | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_TryToFaint_EvasionCheck
+	if_holds_item AI_TARGET, ITEM_WHITE_HERB, AI_TryToFaint_SubstituteCheck
+	if_effect EFFECT_OVERHEAT | EFFECT_SUPERPOWER, AI_TryToFaint_AccBonus_1
+AI_TryToFaint_SubstituteCheck:
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_TryToFaint_Plus4
+	if_effect EFFECT_SEMI_INVULNERABLE, AI_TryToFaint_EvasionCheck
+	goto AI_TryToFaint_Plus4
+
+AI_TryToFaint_Plus6:
 	score +2
 AI_TryToFaint_Plus4:
 	score +4
