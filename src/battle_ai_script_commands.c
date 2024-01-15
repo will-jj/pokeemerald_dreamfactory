@@ -135,9 +135,9 @@ static void Cmd_get_protect_count(void);
 static void Cmd_get_move_target_from_result(void);
 static void Cmd_if_type_effectiveness_from_result(void);
 static void Cmd_get_considered_move_second_eff_chance_from_result(void);
-static void Cmd_nop_55(void);
-static void Cmd_nop_56(void);
-static void Cmd_nop_57(void);
+static void Cmd_get_spikes_layers_target(void);
+static void Cmd_if_ai_can_faint(void);
+static void Cmd_get_highest_type_effectiveness_from_target(void);
 static void Cmd_call(void);
 static void Cmd_goto(void);
 static void Cmd_end(void);
@@ -243,10 +243,10 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_protect_count,                          // 0x51
     Cmd_get_move_target_from_result,                // 0x52
     Cmd_if_type_effectiveness_from_result,          // 0x53
-    Cmd_get_considered_move_second_eff_chance_from_result,                                     // 0x54
-    Cmd_nop_55,                                     // 0x55
-    Cmd_nop_56,                                     // 0x56
-    Cmd_nop_57,                                     // 0x57
+    Cmd_get_considered_move_second_eff_chance_from_result, // 0x54
+    Cmd_get_spikes_layers_target,                   // 0x55
+    Cmd_if_ai_can_faint,                            // 0x56
+    Cmd_get_highest_type_effectiveness_from_target, // 0x57
     Cmd_call,                                       // 0x58
     Cmd_goto,                                       // 0x59
     Cmd_end,                                        // 0x5A
@@ -1489,6 +1489,7 @@ static void Cmd_get_highest_type_effectiveness(void)
         {
             // TypeCalc does not assign to gMoveResultFlags, Cmd_typecalc does
             // This makes the check for gMoveResultFlags below always fail
+            // in the original game. But this is fixed here.
             gMoveResultFlags = TypeCalc(gCurrentMove, sBattler_AI, gBattlerTarget);
 
             if (gBattleMoveDamage == 120) // Super effective STAB.
@@ -1753,7 +1754,8 @@ static void Cmd_if_can_faint(void)
     AI_CalcDmg(sBattler_AI, gBattlerTarget);
     TypeCalc(gCurrentMove, sBattler_AI, gBattlerTarget);
 
-    gBattleMoveDamage = gBattleMoveDamage * AI_THINKING_STRUCT->simulatedRNG[AI_THINKING_STRUCT->movesetIndex] / 100;
+    // Apply a higher likely damage roll
+    gBattleMoveDamage = gBattleMoveDamage * 95 / 100;
 
     // Moves always do at least 1 damage.
     if (gBattleMoveDamage == 0)
@@ -2201,17 +2203,96 @@ static void Cmd_get_considered_move_second_eff_chance_from_result(void)
     gAIScriptPtr += 1;
 }
 
-static void Cmd_nop_55(void)
+static void Cmd_get_spikes_layers_target(void)
 {
+    AI_THINKING_STRUCT->funcResult = gSideTimers[GetBattlerSide(gBattlerTarget)].spikesAmount;
+    gAIScriptPtr += 1;
 }
 
-static void Cmd_nop_56(void)
+static void Cmd_if_ai_can_faint(void)
 {
+    s32 i;
+    u8 *dynamicMoveType;
+    u8 damageVar;
+
+    damageVar = 0;
+    gDynamicBasePower = 0;
+    dynamicMoveType = &gBattleStruct->dynamicMoveType;
+    *dynamicMoveType = 0;
+    gBattleScripting.dmgMultiplier = 1;
+    gMoveResultFlags = 0;
+    gCritMultiplier = 1;
+    AI_THINKING_STRUCT->funcResult = 0;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        gCurrentMove = gBattleMons[gBattlerTarget].moves[i];
+
+        if (gCurrentMove != MOVE_NONE)
+        {
+            AI_CalcDmg(gBattlerTarget, sBattler_AI);
+            TypeCalc(gCurrentMove, gBattlerTarget, sBattler_AI);
+
+            // Get the highest battle move damage
+            if (damageVar < gBattleMoveDamage)
+                damageVar = gBattleMoveDamage;
+        }
+
+        // Apply a higher likely damage roll
+        damageVar = damageVar * 95 / 100;
+
+        if (gBattleMons[gBattlerTarget].hp <= damageVar)
+            gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
+        else
+            gAIScriptPtr += 5;
+    }
 }
 
-static void Cmd_nop_57(void)
+static void Cmd_get_highest_type_effectiveness_from_target(void)
 {
+    s32 i;
+    u8 *dynamicMoveType;
+
+    gDynamicBasePower = 0;
+    dynamicMoveType = &gBattleStruct->dynamicMoveType;
+    *dynamicMoveType = 0;
+    gBattleScripting.dmgMultiplier = 1;
+    gMoveResultFlags = 0;
+    gCritMultiplier = 1;
+    AI_THINKING_STRUCT->funcResult = 0;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        gBattleMoveDamage = 40;
+        gCurrentMove = gBattleMons[gBattlerTarget].moves[i];
+
+        if (gCurrentMove != MOVE_NONE)
+        {
+            // TypeCalc does not assign to gMoveResultFlags, Cmd_typecalc does
+            // This makes the check for gMoveResultFlags below always fail
+            // in the original game. But this is fixed here.
+            gMoveResultFlags = TypeCalc(gCurrentMove, gBattlerTarget, sBattler_AI);
+
+            if (gBattleMoveDamage == 120) // Super effective STAB.
+                gBattleMoveDamage = AI_EFFECTIVENESS_x2;
+            if (gBattleMoveDamage == 240)
+                gBattleMoveDamage = AI_EFFECTIVENESS_x4;
+            if (gBattleMoveDamage == 30) // Not very effective STAB.
+                gBattleMoveDamage = AI_EFFECTIVENESS_x0_5;
+            if (gBattleMoveDamage == 15)
+                gBattleMoveDamage = AI_EFFECTIVENESS_x0_25;
+
+            if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
+                gBattleMoveDamage = AI_EFFECTIVENESS_x0;
+
+            if (AI_THINKING_STRUCT->funcResult < gBattleMoveDamage)
+                AI_THINKING_STRUCT->funcResult = gBattleMoveDamage;
+        }
+    }
+
+    gAIScriptPtr += 1;
 }
+
 
 static void Cmd_call(void)
 {

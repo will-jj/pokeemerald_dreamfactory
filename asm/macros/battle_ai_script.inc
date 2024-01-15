@@ -483,15 +483,16 @@
 	.byte 0x54
 	.endm
 
-	.macro nop_55
+	.macro get_spikes_layers_target
 	.byte 0x55
 	.endm
 
-	.macro nop_56
+	.macro if_ai_can_faint param0:req
 	.byte 0x56
+	.4byte \param0
 	.endm
 
-	.macro nop_57
+	.macro get_highest_type_effectiveness_from_target
 	.byte 0x57
 	.endm
 
