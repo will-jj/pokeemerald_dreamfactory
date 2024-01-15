@@ -4722,7 +4722,7 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
         .species = SPECIES_WALREIN,
         .moves = {MOVE_DEFENSE_CURL, MOVE_YAWN, MOVE_ICE_BALL, MOVE_ENCORE},
         .itemTableId = BATTLE_FRONTIER_ITEM_LEFTOVERS,
-        .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_S[e,
+        .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
     },
     [FRONTIER_MON_WEEZING_1] = {
