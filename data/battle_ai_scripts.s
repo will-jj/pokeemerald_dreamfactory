@@ -1613,7 +1613,7 @@ AI_CV_Sleep:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
 	if_not_equal EFFECT_SLEEP, AI_CV_SleepEncourageSlpDamage_Check
-	if_random_less_than 205, AI_CV_SleepEncourageSlpDamage_Check
+	if_random_less_than 224, AI_CV_SleepEncourageSlpDamage_Check
 	score +30
 AI_CV_SleepEncourageSlpDamage_Check:
 	if_has_move_with_effect AI_USER, EFFECT_DREAM_EATER, AI_CV_SleepEncourageSlpDamage
@@ -3415,12 +3415,12 @@ AI_CV_Endure:
 	end
 
 AI_CV_Endure_TwoTurn:
-	if_status3 AI_TARGET, STATUS3_ON_AIR | STATUS3_UNDERGROUND | STATUS3_UNDERWATER, AI_CV_Endure_Plus5
+	if_status3 AI_TARGET, STATUS3_ON_AIR | STATUS3_UNDERGROUND | STATUS3_UNDERWATER, AI_CV_Endure_Plus10
 	if_status2 AI_TARGET, STATUS2_MULTIPLETURNS, AI_CV_Endure_TwoTurn_CheckEffect
 	goto AI_CV_Endure_UtilityCheck
 
 AI_CV_Endure_TwoTurn_CheckEffect:
-	if_has_move_with_effect AI_TARGET, EFFECT_RAZOR_WIND | EFFECT_SKULL_BASH | EFFECT_SOLAR_BEAM | EFFECT_SKY_ATTACK, AI_CV_Endure_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_RAZOR_WIND | EFFECT_SKULL_BASH | EFFECT_SOLAR_BEAM | EFFECT_SKY_ATTACK, AI_CV_Endure_Plus10
 AI_CV_Endure_UtilityCheck:
 	if_status AI_USER, STATUS1_BURN | STATUS1_PSN_ANY, AI_CV_Endure_DontUse
 	get_weather
@@ -3507,14 +3507,14 @@ AI_CV_Endure_Torrent:
 	goto AI_CV_Endure_DontUse
 
 AI_CV_Endure_Useful:
-	if_target_taunted AI_CV_Endure_Plus5
+	if_target_taunted AI_CV_Endure_Plus10
 	if_status2 AI_TARGET, STATUS2_MULTIPLETURNS, AI_CV_Endure_TwoTurn_CheckEffect2
 	goto AI_CV_Endure_Useful_CheckRepeatUse
 
 AI_CV_Endure_TwoTurn_CheckEffect2:
 	get_last_used_bank_move AI_TARGET
 	get_move_effect_from_result
-	if_equal EFFECT_RAMPAGE | EFFECT_ROLLOUT | EFFECT_UPROAR, AI_CV_Endure_Plus5
+	if_equal EFFECT_RAMPAGE | EFFECT_ROLLOUT | EFFECT_UPROAR, AI_CV_Endure_Plus10
 AI_CV_Endure_Useful_CheckRepeatUse:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
@@ -3570,7 +3570,7 @@ AI_CV_Endure_Useful_CheckConfusion:
 	if_status2 AI_USER, STATUS2_CONFUSION, AI_CV_Endure_Useful_CheckShieldDust
 	if_has_move_with_effect AI_TARGET, EFFECT_CONFUSE | EFFECT_FLATTER | EFFECT_SWAGGER | EFFECT_TEETER_DANCE, AI_CV_Endure_DontUse_HighOdds
 AI_CV_Endure_Useful_CheckShieldDust:
-	if_ability AI_USER, ABILITY_SHIELD_DUST, AI_CV_Endure_Useful_CheckSpeed
+	if_ability AI_USER, ABILITY_SHIELD_DUST, AI_CV_Endure_Useful_CheckSubstitute
 AI_CV_Endure_Useful_CheckSignalBeam:
 	if_status2 AI_USER, STATUS2_CONFUSION, AI_CV_Endure_Useful_CheckGhost_Para_LowOdds
 	if_has_move AI_TARGET, MOVE_SIGNAL_BEAM, AI_CV_Endure_DontUse_LowOdds
@@ -3651,12 +3651,13 @@ AI_CV_Endure_DontUse_HighOdds:
 	if_random_less_than 48, AI_CV_Endure_DontUse
 AI_CV_Endure_Useful_CheckSubstitute:
 	if_has_move_with_effect AI_TARGET, EFFECT_SUBSTITUTE, AI_CV_Endure_Useful_Substitute
-	goto AI_CV_Endure_Plus5
+	if_random_less_than 16, AI_CV_Endure_DontUse
+	goto AI_CV_Endure_Plus10
 
 AI_CV_Endure_Useful_Substitute:
 	if_random_less_than 196, AI_CV_Endure_DontUse
-AI_CV_Endure_Plus5:
-	score +5
+AI_CV_Endure_Plus10:
+	score +10
 	end
 
 AI_CV_Endure_DontUse:

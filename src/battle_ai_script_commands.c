@@ -2237,15 +2237,15 @@ static void Cmd_if_ai_can_faint(void)
             if (damageVar < gBattleMoveDamage)
                 damageVar = gBattleMoveDamage;
         }
-
-        // Apply a higher likely damage roll
-        damageVar = damageVar * 95 / 100;
-
-        if (gBattleMons[gBattlerTarget].hp <= damageVar)
-            gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
-        else
-            gAIScriptPtr += 5;
     }
+
+    // Apply a higher likely damage roll
+    damageVar = damageVar * 95 / 100;
+
+    if (gBattleMons[sBattler_AI].hp <= damageVar)
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
+    else
+        gAIScriptPtr += 5;
 }
 
 static void Cmd_get_highest_type_effectiveness_from_target(void)
