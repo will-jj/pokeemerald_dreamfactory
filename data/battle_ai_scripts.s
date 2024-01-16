@@ -153,6 +153,8 @@ AI_CBM_TestWhetherToTypeMatchup_Speed:
 	if_side_affecting AI_TARGET, SIDE_STATUS_MIST, AI_CBM_TypeMatchup_Modifiers
 	if_target_faster AI_CBM_CheckSoundproof
 AI_CBM_TypeMatchup_Modifiers:
+	if_effect EFFECT_HIDDEN_POWER, AI_CBM_TypeMatchup_LS
+	if_effect EFFECT_WEATHER_BALL, AI_CBM_TypeMatchup_Modifiers_WeatherBall
 	get_curr_move_type
 	if_equal TYPE_BUG | TYPE_FIGHTING | TYPE_FLYING | TYPE_GHOST | TYPE_GROUND | TYPE_NORMAL | TYPE_POISON | TYPE_ROCK | TYPE_STEEL, AI_CBM_TypeMatchup_Reflect
 	if_equal TYPE_DARK | TYPE_DRAGON | TYPE_GRASS | TYPE_PSYCHIC, AI_CBM_TypeMatchup_LS
@@ -162,6 +164,11 @@ AI_CBM_TypeMatchup_Modifiers:
 	if_equal TYPE_WATER, AI_CBM_TypeMatchup_Weather_Water
 	goto AI_CBM_TypeMatchup_LS
 
+AI_CBM_TypeMatchup_Modifiers_WeatherBall:
+	get_weather
+	if_equal AI_WEATHER_HAIL, AI_CBM_TypeMatchup_ThickFat
+	if_equal AI_WEATHER_RAIN, AI_CBM_TypeMatchup_Weather_Water
+	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_WaterSport
 AI_CBM_TypeMatchup_Reflect:
 	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_HalfDmg
 	goto AI_CBM_TypeMatchup
@@ -195,7 +202,7 @@ AI_CBM_TypeMatchup_Weather_Fire_HalfDmg:
 AI_CBM_TypeMatchup_Weather_Fire_QuarterDmg:
 	get_weather
 	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_LS_HalfDmg
-	if_equal AI_WEATHER_RAIN, AI_CBM_TypeMatchup_LS_EighthDmg
+	if_equal AI_WEATHER_RAIN, AI_CBM_TypeMatchup_LS_OneEighthDmg
 	goto AI_CBM_TypeMatchup_LS_QuarterDmg
 
 AI_CBM_TypeMatchup_Weather_Water:
@@ -230,12 +237,12 @@ AI_CBM_TypeMatchup_LS_HalfDmg:
 	goto AI_CBM_TypeMatchup_HalfDmg
 
 AI_CBM_TypeMatchup_LS_QuarterDmg:
-	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_LS_EighthDmg
+	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_LS_OneEighthDmg
 	goto AI_CBM_TypeMatchup_QuarterDmg
 
-AI_CBM_TypeMatchup_LS_EighthDmg:
+AI_CBM_TypeMatchup_LS_OneEighthDmg:
 	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_OneSixteenthDmg
-	goto AI_CBM_TypeMatchup_LS_EighthDmg
+	goto AI_CBM_TypeMatchup_OneEighthDmg
 
 AI_CBM_TypeMatchup_OneSixteenthDmg:
 	count_usable_party_mons AI_USER
@@ -451,6 +458,7 @@ AI_CheckBadMove_CheckEffect:
 	if_effect EFFECT_WATER_SPORT, AI_CBM_WaterSport
 	if_effect EFFECT_WISH, AI_CBM_Wish
 	if_effect EFFECT_CAMOUFLAGE, AI_CBM_Camouflage
+	if_effect EFFECT_CHARGE, AI_CBM_Charge
 	if_effect EFFECT_MIMIC | EFFECT_MIRROR_MOVE, AI_CBM_MirrorMove
 	end
 
@@ -583,6 +591,10 @@ AI_CBM_TestWhetherToTypeMatchup_Speed_MirrorMove:
 	if_target_faster AI_CBM_Soundproof_MirrorMove
 AI_CBM_TypeMatchup_MirrorMove_Modifiers:
 	get_last_used_bank_move AI_TARGET
+	get_move_effect_from_result
+	if_equal EFFECT_HIDDEN_POWER, AI_CBM_TypeMatchup_MirrorMove_LS
+	if_equal EFFECT_WEATHER_BALL, AI_CBM_TypeMatchup_MirrorMove_Modifiers_WeatherBall
+	get_last_used_bank_move AI_TARGET
 	get_move_type_from_result
 	if_equal TYPE_BUG | TYPE_FIGHTING | TYPE_FLYING | TYPE_GHOST | TYPE_GROUND | TYPE_NORMAL | TYPE_POISON | TYPE_ROCK | TYPE_STEEL, AI_CBM_TypeMatchup_MirrorMove_Reflect
 	if_equal TYPE_DARK | TYPE_DRAGON | TYPE_GRASS | TYPE_PSYCHIC, AI_CBM_TypeMatchup_MirrorMove_LS
@@ -592,6 +604,11 @@ AI_CBM_TypeMatchup_MirrorMove_Modifiers:
 	if_equal TYPE_WATER, AI_CBM_TypeMatchup_MirrorMove_Weather_Water
 	goto AI_CBM_TypeMatchup_MirrorMove_LS
 
+AI_CBM_TypeMatchup_MirrorMove_Modifiers_WeatherBall:
+	get_weather
+	if_equal AI_WEATHER_HAIL, AI_CBM_TypeMatchup_MirrorMove_ThickFat
+	if_equal AI_WEATHER_RAIN, AI_CBM_TypeMatchup_MirrorMove_Weather_Water
+	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_MirrorMove_WaterSport
 AI_CBM_TypeMatchup_MirrorMove_Reflect:
 	if_side_affecting AI_TARGET, SIDE_STATUS_REFLECT, AI_CBM_TypeMatchup_MirrorMove_HalfDmg
 	goto AI_CBM_TypeMatchup_MirrorMove
@@ -625,7 +642,7 @@ AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_HalfDmg:
 AI_CBM_TypeMatchup_MirrorMove_Weather_Fire_QuarterDmg:
 	get_weather
 	if_equal AI_WEATHER_SUN, AI_CBM_TypeMatchup_MirrorMove_LS_HalfDmg
-	if_equal AI_WEATHER_RAIN, AI_CBM_TypeMatchup_MirrorMove_LS_EighthDmg
+	if_equal AI_WEATHER_RAIN, AI_CBM_TypeMatchup_MirrorMove_LS_OneEighthDmg
 	goto AI_CBM_TypeMatchup_MirrorMove_LS_QuarterDmg
 
 AI_CBM_TypeMatchup_MirrorMove_Weather_Water:
@@ -662,12 +679,12 @@ AI_CBM_TypeMatchup_MirrorMove_LS_HalfDmg:
 	goto AI_CBM_TypeMatchup_MirrorMove_HalfDmg
 
 AI_CBM_TypeMatchup_MirrorMove_LS_QuarterDmg:
-	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_MirrorMove_LS_EighthDmg
+	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_MirrorMove_LS_OneEighthDmg
 	goto AI_CBM_TypeMatchup_MirrorMove_QuarterDmg
 
-AI_CBM_TypeMatchup_MirrorMove_LS_EighthDmg:
+AI_CBM_TypeMatchup_MirrorMove_LS_OneEighthDmg:
 	if_side_affecting AI_TARGET, SIDE_STATUS_LIGHTSCREEN, AI_CBM_TypeMatchup_MirrorMove_OneSixteenthDmg
-	goto AI_CBM_TypeMatchup_MirrorMove_LS_EighthDmg
+	goto AI_CBM_TypeMatchup_MirrorMove_OneEighthDmg
 
 AI_CBM_TypeMatchup_MirrorMove_OneSixteenthDmg:
 	count_usable_party_mons AI_USER
@@ -904,6 +921,7 @@ AI_CBM_MirrorMove_CheckEffect:
 	if_equal EFFECT_WATER_SPORT, AI_CBM_WaterSport
 	if_equal EFFECT_WISH, AI_CBM_Wish
 	if_equal EFFECT_CAMOUFLAGE, AI_CBM_Camouflage
+	if_equal EFFECT_CHARGE, AI_CBM_Charge
 	end
 
 AI_CBM_MirrorMovePenalty:
@@ -1206,63 +1224,69 @@ AI_CBM_Wish:
 	if_effect EFFECT_WISH, Score_Minus30
 	end
 
+AI_CBM_Charge:
+	get_last_used_bank_move AI_USER
+	get_move_effect_from_result
+	if_effect EFFECT_CHARGE, Score_Minus30
+	end
+
 AI_CBM_BellyDrum:
 	if_hp_less_than AI_USER, 51, Score_Minus10
 AI_CBM_AttackUp:
-	if_stat_level_equal AI_USER, STAT_ATK, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_ATK, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_DefenseUp:
-	if_stat_level_equal AI_USER, STAT_DEF, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_DEF, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_SpeedUp:
-	if_stat_level_equal AI_USER, STAT_SPEED, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_SPEED, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_SpAtkUp:
-	if_stat_level_equal AI_USER, STAT_SPATK, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_SPATK, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_SpDefUp:
-	if_stat_level_equal AI_USER, STAT_SPDEF, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_SPDEF, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_AccUp:
-	if_stat_level_equal AI_USER, STAT_ACC, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_ACC, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_EvasionUp:
-	if_stat_level_equal AI_USER, STAT_EVASION, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_EVASION, MAX_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_AttackDown:
-	if_stat_level_equal AI_TARGET, STAT_ATK, MIN_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_TARGET, STAT_ATK, MIN_STAT_STAGE, Score_Minus30
 	get_ability AI_TARGET
-	if_equal ABILITY_HYPER_CUTTER, Score_Minus10
+	if_equal ABILITY_HYPER_CUTTER, Score_Minus30
 	end
 
 AI_CBM_DefenseDown:
-	if_stat_level_equal AI_TARGET, STAT_DEF, MIN_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_TARGET, STAT_DEF, MIN_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_SpeedDown:
-	if_stat_level_equal AI_TARGET, STAT_SPEED, MIN_STAT_STAGE, Score_Minus10
-	if_ability AI_TARGET, ABILITY_SPEED_BOOST, Score_Minus10
+	if_stat_level_equal AI_TARGET, STAT_SPEED, MIN_STAT_STAGE, Score_Minus30
+	if_ability AI_TARGET, ABILITY_SPEED_BOOST, Score_Minus30
 	end
 
 AI_CBM_SpAtkDown:
-	if_stat_level_equal AI_TARGET, STAT_SPATK, MIN_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_TARGET, STAT_SPATK, MIN_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_SpDefDown:
-	if_stat_level_equal AI_TARGET, STAT_SPDEF, MIN_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_TARGET, STAT_SPDEF, MIN_STAT_STAGE, Score_Minus30
 	end
 
 AI_CBM_AccDown:
-	if_stat_level_equal AI_TARGET, STAT_ACC, MIN_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_TARGET, STAT_ACC, MIN_STAT_STAGE, Score_Minus30
 	get_ability AI_TARGET
-	if_equal ABILITY_KEEN_EYE, Score_Minus10
+	if_equal ABILITY_KEEN_EYE, Score_Minus30
 	end
 
 AI_CBM_EvasionDown:
@@ -1294,27 +1318,27 @@ AI_CBM_Memento:
 AI_CBM_Tickle:
 	if_stat_level_more_than AI_TARGET, STAT_ATK, MIN_STAT_STAGE, AI_End
 	if_stat_level_more_than AI_TARGET, STAT_DEF, MIN_STAT_STAGE, AI_End
-	goto Score_Minus10
+	goto Score_Minus30
 
 AI_CBM_CosmicPower:
-	if_stat_level_equal AI_USER, STAT_DEF, MAX_STAT_STAGE, Score_Minus10
+	if_stat_level_equal AI_USER, STAT_DEF, MAX_STAT_STAGE, Score_Minus30
 	if_stat_level_equal AI_USER, STAT_SPDEF, MAX_STAT_STAGE, Score_Minus8
 	end
 
 AI_CBM_BulkUp:
 	if_stat_level_less_than AI_USER, STAT_ATK, MAX_STAT_STAGE, AI_End
 	if_stat_level_less_than AI_USER, STAT_DEF, MAX_STAT_STAGE, AI_End
-	goto Score_Minus10
+	goto Score_Minus30
 
 AI_CBM_CalmMind:
 	if_stat_level_less_than AI_USER, STAT_SPATK, MAX_STAT_STAGE, AI_End
 	if_stat_level_less_than AI_USER, STAT_SPDEF, MAX_STAT_STAGE, AI_End
-	goto Score_Minus10
+	goto Score_Minus30
 
 AI_CBM_DragonDance:
 	if_stat_level_less_than AI_USER, STAT_ATK, MAX_STAT_STAGE, AI_End
 	if_stat_level_less_than AI_USER, STAT_SPEED, MAX_STAT_STAGE, AI_End
-	goto Score_Minus10
+	goto Score_Minus30
 
 Score_Minus1:
 	score -1
@@ -1340,13 +1364,13 @@ Score_Minus10:
 	score -10
 	end
 
-Score_Minus20:
-    score -20
-    end
-
 Score_Minus12:
 	score -12
 	end
+
+Score_Minus20:
+    score -20
+    end
 
 Score_Minus30:
 	score -30
@@ -1464,7 +1488,7 @@ AI_CheckViability:
 	if_effect EFFECT_SPIT_UP, AI_CV_SpitUp
 	if_effect EFFECT_PERISH_SONG, AI_CV_SuicideCheck
 	if_effect EFFECT_SUPERPOWER, AI_CV_Superpower
-	if_effect EFFECT_ASSIST | EFFECT_METRONOME | EFFECT_PRESENT | EFFECT_SPITE, AI_CV_GeneralDiscourage
+	if_effect EFFECT_ASSIST | EFFECT_CHARGE | EFFECT_METRONOME | EFFECT_PRESENT | EFFECT_SPITE, AI_CV_GeneralDiscourage
 	end
 
 AI_CV_MirrorMove:
@@ -1571,7 +1595,7 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_ROLLOUT, AI_CV_Rollout
 	if_equal EFFECT_SMELLINGSALT, AI_CV_SmellingSalt
 	if_equal EFFECT_SUPERPOWER, AI_CV_Superpower
-	if_equal EFFECT_ASSIST | EFFECT_METRONOME | EFFECT_PRESENT | EFFECT_SPITE, AI_CV_GeneralDiscourage
+	if_equal EFFECT_ASSIST | EFFECT_CHARGE | EFFECT_METRONOME | EFFECT_PRESENT | EFFECT_SPITE, AI_CV_GeneralDiscourage
 	end
 
 AI_CV_MirrorMovePenalty:
