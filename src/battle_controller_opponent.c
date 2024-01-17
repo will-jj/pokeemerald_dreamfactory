@@ -1531,6 +1531,9 @@ static void OpponentHandlePrintSelectionString(void)
 
 static void OpponentHandleChooseAction(void)
 {
+    BattleAI_SetupAIData(ALL_MOVES_MASK);
+    BattleAI_ChooseMoveOrAction();
+
     AI_TrySwitchOrUseItem();
     OpponentBufferExecCompleted();
 }
@@ -1554,9 +1557,7 @@ static void OpponentHandleChooseMove(void)
 
         if (gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_SAFARI | BATTLE_TYPE_ROAMER))
         {
-
-            BattleAI_SetupAIData(ALL_MOVES_MASK);
-            chosenMoveId = BattleAI_ChooseMoveOrAction();
+            chosenMoveId = gBattleResources->ai->chosenMoveId;
 
             switch (chosenMoveId)
             {

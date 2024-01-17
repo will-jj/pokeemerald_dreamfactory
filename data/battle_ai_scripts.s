@@ -1431,6 +1431,7 @@ AI_CheckViability:
 	if_effect EFFECT_PARALYZE, AI_CV_Paralyze
 	if_effect EFFECT_PARALYZE_HIT | EFFECT_SECRET_POWER | EFFECT_THUNDER, AI_CV_ParalyzeHit
 	if_effect EFFECT_LEECH_SEED | EFFECT_POISON | EFFECT_TOXIC, AI_CV_Toxic
+	if_effect EFFECT_WILL_O_WISP, AI_CV_Status_CheckSubstitute
 	if_effect EFFECT_SOLAR_BEAM, AI_CV_SolarBeam
 	if_effect EFFECT_RAZOR_WIND | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_CV_ChargeUpMove
 	if_effect EFFECT_RECHARGE, AI_CV_Recharge
@@ -1538,6 +1539,7 @@ AI_CV_CheckViability_MirrorMove:
 	if_equal EFFECT_PARALYZE, AI_CV_Paralyze
 	if_equal EFFECT_PARALYZE_HIT | EFFECT_SECRET_POWER | EFFECT_THUNDER, AI_CV_ParalyzeHit
 	if_equal EFFECT_LEECH_SEED | EFFECT_POISON | EFFECT_TOXIC, AI_CV_Toxic
+	if_equal EFFECT_WILL_O_WISP, AI_CV_Status_CheckSubstitute
 	if_equal EFFECT_SOLAR_BEAM, AI_CV_SolarBeam
 	if_equal EFFECT_RAZOR_WIND | EFFECT_SKULL_BASH | EFFECT_SKY_ATTACK, AI_CV_ChargeUpMove
 	if_equal EFFECT_RECHARGE, AI_CV_Recharge
@@ -1642,12 +1644,12 @@ AI_CV_Sleep:
 AI_CV_SleepEncourageSlpDamage_Check:
 	if_has_move_with_effect AI_USER, EFFECT_DREAM_EATER, AI_CV_SleepEncourageSlpDamage
 	if_has_move_with_effect AI_USER, EFFECT_NIGHTMARE, AI_CV_SleepEncourageSlpDamage
-	end
+	goto AI_CV_Status_CheckSubstitute
 
 AI_CV_SleepEncourageSlpDamage:
 	if_random_less_than 128, AI_End
 	score +1
-	end
+	goto AI_CV_Status_CheckSubstitute
 
 AI_CV_Toxic:
 	is_first_turn_for AI_USER
@@ -1661,15 +1663,15 @@ AI_CV_Toxic_StatBoosts_Plus1:
 	score +1
 AI_CV_LeechOverToxic:
 	if_effect EFFECT_LEECH_SEED, AI_CV_LeechOverToxic2
-	end
+	goto AI_CV_Status_CheckSubstitute
 
 AI_CV_LeechOverToxic2:
 	if_has_move_with_effect AI_USER, EFFECT_POISON | EFFECT_TOXIC, AI_CV_LeechOverToxic_Plus1
-	end
+	goto AI_CV_Status_CheckSubstitute
 
 AI_CV_LeechOverToxic_Plus1:
 	score +1
-	end
+	goto AI_CV_Status_CheckSubstitute
 
 AI_CV_ParalyzeHit:
 	get_considered_move_second_eff_chance
@@ -1678,16 +1680,26 @@ AI_CV_ParalyzeHit:
 
 AI_CV_Paralyze:
 	if_target_faster AI_CV_Paralyze_TargetFaster
-	goto AI_CV_Paralyze_Plus1_Random
+	if_random_less_than 64, AI_End
+	score +1
+	end
 
 AI_CV_Paralyze_TargetFaster:
 	if_random_less_than 20, AI_End
 	score +3
+AI_CV_Status_CheckSubstitute:
+	get_considered_move_power
+	if_not_equal 0, AI_End
+	if_has_move_with_effect AI_TARGET, EFFECT_SUBSTITUTE, AI_CV_Status_VsSubstitute
 	end
 
-AI_CV_Paralyze_Plus1_Random:
+AI_CV_Status_VsSubstitute:
+	if_target_faster AI_CV_Status_VsFastSub
+	end
+
+AI_CV_Status_VsFastSub:
 	if_random_less_than 64, AI_End
-	score +1
+	score -5
 	end
 
 AI_CV_SleepTalk:

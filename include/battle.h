@@ -182,6 +182,7 @@ struct AI_ThinkingStruct
     u8 aiLogicId;
     u8 filler12[6];
     u8 simulatedRNG[MAX_MON_MOVES];
+    u8 chosenMoveId;
 };
 
 struct UsedMoves

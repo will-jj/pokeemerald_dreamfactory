@@ -390,6 +390,7 @@ u8 BattleAI_ChooseMoveOrAction(void)
         ret = ChooseMoveOrAction_Doubles();
 
     gCurrentMove = savedCurrentMove;
+    AI_THINKING_STRUCT->chosenMoveId = ret;
     return ret;
 }
 
