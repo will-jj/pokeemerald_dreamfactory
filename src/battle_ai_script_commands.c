@@ -2522,7 +2522,7 @@ static void Cmd_if_ai_can_faint(void)
 
 static void Cmd_get_highest_type_effectiveness_from_target(void)
 {
-    u8 damageVar, moveType, hpThreshhold, hpThreshholdHit, attackStage, defenseStage;
+    u8 damageVar, resultVar, moveType, hpThreshhold, hpThreshholdHit, attackStage, defenseStage;
     u8 *dynamicMoveType;
     u16 multiplier, divisor;
     u32 side, userAbility;
@@ -2535,7 +2535,8 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
     gMoveResultFlags = 0;
     gCritMultiplier = 1;
     AI_THINKING_STRUCT->funcResult = 0;
-    damageVar = AI_EFFECTIVENESS_x1;
+    resultVar = AI_EFFECTIVENESS_x1;
+    damageVar = 0;
     side = GET_BATTLER_SIDE(sBattler_AI);
     userAbility = gBattleMons[sBattler_AI].ability;
 
@@ -2771,25 +2772,27 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
                 // Applying stat stage adjustments
                 gBattleMoveDamage = gBattleMoveDamage * multiplier / divisor;
 
+                if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
+                    gBattleMoveDamage = 0;
+
                 if (damageVar < gBattleMoveDamage)
                     damageVar = gBattleMoveDamage;
             }
         }
     }
 
+    if (damageVar == 0)
+        resultVar = AI_EFFECTIVENESS_x0;
     if (damageVar >= 160)
-        damageVar = AI_EFFECTIVENESS_x4;
+        resultVar = AI_EFFECTIVENESS_x4;
     if (damageVar <= 15)
-        damageVar = AI_EFFECTIVENESS_x0_25;
+        resultVar = AI_EFFECTIVENESS_x0_25;
     if (damageVar >= 80)
-        damageVar = AI_EFFECTIVENESS_x2;
+        resultVar = AI_EFFECTIVENESS_x2;
     if (damageVar <= 30)
-        damageVar = AI_EFFECTIVENESS_x0_5;
+        resultVar = AI_EFFECTIVENESS_x0_5;
 
-    if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
-        damageVar = AI_EFFECTIVENESS_x0;
-
-    AI_THINKING_STRUCT->funcResult = damageVar;
+    AI_THINKING_STRUCT->funcResult = resultVar;
 
     gAIScriptPtr += 1;
 }
