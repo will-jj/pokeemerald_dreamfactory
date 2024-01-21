@@ -4293,21 +4293,21 @@ AI_ShouldSwitch_Seeded:
 
 AI_ShouldSwitch_Seeded_Minus7:
 	if_random_less_than 4, AI_ShouldSwitch_Cursed
-	score -7
+	score -8
 AI_ShouldSwitch_Cursed:
 	if_status2 AI_USER, STATUS2_CURSED, AI_ShouldSwitch_Cursed_Minus8
 	goto AI_ShouldSwitch_Nightmares
 
 AI_ShouldSwitch_Cursed_Minus8:
 	if_random_less_than 4, AI_ShouldSwitch_Nightmares
-	score -8
+	score -9
 AI_ShouldSwitch_Nightmares:
 	if_status2 AI_USER, STATUS2_NIGHTMARE, AI_ShouldSwitch_Nightmares_Minus7_Random
 	goto AI_ShouldSwitch_Yawn
 
 AI_ShouldSwitch_Nightmares_Minus7_Random:
 	if_random_less_than 16, AI_ShouldSwitch_Yawn
-	score -7
+	score -9
 AI_ShouldSwitch_Yawn:
 	if_holds_item AI_USER, ITEM_CHESTO_BERRY, AI_ShouldSwitch_ChoiceLocked_Check
 	if_holds_item AI_USER, ITEM_LUM_BERRY, AI_ShouldSwitch_ChoiceLocked_Check
@@ -4316,7 +4316,7 @@ AI_ShouldSwitch_Yawn:
 
 AI_ShouldSwitch_Yawn_Minus7_Random:
 	if_random_less_than 16, AI_ShouldSwitch_ChoiceLocked_Check
-	score -7
+	score -9
 AI_ShouldSwitch_ChoiceLocked_Check:
 	is_first_turn_for AI_USER
 	if_equal TRUE, AI_ShouldSwitch_AreSpikesUp
@@ -4365,7 +4365,7 @@ AI_CV_BadlyPoisoned5_RandomMinus7:
 	if_random_less_than 8, AI_ShouldSwitch_RandomSwitch
 AI_CV_BadlyPoisoned7_RandomMinus7:
 	if_random_less_than 4, AI_ShouldSwitch_RandomSwitch
-	score -7
+	score -9
 AI_ShouldSwitch_RandomSwitch:
 	if_random_less_than 128, AI_ShouldSwitch_CheckShedinja
 	if_status AI_TARGET, STATUS1_FREEZE | STATUS1_SLEEP, AI_ShouldSwitch_CheckShedinja
@@ -4376,7 +4376,7 @@ AI_ShouldSwitch_RandomSwitch:
 	goto AI_ShouldSwitch_CheckShedinja
 
 AI_ShouldSwitch_RandomSwitch_Minus7:
-	score -7
+	score -9
 AI_ShouldSwitch_CheckShedinja:
 	if_ability AI_USER, ABILITY_WONDER_GUARD, AI_ShouldSwitch_Shedinja
 	goto AI_ShouldSwitch_CanAIFaint
@@ -4440,7 +4440,7 @@ AI_ShouldSwitch_AICanFaint2:
 	if_has_move_with_effect AI_USER, EFFECT_FAKE_OUT, AI_End
 AI_ShouldSwitch_AICanFaint:
 	if_random_less_than 32, AI_End
-	score -7
+	score -9
 	end
 
 AI_DoubleBattle:
