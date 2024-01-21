@@ -260,6 +260,26 @@ static bool8 ShouldSwitchIfNaturalCure(void)
     return FALSE;
 }
 
+static bool8 ShouldSwitchIfLowScore(void)
+{
+    s32 i;
+    s8 currentScore;
+    s8 maxScore = 0;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        currentScore = gBattleResources->ai->score[i];
+
+        if (maxScore < currentScore)
+            maxScore = currentScore;
+    }
+
+    if (maxScore < 94)
+        return TRUE;
+    else
+        return FALSE;
+}
+
 static bool8 HasSuperEffectiveMoveAgainstOpponents(bool8 noRng)
 {
     u8 opposingPosition;
@@ -524,6 +544,8 @@ static bool8 ShouldSwitch(void)
     if (ShouldSwitchIfPerishSong())
         return TRUE;
     if (ShouldSwitchIfWonderGuard())
+        return TRUE;
+    if (ShouldSwitchIfLowScore())
         return TRUE;
     if (FindMonThatAbsorbsOpponentsMove())
         return TRUE;

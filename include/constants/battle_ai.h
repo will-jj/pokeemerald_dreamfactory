@@ -13,6 +13,10 @@
 #define AI_TYPE2_TARGET 2
 #define AI_TYPE2_USER 3
 #define AI_TYPE_MOVE 4
+#define AI_TYPE1_TARGET_PARTNER 5
+#define AI_TYPE1_USER_PARTNER 6
+#define AI_TYPE2_TARGET_PARTNER 7
+#define AI_TYPE2_USER_PARTNER 8
 
 // type effectiveness
 #define AI_EFFECTIVENESS_x4     160
@@ -37,14 +41,9 @@
 #define AI_SCRIPT_CHECK_BAD_MOVE        (1 << 0)
 #define AI_SCRIPT_TRY_TO_FAINT          (1 << 1)
 #define AI_SCRIPT_CHECK_VIABILITY       (1 << 2)
-#define AI_SCRIPT_SETUP_FIRST_TURN      (1 << 3)
-#define AI_SCRIPT_RISKY                 (1 << 4)
-#define AI_SCRIPT_PREFER_POWER_EXTREMES (1 << 5)
-#define AI_SCRIPT_PREFER_BATON_PASS     (1 << 6)
-#define AI_SCRIPT_DOUBLE_BATTLE         (1 << 7)
-#define AI_SCRIPT_HP_AWARE              (1 << 8)
-#define AI_SCRIPT_TRY_SUNNY_DAY_START   (1 << 9)
-// 10 - 28 are not used
+#define AI_SCRIPT_SHOULD_SWITCH         (1 << 3)
+#define AI_SCRIPT_DOUBLE_BATTLE         (1 << 4)
+// 5 - 28 are not used
 #define AI_SCRIPT_ROAMING               (1 << 29)
 #define AI_SCRIPT_SAFARI                (1 << 30)
 #define AI_SCRIPT_FIRST_BATTLE          (1 << 31)

@@ -52,8 +52,8 @@ static bool8 AIStackPop(void);
 
 static void Cmd_if_random_less_than(void);
 static void Cmd_if_random_greater_than(void);
-static void Cmd_if_random_equal(void);
-static void Cmd_if_random_not_equal(void);
+static void Cmd_if_waking(void);
+static void Cmd_if_badly_poisoned_for_turns(void);
 static void Cmd_score(void);
 static void Cmd_if_hp_less_than(void);
 static void Cmd_if_hp_more_than(void);
@@ -64,7 +64,7 @@ static void Cmd_if_not_status(void);
 static void Cmd_if_status2(void);
 static void Cmd_if_not_status2(void);
 static void Cmd_if_status3(void);
-static void Cmd_if_not_status3(void);
+static void Cmd_removed(void);
 static void Cmd_if_side_affecting(void);
 static void Cmd_if_not_side_affecting(void);
 static void Cmd_if_less_than(void);
@@ -101,7 +101,7 @@ static void Cmd_get_ability(void);
 static void Cmd_get_highest_type_effectiveness(void);
 static void Cmd_if_type_effectiveness(void);
 static void Cmd_if_target(void);
-static void Cmd_get_fainted_previous_turn(void);
+static void Cmd_if_type_effectiveness_with_modifiers(void);
 static void Cmd_if_status_in_party(void);
 static void Cmd_if_status_not_in_party(void);
 static void Cmd_get_weather(void);
@@ -112,7 +112,7 @@ static void Cmd_if_stat_level_more_than(void);
 static void Cmd_if_stat_level_equal(void);
 static void Cmd_if_stat_level_not_equal(void);
 static void Cmd_if_can_faint(void);
-static void Cmd_if_cant_faint(void);
+static void Cmd_consider_imitated_move(void);
 static void Cmd_if_has_move(void);
 static void Cmd_if_doesnt_have_move(void);
 static void Cmd_if_has_move_with_effect(void);
@@ -145,7 +145,7 @@ static void Cmd_if_level_cond(void);
 static void Cmd_if_target_taunted(void);
 static void Cmd_if_target_not_taunted(void);
 static void Cmd_check_ability(void);
-static void Cmd_is_of_type(void);
+static void Cmd_used_considered_move_last_turn(void);
 static void Cmd_if_target_is_ally(void);
 static void Cmd_if_flash_fired(void);
 static void Cmd_if_holds_item(void);
@@ -161,8 +161,8 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
 {
     Cmd_if_random_less_than,                        // 0x0
     Cmd_if_random_greater_than,                     // 0x1
-    Cmd_if_random_equal,                            // 0x2
-    Cmd_if_random_not_equal,                        // 0x3
+    Cmd_if_waking,                                  // 0x2
+    Cmd_if_badly_poisoned_for_turns,                // 0x3
     Cmd_score,                                      // 0x4
     Cmd_if_hp_less_than,                            // 0x5
     Cmd_if_hp_more_than,                            // 0x6
@@ -173,7 +173,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_if_status2,                                 // 0xB
     Cmd_if_not_status2,                             // 0xC
     Cmd_if_status3,                                 // 0xD
-    Cmd_if_not_status3,                             // 0xE
+    Cmd_removed,                                    // 0xE
     Cmd_if_side_affecting,                          // 0xF
     Cmd_if_not_side_affecting,                      // 0x10
     Cmd_if_less_than,                               // 0x11
@@ -210,7 +210,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_highest_type_effectiveness,             // 0x30
     Cmd_if_type_effectiveness,                      // 0x31
     Cmd_if_target,                                  // 0x32
-    Cmd_get_fainted_previous_turn,                  // 0x33
+    Cmd_if_type_effectiveness_with_modifiers,       // 0x33
     Cmd_if_status_in_party,                         // 0x34
     Cmd_if_status_not_in_party,                     // 0x35
     Cmd_get_weather,                                // 0x36
@@ -221,7 +221,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_if_stat_level_equal,                        // 0x3B
     Cmd_if_stat_level_not_equal,                    // 0x3C
     Cmd_if_can_faint,                               // 0x3D
-    Cmd_if_cant_faint,                              // 0x3E
+    Cmd_consider_imitated_move,                     // 0x3E
     Cmd_if_has_move,                                // 0x3F
     Cmd_if_doesnt_have_move,                        // 0x40
     Cmd_if_has_move_with_effect,                    // 0x41
@@ -254,7 +254,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_if_target_taunted,                          // 0x5C
     Cmd_if_target_not_taunted,                      // 0x5D
     Cmd_if_target_is_ally,                          // 0x5E
-    Cmd_is_of_type,                                 // 0x5F
+    Cmd_used_considered_move_last_turn,                                 // 0x5F
     Cmd_check_ability,                              // 0x60
     Cmd_if_flash_fired,                             // 0x61
     Cmd_if_holds_item,                              // 0x62
@@ -369,7 +369,7 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves)
     else if (gBattleTypeFlags & BATTLE_TYPE_FACTORY)
         AI_THINKING_STRUCT->aiFlags = GetAiScriptsInBattleFactory();
     else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_TRAINER_HILL | BATTLE_TYPE_SECRET_BASE))
-        AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_TRY_TO_FAINT;
+        AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_SHOULD_SWITCH;
     else if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
         AI_THINKING_STRUCT->aiFlags = gTrainers[gTrainerBattleOpponent_A].aiFlags | gTrainers[gTrainerBattleOpponent_B].aiFlags;
     else
@@ -677,25 +677,36 @@ static void Cmd_if_random_greater_than(void)
         gAIScriptPtr += 6;
 }
 
-static void Cmd_if_random_equal(void)
+static void Cmd_if_waking(void)
 {
-    u16 random = Random();
+    u8 battlerId;
 
-    if (random % 256 == gAIScriptPtr[1])
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
+    if (gAIScriptPtr[1] == AI_USER)
+        battlerId = sBattler_AI;
     else
-        gAIScriptPtr += 6;
+        battlerId = gBattlerTarget;
+
+    if ((gBattleMons[battlerId].status1 & STATUS1_SLEEP) > STATUS1_SLEEP_TURN(1))
+        gAIScriptPtr += 5;
+    else
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
 }
 
-static void Cmd_if_random_not_equal(void)
+static void Cmd_if_badly_poisoned_for_turns(void)
 {
-    u16 random = Random();
+    u8 battlerId;
 
-    if (random % 256 != gAIScriptPtr[1])
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
+    if (gAIScriptPtr[1] == AI_USER)
+        battlerId = sBattler_AI;
     else
-        gAIScriptPtr += 6;
+        battlerId = gBattlerTarget;
+
+    if ((gBattleMons[battlerId].status1 & STATUS1_TOXIC_COUNTER) >= STATUS1_TOXIC_TURN(gAIScriptPtr[2]))
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
+    else
+        gAIScriptPtr += 5;
 }
+
 
 static void Cmd_score(void)
 {
@@ -857,22 +868,8 @@ static void Cmd_if_status3(void)
         gAIScriptPtr += 10;
 }
 
-static void Cmd_if_not_status3(void)
+static void Cmd_removed(void)
 {
-    u16 battlerId;
-    u32 status;
-
-    if (gAIScriptPtr[1] == AI_USER)
-        battlerId = sBattler_AI;
-    else
-        battlerId = gBattlerTarget;
-
-    status = T1_READ_32(gAIScriptPtr + 2);
-
-    if (!(gStatuses3[battlerId] & status))
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 6);
-    else
-        gAIScriptPtr += 10;
 }
 
 static void Cmd_if_side_affecting(void)
@@ -1130,7 +1127,20 @@ static void Cmd_get_type(void)
     case AI_TYPE_MOVE: // type of move being pointed to
         AI_THINKING_STRUCT->funcResult = gBattleMoves[AI_THINKING_STRUCT->moveConsidered].type;
         break;
+    case AI_TYPE1_USER_PARTNER: // AI partner primary type
+        AI_THINKING_STRUCT->funcResult = gBattleMons[BATTLE_PARTNER(sBattler_AI)].type1;
+        break;
+    case AI_TYPE1_TARGET_PARTNER: // target partner primary type
+        AI_THINKING_STRUCT->funcResult = gBattleMons[BATTLE_PARTNER(gBattlerTarget)].type1;
+        break;
+    case AI_TYPE2_USER_PARTNER: // AI partner secondary type
+        AI_THINKING_STRUCT->funcResult = gBattleMons[BATTLE_PARTNER(sBattler_AI)].type2;
+        break;
+    case AI_TYPE2_TARGET_PARTNER: // target partner secondary type
+        AI_THINKING_STRUCT->funcResult = gBattleMons[BATTLE_PARTNER(gBattlerTarget)].type2;
+        break;
     }
+
     gAIScriptPtr += 2;
 }
 
@@ -1150,16 +1160,14 @@ static u8 BattleAI_GetWantedBattler(u8 wantedBattler)
     }
 }
 
-static void Cmd_is_of_type(void)
+static void Cmd_used_considered_move_last_turn(void)
 {
-    u8 battlerId = BattleAI_GetWantedBattler(gAIScriptPtr[1]);
-
-    if (IS_BATTLER_OF_TYPE(battlerId, gAIScriptPtr[2]))
+    if (gLastMoves[sBattler_AI] == AI_THINKING_STRUCT->moveConsidered)
         AI_THINKING_STRUCT->funcResult = TRUE;
     else
         AI_THINKING_STRUCT->funcResult = FALSE;
 
-    gAIScriptPtr += 3;
+    gAIScriptPtr += 1;
 }
 
 static void Cmd_get_considered_move_power(void)
@@ -1534,14 +1542,14 @@ static void Cmd_if_type_effectiveness(void)
     // This bug is fixed in this mod
     gMoveResultFlags = TypeCalc(gCurrentMove, sBattler_AI, gBattlerTarget);
 
-    if (gBattleMoveDamage == 120) // Super effective STAB.
-        gBattleMoveDamage = AI_EFFECTIVENESS_x2;
-    if (gBattleMoveDamage == 240)
+    if (gBattleMoveDamage >= 180)
         gBattleMoveDamage = AI_EFFECTIVENESS_x4;
-    if (gBattleMoveDamage == 30) // Not very effective STAB.
-        gBattleMoveDamage = AI_EFFECTIVENESS_x0_5;
-    if (gBattleMoveDamage == 15)
+    if (gBattleMoveDamage <= 15)
         gBattleMoveDamage = AI_EFFECTIVENESS_x0_25;
+    if (gBattleMoveDamage >= 90)
+        gBattleMoveDamage = AI_EFFECTIVENESS_x2;
+    if (gBattleMoveDamage <= 30)
+        gBattleMoveDamage = AI_EFFECTIVENESS_x0_5;
 
     if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
         gBattleMoveDamage = AI_EFFECTIVENESS_x0;
@@ -1563,13 +1571,299 @@ static void Cmd_if_target(void)
         gAIScriptPtr += 6;
 }
 
-static void Cmd_get_fainted_previous_turn(void)
+static void Cmd_if_type_effectiveness_with_modifiers(void)
 {
-    gBattlerFainted = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+    u8 damageVar, moveType, hpThreshhold, hpThreshholdHit, attackStage, defenseStage;
+    u16 multiplier, divisor;
+    u32 side, targetAbility;
 
-    AI_THINKING_STRUCT->funcResult = GetBattlerSide(gBattlerFainted);
+    gDynamicBasePower = 0;
+    gBattleStruct->dynamicMoveType = 0;
+    gBattleScripting.dmgMultiplier = 1;
+    gMoveResultFlags = 0;
+    gCritMultiplier = 1;
 
-    gAIScriptPtr += 2;
+    damageVar = AI_EFFECTIVENESS_x1;
+    gBattleMoveDamage = 40;
+    gCurrentMove = AI_THINKING_STRUCT->moveConsidered;
+    side = GET_BATTLER_SIDE(gBattlerTarget);
+
+    // TypeCalc does not assign to gMoveResultFlags, Cmd_typecalc does
+    // This makes the check for gMoveResultFlags below always fail
+    // This is how you get the "dual non-immunity" glitch, where AI
+    // will use ineffective moves on immune pokémon if the second type
+    // has a non-neutral, non-immune effectiveness
+    // This bug is fixed in this mod
+    gMoveResultFlags = TypeCalc(gCurrentMove, sBattler_AI, gBattlerTarget);
+
+    // Get the move type to perform extra checks
+    moveType = gBattleMoves[gCurrentMove].type;
+
+    // Determine if Swarm, Torrent, etc. will activate for the AI User
+    hpThreshhold = gBattleMons[sBattler_AI].maxHP * 4 / 3;
+
+    if (gBattleMons[sBattler_AI].hp <= hpThreshhold)
+        hpThreshholdHit = TRUE;
+    else
+        hpThreshholdHit = FALSE;
+
+    // Get the target's ability to perform extra checks
+    // This is a modified version of the get_ability command
+    if (BATTLE_HISTORY->abilities[gBattlerTarget] != ABILITY_NONE)
+    {
+        targetAbility = BATTLE_HISTORY->abilities[gBattlerTarget];
+    }
+    // Abilities that prevent fleeing.
+    else if (gBattleMons[gBattlerTarget].ability == ABILITY_SHADOW_TAG
+    || gBattleMons[gBattlerTarget].ability == ABILITY_MAGNET_PULL
+    || gBattleMons[gBattlerTarget].ability == ABILITY_ARENA_TRAP)
+    {
+        targetAbility = gBattleMons[gBattlerTarget].ability;
+    }
+    else
+    {
+        if (gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[1] != ABILITY_NONE)
+        {
+            u8 abilityDummyVariable = targetAbility; // Needed to match.
+            if (gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[0] != abilityDummyVariable
+            && gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[1] != abilityDummyVariable)
+            {
+                targetAbility = gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[0];
+            }
+            else
+            {
+                targetAbility = ABILITY_NONE;
+            }
+        }
+        else
+        {
+            targetAbility = gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[0];
+        }
+    }
+
+    if (targetAbility == ABILITY_WONDER_GUARD)
+    {
+        if (gBattleMoveDamage >= 120)
+            gBattleMoveDamage = AI_EFFECTIVENESS_x2;
+        else
+            gBattleMoveDamage = AI_EFFECTIVENESS_x0;
+    }
+    else
+    {
+        // type-specific modifiers
+        switch (moveType)
+        {
+            case TYPE_BUG:
+                if (gBattleMons[sBattler_AI].ability == ABILITY_SWARM && hpThreshholdHit == TRUE)
+                    gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+                break;
+            case TYPE_GRASS:
+                if (gBattleMons[sBattler_AI].ability == ABILITY_OVERGROW && hpThreshholdHit == TRUE)
+                    gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+                break;
+            case TYPE_GROUND:
+                if (targetAbility == ABILITY_LEVITATE)
+                    gBattleMoveDamage = 0;
+                break;
+            case TYPE_ICE:
+                if (targetAbility == ABILITY_THICK_FAT)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+                break;
+            case TYPE_ELECTRIC:
+                if (targetAbility == ABILITY_VOLT_ABSORB)
+                    gBattleMoveDamage = 0;
+
+                if (gStatuses3[sBattler_AI] & STATUS3_CHARGED_UP)
+                    gBattleMoveDamage = gBattleMoveDamage * 2;
+
+                if (gStatuses3[gBattlerTarget] & STATUS3_MUDSPORT)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+                break;
+            case TYPE_WATER:
+                if (targetAbility == ABILITY_WATER_ABSORB)
+                    gBattleMoveDamage = 0;
+
+                if (gBattleWeather & B_WEATHER_RAIN)
+                    gBattleMoveDamage = gBattleMoveDamage * 2;
+
+                if (gBattleMons[sBattler_AI].ability == ABILITY_TORRENT && hpThreshholdHit == TRUE)
+                    gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+
+                if (gBattleWeather & B_WEATHER_SUN)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+                break;
+            case TYPE_FIRE:
+                if (targetAbility == ABILITY_FLASH_FIRE)
+                    gBattleMoveDamage = 0;
+
+                if (gBattleWeather & B_WEATHER_SUN)
+                    gBattleMoveDamage = gBattleMoveDamage * 2;
+
+                if (gBattleMons[sBattler_AI].ability == ABILITY_BLAZE && hpThreshholdHit == TRUE)
+                    gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+
+                if (gBattleWeather & B_WEATHER_RAIN)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+
+                if (targetAbility == ABILITY_THICK_FAT)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+
+                if (gStatuses3[gBattlerTarget] & STATUS3_WATERSPORT)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+
+                break;
+            default:
+                break;
+        }
+
+        // physical/special modifiers, and getting stat stages
+        switch (moveType)
+        {
+            case TYPE_BUG:
+            case TYPE_FIGHTING:
+            case TYPE_FLYING:
+            case TYPE_GHOST:
+            case TYPE_GROUND:
+            case TYPE_NORMAL:
+            case TYPE_POISON:
+            case TYPE_ROCK:
+            case TYPE_STEEL:
+                attackStage = gBattleMons[sBattler_AI].statStages[STAT_ATK];
+                defenseStage = gBattleMons[gBattlerTarget].statStages[STAT_DEF];
+
+                if (gSideStatuses[side] & SIDE_STATUS_REFLECT)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+                break;
+            case TYPE_DARK:
+            case TYPE_DRAGON:
+            case TYPE_ELECTRIC:
+            case TYPE_FIRE:
+            case TYPE_GRASS:
+            case TYPE_ICE:
+            case TYPE_PSYCHIC:
+            case TYPE_WATER:
+                attackStage = gBattleMons[sBattler_AI].statStages[STAT_SPATK];
+                defenseStage = gBattleMons[gBattlerTarget].statStages[STAT_SPDEF];
+
+                if (gSideStatuses[side] & SIDE_STATUS_LIGHTSCREEN)
+                    gBattleMoveDamage = gBattleMoveDamage / 2;
+                break;
+            default:
+                break;
+        }
+
+        switch (attackStage)
+        {
+            case 0:
+                multiplier = 33;
+                break;
+            case 1:
+                multiplier = 36;
+                break;
+            case 2:
+                multiplier = 43;
+                break;
+            case 3:
+                multiplier = 50;
+                break;
+            case 4:
+                multiplier = 60;
+                break;
+            case 5:
+                multiplier = 75;
+                break;
+            case 6:
+                multiplier = 100;
+                break;
+            case 7:
+                multiplier = 133;
+                break;
+            case 8:
+                multiplier = 166;
+                break;
+            case 9:
+                multiplier = 200;
+                break;
+            case 10:
+                multiplier = 250;
+                break;
+            case 11:
+                multiplier = 266;
+                break;
+            case 12:
+                multiplier = 300;
+                break;
+            default:
+                multiplier = 100;
+                break;
+        }
+
+        switch (defenseStage)
+        {
+            case 0:
+                divisor = 33;
+                break;
+            case 1:
+                divisor = 36;
+                break;
+            case 2:
+                divisor = 43;
+                break;
+            case 3:
+                divisor = 50;
+                break;
+            case 4:
+                divisor = 60;
+                break;
+            case 5:
+                divisor = 75;
+                break;
+            case 6:
+                divisor = 100;
+                break;
+            case 7:
+                divisor = 133;
+                break;
+            case 8:
+                divisor = 166;
+                break;
+            case 9:
+                divisor = 200;
+                break;
+            case 10:
+                divisor = 250;
+                break;
+            case 11:
+                divisor = 266;
+                break;
+            case 12:
+                divisor = 300;
+                break;
+            default:
+                divisor = 100;
+                break;
+        }
+
+        // Applying stat stage adjustments
+        gBattleMoveDamage = gBattleMoveDamage * multiplier / divisor;
+
+        if (gBattleMoveDamage >= 160)
+            damageVar = AI_EFFECTIVENESS_x4;
+        if (gBattleMoveDamage <= 15)
+            damageVar = AI_EFFECTIVENESS_x0_25;
+        if (gBattleMoveDamage >= 80)
+            damageVar = AI_EFFECTIVENESS_x2;
+        if (gBattleMoveDamage <= 30)
+            damageVar = AI_EFFECTIVENESS_x0_5;
+    }
+
+    if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
+        damageVar = AI_EFFECTIVENESS_x0;
+
+    if (damageVar == gAIScriptPtr[1])
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
+    else
+        gAIScriptPtr += 6;
 }
 
 static void Cmd_if_status_in_party(void)
@@ -1768,33 +2062,10 @@ static void Cmd_if_can_faint(void)
         gAIScriptPtr += 5;
 }
 
-static void Cmd_if_cant_faint(void)
+static void Cmd_consider_imitated_move(void)
 {
-    if (gBattleMoves[AI_THINKING_STRUCT->moveConsidered].power < 2)
-    {
-        gAIScriptPtr += 5;
-        return;
-    }
-
-    gDynamicBasePower = 0;
-    gBattleStruct->dynamicMoveType = 0;
-    gBattleScripting.dmgMultiplier = 1;
-    gMoveResultFlags = 0;
-    gCritMultiplier = 1;
-    gCurrentMove = AI_THINKING_STRUCT->moveConsidered;
-    AI_CalcDmg(sBattler_AI, gBattlerTarget);
-    TypeCalc(gCurrentMove, sBattler_AI, gBattlerTarget);
-
-    gBattleMoveDamage = gBattleMoveDamage * AI_THINKING_STRUCT->simulatedRNG[AI_THINKING_STRUCT->movesetIndex] / 100;
-
-    // Moves always do at least 1 damage.
-    if (gBattleMoveDamage == 0)
-        gBattleMoveDamage = 1;
-
-    if (gBattleMons[gBattlerTarget].hp > gBattleMoveDamage)
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
-    else
-        gAIScriptPtr += 5;
+    AI_THINKING_STRUCT->moveConsidered = gLastMoves[gBattlerTarget];
+    gAIScriptPtr += 2;
 }
 
 static void Cmd_if_has_move(void)
@@ -2251,8 +2522,11 @@ static void Cmd_if_ai_can_faint(void)
 
 static void Cmd_get_highest_type_effectiveness_from_target(void)
 {
-    s32 i;
+    u8 damageVar, moveType, hpThreshhold, hpThreshholdHit, attackStage, defenseStage;
     u8 *dynamicMoveType;
+    u16 multiplier, divisor;
+    u32 side, userAbility;
+    s32 i;
 
     gDynamicBasePower = 0;
     dynamicMoveType = &gBattleStruct->dynamicMoveType;
@@ -2261,6 +2535,17 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
     gMoveResultFlags = 0;
     gCritMultiplier = 1;
     AI_THINKING_STRUCT->funcResult = 0;
+    damageVar = AI_EFFECTIVENESS_x1;
+    side = GET_BATTLER_SIDE(sBattler_AI);
+    userAbility = gBattleMons[sBattler_AI].ability;
+
+    // Determine if Swarm, Torrent, etc. will activate for the AI Target
+    hpThreshhold = gBattleMons[gBattlerTarget].maxHP * 4 / 3;
+
+    if (gBattleMons[gBattlerTarget].hp <= hpThreshhold)
+        hpThreshholdHit = TRUE;
+    else
+        hpThreshholdHit = FALSE;
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
@@ -2271,25 +2556,240 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
         {
             // TypeCalc does not assign to gMoveResultFlags, Cmd_typecalc does
             // This makes the check for gMoveResultFlags below always fail
-            // in the original game. But this is fixed here.
+            // This is how you get the "dual non-immunity" glitch, where AI
+            // will use ineffective moves on immune pokémon if the second type
+            // has a non-neutral, non-immune effectiveness
+            // This bug is fixed in this mod
             gMoveResultFlags = TypeCalc(gCurrentMove, gBattlerTarget, sBattler_AI);
 
-            if (gBattleMoveDamage == 120) // Super effective STAB.
-                gBattleMoveDamage = AI_EFFECTIVENESS_x2;
-            if (gBattleMoveDamage == 240)
-                gBattleMoveDamage = AI_EFFECTIVENESS_x4;
-            if (gBattleMoveDamage == 30) // Not very effective STAB.
-                gBattleMoveDamage = AI_EFFECTIVENESS_x0_5;
-            if (gBattleMoveDamage == 15)
-                gBattleMoveDamage = AI_EFFECTIVENESS_x0_25;
+            // Get the move type to perform extra checks
+            moveType = gBattleMoves[gCurrentMove].type;
 
-            if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
-                gBattleMoveDamage = AI_EFFECTIVENESS_x0;
+            if (userAbility == ABILITY_WONDER_GUARD)
+            {
+                if (gBattleMoveDamage >= 120)
+                    gBattleMoveDamage = AI_EFFECTIVENESS_x2;
+                else
+                    gBattleMoveDamage = AI_EFFECTIVENESS_x0;
+            }
+            else
+            {
+                // type-specific modifiers
+                switch (moveType)
+                {
+                    case TYPE_BUG:
+                        if (gBattleMons[gBattlerTarget].ability == ABILITY_SWARM && hpThreshholdHit == TRUE)
+                            gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+                        break;
+                    case TYPE_GRASS:
+                        if (gBattleMons[gBattlerTarget].ability == ABILITY_OVERGROW && hpThreshholdHit == TRUE)
+                            gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+                        break;
+                    case TYPE_GROUND:
+                        if (userAbility == ABILITY_LEVITATE)
+                            gBattleMoveDamage = 0;
+                        break;
+                    case TYPE_ICE:
+                        if (userAbility == ABILITY_THICK_FAT)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+                        break;
+                    case TYPE_ELECTRIC:
+                        if (userAbility == ABILITY_VOLT_ABSORB)
+                            gBattleMoveDamage = 0;
 
-            if (AI_THINKING_STRUCT->funcResult < gBattleMoveDamage)
-                AI_THINKING_STRUCT->funcResult = gBattleMoveDamage;
+                        if (gStatuses3[gBattlerTarget] & STATUS3_CHARGED_UP)
+                            gBattleMoveDamage = gBattleMoveDamage * 2;
+
+                        if (gStatuses3[sBattler_AI] & STATUS3_MUDSPORT)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+                        break;
+                    case TYPE_WATER:
+                        if (userAbility == ABILITY_WATER_ABSORB)
+                            gBattleMoveDamage = 0;
+
+                        if (gBattleWeather & B_WEATHER_RAIN)
+                            gBattleMoveDamage = gBattleMoveDamage * 2;
+
+                        if (gBattleMons[gBattlerTarget].ability == ABILITY_TORRENT && hpThreshholdHit == TRUE)
+                            gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+
+                        if (gBattleWeather & B_WEATHER_SUN)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+                        break;
+                    case TYPE_FIRE:
+                        if (userAbility == ABILITY_FLASH_FIRE)
+                            gBattleMoveDamage = 0;
+
+                        if (gBattleWeather & B_WEATHER_SUN)
+                            gBattleMoveDamage = gBattleMoveDamage * 2;
+
+                        if (gBattleMons[gBattlerTarget].ability == ABILITY_BLAZE && hpThreshholdHit == TRUE)
+                            gBattleMoveDamage = gBattleMoveDamage * 4 / 3;
+
+                        if (gBattleWeather & B_WEATHER_RAIN)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+
+                        if (userAbility == ABILITY_THICK_FAT)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+
+                        if (gStatuses3[sBattler_AI] & STATUS3_WATERSPORT)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+
+                        break;
+                    default:
+                        break;
+                }
+
+                // physical/special modifiers, and getting stat stages
+                switch (moveType)
+                {
+                    case TYPE_BUG:
+                    case TYPE_FIGHTING:
+                    case TYPE_FLYING:
+                    case TYPE_GHOST:
+                    case TYPE_GROUND:
+                    case TYPE_NORMAL:
+                    case TYPE_POISON:
+                    case TYPE_ROCK:
+                    case TYPE_STEEL:
+                        attackStage = gBattleMons[gBattlerTarget].statStages[STAT_ATK];
+                        defenseStage = gBattleMons[sBattler_AI].statStages[STAT_DEF];
+
+                        if (gSideStatuses[side] & SIDE_STATUS_REFLECT)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+                        break;
+                    case TYPE_DARK:
+                    case TYPE_DRAGON:
+                    case TYPE_ELECTRIC:
+                    case TYPE_FIRE:
+                    case TYPE_GRASS:
+                    case TYPE_ICE:
+                    case TYPE_PSYCHIC:
+                    case TYPE_WATER:
+                        attackStage = gBattleMons[gBattlerTarget].statStages[STAT_SPATK];
+                        defenseStage = gBattleMons[sBattler_AI].statStages[STAT_SPDEF];
+
+                        if (gSideStatuses[side] & SIDE_STATUS_LIGHTSCREEN)
+                            gBattleMoveDamage = gBattleMoveDamage / 2;
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (attackStage)
+                {
+                    case 0:
+                        multiplier = 33;
+                        break;
+                    case 1:
+                        multiplier = 36;
+                        break;
+                    case 2:
+                        multiplier = 43;
+                        break;
+                    case 3:
+                        multiplier = 50;
+                        break;
+                    case 4:
+                        multiplier = 60;
+                        break;
+                    case 5:
+                        multiplier = 75;
+                        break;
+                    case 6:
+                        multiplier = 100;
+                        break;
+                    case 7:
+                        multiplier = 133;
+                        break;
+                    case 8:
+                        multiplier = 166;
+                        break;
+                    case 9:
+                        multiplier = 200;
+                        break;
+                    case 10:
+                        multiplier = 250;
+                        break;
+                    case 11:
+                        multiplier = 266;
+                        break;
+                    case 12:
+                        multiplier = 300;
+                        break;
+                    default:
+                        multiplier = 100;
+                        break;
+                }
+
+                switch (defenseStage)
+                {
+                    case 0:
+                        divisor = 33;
+                        break;
+                    case 1:
+                        divisor = 36;
+                        break;
+                    case 2:
+                        divisor = 43;
+                        break;
+                    case 3:
+                        divisor = 50;
+                        break;
+                    case 4:
+                        divisor = 60;
+                        break;
+                    case 5:
+                        divisor = 75;
+                        break;
+                    case 6:
+                        divisor = 100;
+                        break;
+                    case 7:
+                        divisor = 133;
+                        break;
+                    case 8:
+                        divisor = 166;
+                        break;
+                    case 9:
+                        divisor = 200;
+                        break;
+                    case 10:
+                        divisor = 250;
+                        break;
+                    case 11:
+                        divisor = 266;
+                        break;
+                    case 12:
+                        divisor = 300;
+                        break;
+                    default:
+                        divisor = 100;
+                        break;
+                }
+
+                // Applying stat stage adjustments
+                gBattleMoveDamage = gBattleMoveDamage * multiplier / divisor;
+
+                if (damageVar < gBattleMoveDamage)
+                    damageVar = gBattleMoveDamage;
+            }
         }
     }
+
+    if (damageVar >= 160)
+        damageVar = AI_EFFECTIVENESS_x4;
+    if (damageVar <= 15)
+        damageVar = AI_EFFECTIVENESS_x0_25;
+    if (damageVar >= 80)
+        damageVar = AI_EFFECTIVENESS_x2;
+    if (damageVar <= 30)
+        damageVar = AI_EFFECTIVENESS_x0_5;
+
+    if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
+        damageVar = AI_EFFECTIVENESS_x0;
+
+    AI_THINKING_STRUCT->funcResult = damageVar;
 
     gAIScriptPtr += 1;
 }

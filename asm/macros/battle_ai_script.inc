@@ -10,16 +10,17 @@
 	.4byte \param1
 	.endm
 
-	.macro if_random_equal param0:req, param1:req
+	.macro if_waking battler:req, param1:req
 	.byte 0x2
-	.byte \param0
+	.byte \battler
 	.4byte \param1
 	.endm
 
-	.macro if_random_not_equal param0:req, param1:req
+	.macro if_badly_poisoned_for_turns battler:req, param1:req, param2:req
 	.byte 0x3
-	.byte \param0
+	.byte \battler
 	.4byte \param1
+	.4byte \param2
 	.endm
 
 	.macro score param0:req
@@ -90,11 +91,10 @@
 	.4byte \param2
 	.endm
 
-	.macro if_not_status3 battler:req, status3:req, param2:req
+	.macro is_of_type battler:req, type:req
 	.byte 0xe
 	.byte \battler
-	.4byte \status3
-	.4byte \param2
+	.byte \type
 	.endm
 
 	.macro if_side_affecting battler:req, sidestatus:req, param2:req
@@ -293,8 +293,10 @@
 	.4byte \param1
 	.endm
 
-	.macro get_fainted_previous_turn
+	.macro if_type_effectiveness_with_modifiers param0:req, param1:req
 	.byte 0x33
+	.byte \param0
+	.4byte \param1
 	.endm
 
 	.macro if_status_in_party battler:req, status1:req, param2:req
@@ -364,9 +366,8 @@
 	.4byte \param0
 	.endm
 
-	.macro if_cant_faint param0:req
+	.macro consider_imitated_move
 	.byte 0x3e
-	.4byte \param0
 	.endm
 
 	.macro if_has_move battler:req, param1:req, param2:req
@@ -531,10 +532,8 @@
 	.4byte \param0
 	.endm
 
-	.macro is_of_type battler:req, type:req
+	.macro used_considered_move_last_turn
 	.byte 0x5f
-	.byte \battler
-	.byte \type
 	.endm
 
 	.macro check_ability battler:req, ability:req
