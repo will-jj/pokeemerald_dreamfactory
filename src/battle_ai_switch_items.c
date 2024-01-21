@@ -275,9 +275,15 @@ static bool8 ShouldSwitchIfLowScore(void)
     }
 
     if (maxScore < 94)
+    {
+        *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
+        BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);
         return TRUE;
+    }
     else
+    {
         return FALSE;
+    }
 }
 
 static bool8 HasSuperEffectiveMoveAgainstOpponents(bool8 noRng)
