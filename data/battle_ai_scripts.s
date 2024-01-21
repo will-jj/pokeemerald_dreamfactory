@@ -810,6 +810,7 @@ AI_CheckViability_CheckMovesAndEffects:
 	if_in_bytes AI_CV_ChargeUp_EffList, AI_CV_ChargeUpMove
 	if_in_bytes AI_CV_Trap_EffList, AI_CV_Trap
 	if_in_bytes AI_CV_ChangeAbility_EffList, AI_CV_ChangeSelfAbility
+	if_in_bytes AI_CV_Recoil_EffList, AI_CV_Recoil
 	if_in_bytes AI_CV_DiscouragedEffList, AI_CV_GeneralDiscourage
 	if_effect EFFECT_EXPLOSION, AI_CV_SelfKO
 	if_effect EFFECT_CURSE, AI_CV_Curse
@@ -923,6 +924,15 @@ AI_CV_Sleep:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
 	if_not_equal EFFECT_SLEEP, AI_CV_SleepEncourageSlpDamage_Check
+	if_has_move_with_effect AI_USER, EFFECT_SUBSTITUTE, AI_CV_Sleep_CheckSubstitute
+	goto AI_CV_Sleep_RandomPlus30
+
+AI_CV_Sleep_CheckSubstitute:
+	if_hp_less_than AI_USER, 25, AI_CV_Sleep_RandomPlus30
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_Sleep_RandomPlus30
+	goto AI_CV_SleepEncourageSlpDamage_Check
+
+AI_CV_Sleep_RandomPlus30:
 	if_random_less_than 224, AI_CV_SleepEncourageSlpDamage_Check
 	score +30
 AI_CV_SleepEncourageSlpDamage_Check:
@@ -1655,6 +1665,7 @@ AI_CV_HealWeather_Minus8:
 AI_CV_Heal:
 	if_hp_more_than AI_USER, 80, AI_CV_Heal_HighHP
 	if_target_faster AI_CV_Heal_Slower
+	if_ai_can_faint AI_CV_Heal_Plus2
 	if_hp_less_than AI_USER, 48, AI_CV_Heal_Plus2
 	if_hp_less_than AI_USER, 60, AI_CV_Heal_CheckSnatch
 	if_random_less_than 70, AI_CV_Heal_CheckSnatch
@@ -2343,11 +2354,31 @@ AI_CV_AlwaysHitRandom:
 AI_CV_SelfKO:
 	score -1
 	if_stat_level_more_than AI_TARGET, STAT_EVASION, 6, AI_CV_SelfKO_HighRisk
-	goto AI_CV_SuicideCheck
+	goto AI_CV_SelfKO_CheckProtect
 
 AI_CV_SelfKO_HighRisk:
-	if_random_less_than 192, AI_CV_SuicideCheck
+	if_random_less_than 192, AI_CV_SelfKO_CheckProtect
 	score -2
+AI_CV_SelfKO_CheckProtect:
+	if_has_move_with_effect AI_TARGET, EFFECT_PROTECT, AI_CV_SelfKO_CheckProtect2
+	goto AI_CV_SuicideCheck
+
+AI_CV_SelfKO_CheckProtect2:
+	get_protect_count AI_TARGET
+	if_less_than 2, AI_CV_SelfKO_RiskOfProtect
+	goto AI_CV_SelfKO_CheckCanFaint
+
+AI_CV_SelfKO_RiskOfProtect:
+	if_random_less_than 160, AI_CV_SelfKO_CheckCanFaint
+	score -2
+AI_CV_SelfKO_CheckCanFaint:
+	if_ai_can_faint AI_CV_SelfKO_CanFaint
+	goto AI_CV_SuicideCheck
+
+AI_CV_SelfKO_CanFaint:
+	if_can_faint AI_CV_SuicideCheck
+	if_random_less_than 32, AI_CV_SuicideCheck
+	score +4
 	goto AI_CV_SuicideCheck
 
 AI_CV_Grudge:
@@ -4140,8 +4171,8 @@ AI_CV_Safeguard_Encourage:
 	score +2
 	end
 
-
-
+AI_CV_Recoil:
+	if_hp_more_than AI_USER, 10, AI_End
 AI_CV_SuicideCheck:
 	count_usable_party_mons AI_USER
 	if_more_than 0, AI_CV_SuicideCheckEnd
@@ -5035,6 +5066,11 @@ AI_CV_Trap_EffList:
 AI_CV_ChangeAbility_EffList:
 	.byte EFFECT_ROLE_PLAY
 	.byte EFFECT_SKILL_SWAP
+	.byte -1
+
+AI_CV_Recoil_EffList:
+	.byte EFFECT_DOUBLE_EDGE
+	.byte EFFECT_RECOIL
 	.byte -1
 
 AI_CV_DiscouragedEffList:
