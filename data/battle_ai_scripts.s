@@ -1483,6 +1483,7 @@ AI_CV_DefensesUp_Plus1:
 	score +1
 AI_CV_Stats:
 	if_ai_can_faint AI_CV_Stats_Minus7
+	if_any_move_encored AI_USER, AI_CV_Stats_Minus7
 	if_hp_not_equal AI_USER, 100, AI_CV_Stats2
 	if_has_move_with_effect AI_USER, EFFECT_SUBSTITUTE, AI_CV_Stats_Minus2_Random
 AI_CV_Stats2:
