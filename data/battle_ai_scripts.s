@@ -4444,13 +4444,13 @@ AI_ShouldSwitch_AICanFaint_LookForPriority:
 	if_status AI_USER, STATUS1_SLEEP, AI_ShouldSwitch_AICanFaint_ReallyAsleep
 	if_status AI_USER, STATUS1_FREEZE, AI_End
 	if_status AI_USER, STATUS1_ANY, AI_ShouldSwitch_AICanFaint_CheckMidHP
-	goto AI_ShouldSwitch_AICanFaint
+	goto AI_ShouldSwitch_AICanFaint_CheckHealingMoves
 
 AI_ShouldSwitch_AICanFaint_ReallyAsleep:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
 	if_in_bytes AI_UseInSleep, AI_ShouldSwitch_AICanFaint_CheckHighHP
-	if_waking AI_USER, AI_ShouldSwitch_AICanFaint
+	if_waking AI_USER, AI_ShouldSwitch_AICanFaint_CheckHealingMoves
 	goto AI_ShouldSwitch_AICanFaint_Minus12
 
 AI_ShouldSwitch_AICanFaint_CheckHighHP:
@@ -4465,10 +4465,17 @@ AI_ShouldSwitch_AICanFaint_CheckHealingMoves:
 	if_has_move_with_effect AI_USER, EFFECT_REST, AI_ShouldSwitch_AICanFaint_CheckLowHP
 	if_has_move_with_effect AI_USER, EFFECT_SOFTBOILED, AI_ShouldSwitch_AICanFaint_CheckLowHP
 	if_has_move_with_effect AI_USER, EFFECT_RESTORE_HP, AI_ShouldSwitch_AICanFaint_CheckLowHP
-AI_ShouldSwitch_AICanFaint:
 	if_hp_less_than AI_USER, 55, AI_End
 AI_ShouldSwitch_AICanFaint_CheckLowHP:
 	if_hp_less_than AI_USER, 24, AI_End
+	if_has_move_with_effect AI_USER, EFFECT_PROTECT, AI_ShouldSwitch_AICanFaint_CheckProtect
+	goto AI_ShouldSwitch_AICanFaint_CheckFakeOut
+
+AI_ShouldSwitch_AICanFaint_CheckProtect:
+	get_last_used_bank_move AI_USER
+	get_move_effect_from_result
+	if_not_equal EFFECT_PROTECT, AI_End
+AI_ShouldSwitch_AICanFaint_CheckFakeOut:
 	is_first_turn_for AI_USER
 	if_equal FALSE, AI_ShouldSwitch_AICanFaint_Minus12
 	if_has_move_with_effect AI_USER, EFFECT_FAKE_OUT, AI_End
