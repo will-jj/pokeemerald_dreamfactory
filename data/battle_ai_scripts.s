@@ -1482,6 +1482,7 @@ AI_CV_DefensesUp_Plus1:
 	if_random_less_than 48, AI_CV_Stats
 	score +1
 AI_CV_Stats:
+	if_ai_can_faint AI_CV_Stats_Minus7
 	if_hp_not_equal AI_USER, 100, AI_CV_Stats2
 	if_has_move_with_effect AI_USER, EFFECT_SUBSTITUTE, AI_CV_Stats_Minus2_Random
 AI_CV_Stats2:
@@ -1530,6 +1531,10 @@ AI_CV_Stats_Minus2_Random:
 	if_random_less_than 96, AI_End
 AI_CV_Stats_Minus2:
 	score -2
+	end
+
+AI_CV_Stats_Minus7:
+	score -7
 	end
 
 AI_CV_CurseGhost:
