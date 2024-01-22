@@ -249,7 +249,7 @@ AI_CheckBadMove_CheckEffect:
 	if_in_bytes AI_CBM_ConsiderAllStats, AI_CBM_Haze
 	if_in_bytes AI_CBM_Psn_EffList, AI_CBM_Toxic
 	if_in_bytes AI_CBM_Confuse_EffList, AI_CBM_Confuse
-	if_in_bytes AI_CBM_UseInSleep, AI_CBM_DamageDuringSleep
+	if_in_bytes AI_UseInSleep, AI_CBM_DamageDuringSleep
 	if_in_bytes AI_CBM_Stockpile_EffList, AI_CBM_SpitUpAndSwallow
 	if_in_bytes AI_CBM_TrickAndKnockOff_EffList, AI_CBM_TrickAndKnockOff
 	if_effect EFFECT_BELLY_DRUM, AI_CBM_BellyDrum
@@ -4278,36 +4278,33 @@ AI_TryToFaint_Minus10:
 	end
 
 AI_ShouldSwitch:
-	get_considered_move_effect
-	if_in_bytes AI_ImitatingMoves, AI_ShouldSwitch_MirrorMove
-	goto AI_ShouldSwitch_Seeded
-
-AI_ShouldSwitch_MirrorMove:
-	if_target_faster Score_Minus10
+	count_usable_party_mons AI_USER
+	if_equal 0, AI_End
+	is_first_turn_for AI_TARGET
+	if_equal TRUE, AI_ShouldSwitch_Seeded
 	is_first_turn_for AI_USER
-	if_equal TRUE, Score_Minus10
-	consider_imitated_move
+	if_equal FALSE, AI_ShouldSwitch_Seeded
+	get_turn_count
+	if_more_than 5, AI_ShouldSwitch_Seeded
+	score +12
 AI_ShouldSwitch_Seeded:
 	if_status3 AI_USER, STATUS3_LEECHSEED, AI_ShouldSwitch_Seeded_Minus7
 	goto AI_ShouldSwitch_Cursed
 
 AI_ShouldSwitch_Seeded_Minus7:
-	if_random_less_than 4, AI_ShouldSwitch_Cursed
-	score -8
+	score -7
 AI_ShouldSwitch_Cursed:
 	if_status2 AI_USER, STATUS2_CURSED, AI_ShouldSwitch_Cursed_Minus8
 	goto AI_ShouldSwitch_Nightmares
 
 AI_ShouldSwitch_Cursed_Minus8:
-	if_random_less_than 4, AI_ShouldSwitch_Nightmares
-	score -9
+	score -8
 AI_ShouldSwitch_Nightmares:
 	if_status2 AI_USER, STATUS2_NIGHTMARE, AI_ShouldSwitch_Nightmares_Minus7_Random
 	goto AI_ShouldSwitch_Yawn
 
 AI_ShouldSwitch_Nightmares_Minus7_Random:
-	if_random_less_than 16, AI_ShouldSwitch_Yawn
-	score -9
+	score -8
 AI_ShouldSwitch_Yawn:
 	if_holds_item AI_USER, ITEM_CHESTO_BERRY, AI_ShouldSwitch_ChoiceLocked_Check
 	if_holds_item AI_USER, ITEM_LUM_BERRY, AI_ShouldSwitch_ChoiceLocked_Check
@@ -4315,8 +4312,7 @@ AI_ShouldSwitch_Yawn:
 	goto AI_ShouldSwitch_ChoiceLocked_Check
 
 AI_ShouldSwitch_Yawn_Minus7_Random:
-	if_random_less_than 16, AI_ShouldSwitch_ChoiceLocked_Check
-	score -9
+	score -8
 AI_ShouldSwitch_ChoiceLocked_Check:
 	is_first_turn_for AI_USER
 	if_equal TRUE, AI_ShouldSwitch_AreSpikesUp
@@ -4329,7 +4325,6 @@ AI_ShouldSwitch_ChoiceLocked:
 	if_equal EFFECT_SLEEP_TALK, AI_ShouldSwitch_ChoiceLocked_Minus30
 	used_considered_move_last_turn
 	if_equal TRUE, AI_ShouldSwitch_AreSpikesUp
-	if_random_less_than 4, AI_ShouldSwitch_AreSpikesUp
 AI_ShouldSwitch_ChoiceLocked_Minus30:
 	score -30
 AI_ShouldSwitch_AreSpikesUp:
@@ -4337,7 +4332,6 @@ AI_ShouldSwitch_AreSpikesUp:
 	goto AI_ShouldSwitch_CheckEncore
 
 AI_ShouldSwitch_SpikesAreUp_Plus2:
-	if_random_less_than 4, AI_ShouldSwitch_CheckEncore
 	score +2
 AI_ShouldSwitch_CheckEncore:
 	if_any_move_encored AI_USER, AI_ShouldSwitch_CheckEncore_CheckMove
@@ -4347,36 +4341,24 @@ AI_ShouldSwitch_CheckEncore_CheckMove:
 	used_considered_move_last_turn
 	if_equal FALSE, AI_ShouldSwitch_CheckEncore_Minus30
 	if_holds_item AI_USER, ITEM_CHOICE_BAND, AI_ShouldSwitch_CheckBadlyPoisoned
-	score -6
+	score -7
 	goto AI_ShouldSwitch_CheckBadlyPoisoned
 
 AI_ShouldSwitch_CheckEncore_Minus30:
 	score -30
 AI_ShouldSwitch_CheckBadlyPoisoned:
-	if_not_status AI_USER, STATUS1_TOXIC_POISON, AI_ShouldSwitch_RandomSwitch
-	if_badly_poisoned_for_turns AI_USER, 7, AI_CV_BadlyPoisoned7_RandomMinus7
-	if_badly_poisoned_for_turns AI_USER, 5, AI_CV_BadlyPoisoned5_RandomMinus7
-	if_badly_poisoned_for_turns AI_USER, 3, AI_CV_BadlyPoisoned3_RandomMinus7
-	goto AI_ShouldSwitch_RandomSwitch
-
-AI_CV_BadlyPoisoned3_RandomMinus7:
-	if_random_less_than 48, AI_ShouldSwitch_RandomSwitch
-AI_CV_BadlyPoisoned5_RandomMinus7:
-	if_random_less_than 8, AI_ShouldSwitch_RandomSwitch
-AI_CV_BadlyPoisoned7_RandomMinus7:
-	if_random_less_than 4, AI_ShouldSwitch_RandomSwitch
-	score -9
-AI_ShouldSwitch_RandomSwitch:
-	if_random_less_than 128, AI_ShouldSwitch_CheckShedinja
-	if_status AI_TARGET, STATUS1_FREEZE | STATUS1_SLEEP, AI_ShouldSwitch_CheckShedinja
-	if_status AI_USER, STATUS1_FREEZE | STATUS1_SLEEP, AI_ShouldSwitch_CheckShedinja
-	if_hp_less_than AI_USER, 25, AI_ShouldSwitch_CheckShedinja
-	if_user_faster AI_ShouldSwitch_CheckShedinja
-	if_ai_can_faint AI_ShouldSwitch_RandomSwitch_Minus7
+	if_not_status AI_USER, STATUS1_TOXIC_POISON, AI_ShouldSwitch_CheckShedinja
+	if_badly_poisoned_for_turns AI_USER, 7, AI_CV_BadlyPoisoned7_Minus12
+	if_badly_poisoned_for_turns AI_USER, 5, AI_CV_BadlyPoisoned5_Minus9
+	if_badly_poisoned_for_turns AI_USER, 3, AI_CV_BadlyPoisoned3_Minus6
 	goto AI_ShouldSwitch_CheckShedinja
 
-AI_ShouldSwitch_RandomSwitch_Minus7:
-	score -9
+AI_CV_BadlyPoisoned7_Minus12:
+	score -3
+AI_CV_BadlyPoisoned5_Minus9:
+	score -3
+AI_CV_BadlyPoisoned3_Minus6:
+	score -6
 AI_ShouldSwitch_CheckShedinja:
 	if_ability AI_USER, ABILITY_WONDER_GUARD, AI_ShouldSwitch_Shedinja
 	goto AI_ShouldSwitch_CanAIFaint
@@ -4414,33 +4396,30 @@ AI_ShouldSwitch_CanAIFaint_SpeedCheck:
 
 AI_ShouldSwitch_AICanFaint_LookForPriority:
 	if_has_move_with_effect AI_USER, EFFECT_ENDURE, AI_End
-	if_random_less_than 4, AI_ShouldSwitch_AICanFaint
 	if_has_move_with_effect AI_USER, EFFECT_QUICK_ATTACK, AI_End
-	get_last_used_bank_move AI_USER
-	get_move_effect_from_result
-	if_equal EFFECT_SLEEP_TALK, AI_ShouldSwitch_AICanFaint_CheckForHighHP
-	if_equal EFFECT_SNORE, AI_ShouldSwitch_AICanFaint_CheckForHighHP
-	if_status AI_USER, STATUS1_FREEZE, AI_End
 	if_status AI_USER, STATUS1_SLEEP, AI_ShouldSwitch_AICanFaint_ReallyAsleep
-	if_status AI_USER, STATUS1_ANY, AI_ShouldSwitch_AICanFaint_CheckForMidHP
-	goto AI_ShouldSwitch_AICanFaint2
+	if_status AI_USER, STATUS1_FREEZE, AI_End
+	if_status AI_USER, STATUS1_ANY, AI_ShouldSwitch_AICanFaint_CheckMidHP
+	goto AI_ShouldSwitch_AICanFaint
 
 AI_ShouldSwitch_AICanFaint_ReallyAsleep:
-	if_waking AI_USER, AI_ShouldSwitch_AICanFaint2
-	goto AI_End
+	get_last_used_bank_move AI_USER
+	get_move_effect_from_result
+	if_in_bytes AI_UseInSleep, AI_ShouldSwitch_AICanFaint_CheckHighHP
+	if_waking AI_USER, AI_ShouldSwitch_AICanFaint
+	goto AI_ShouldSwitch_AICanFaint_Minus16
 
-AI_ShouldSwitch_AICanFaint_CheckForHighHP:
+AI_ShouldSwitch_AICanFaint_CheckHighHP:
 	if_hp_less_than AI_USER, 70, AI_End
-AI_ShouldSwitch_AICanFaint_CheckForMidHP:
+AI_ShouldSwitch_AICanFaint_CheckMidHP:
 	if_hp_less_than AI_USER, 38, AI_End
-AI_ShouldSwitch_AICanFaint2:
+AI_ShouldSwitch_AICanFaint:
 	if_hp_less_than AI_USER, 25, AI_End
 	is_first_turn_for AI_USER
-	if_equal FALSE, AI_ShouldSwitch_AICanFaint
+	if_equal FALSE, AI_ShouldSwitch_AICanFaint_Minus16
 	if_has_move_with_effect AI_USER, EFFECT_FAKE_OUT, AI_End
-AI_ShouldSwitch_AICanFaint:
-	if_random_less_than 32, AI_End
-	score -9
+AI_ShouldSwitch_AICanFaint_Minus16:
+	score -16
 	end
 
 AI_DoubleBattle:
@@ -4781,11 +4760,6 @@ AI_CBM_Confuse_EffList:
 	.byte EFFECT_FLATTER
 	.byte EFFECT_SWAGGER
 	.byte EFFECT_TEETER_DANCE
-	.byte -1
-
-AI_CBM_UseInSleep:
-	.byte EFFECT_SNORE
-	.byte EFFECT_SLEEP_TALK
 	.byte -1
 
 AI_CBM_Stockpile_EffList:
@@ -5143,6 +5117,11 @@ AI_DoubleBattle_GroundWeak:
 	.byte TYPE_FIRE
 	.byte TYPE_POISON
 	.byte TYPE_ROCK
+	.byte -1
+
+AI_UseInSleep:
+	.byte EFFECT_SNORE
+	.byte EFFECT_SLEEP_TALK
 	.byte -1
 
 AI_Sleep_EffList:
