@@ -133,13 +133,15 @@ AI_CBM_TypeMatchup_Modifiers_CheckPartySize:
 	count_usable_party_mons AI_USER
 	if_equal 0, AI_CBM_TypeMatchup_Modifiers_LastMon
 AI_CBM_TypeMatchup_Modifiers:
-	if_type_effectiveness_with_modifiers AI_EFFECTIVENESS_x0_25, Score_Minus30
-	if_type_effectiveness_with_modifiers AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Modifiers_CheckUnmodified
+	if_type_effectiveness_with_modifiers AI_EFFECTIVENESS_x0_25, AI_CBM_TypeMatchup_Modifiers_CheckUnmodifiedQuarterDmg
+	if_type_effectiveness_with_modifiers AI_EFFECTIVENESS_x0_5, AI_CBM_TypeMatchup_Modifiers_CheckUnmodifiedHalfDmg
 	goto AI_CBM_TypeMatchup_WeaknessesPreCheck
 
-AI_CBM_TypeMatchup_Modifiers_CheckUnmodified:
-	if_type_effectiveness_with_modifiers AI_EFFECTIVENESS_x0_5, Score_Minus7
-	goto Score_Minus5
+AI_CBM_TypeMatchup_Modifiers_CheckUnmodifiedQuarterDmg:
+	if_type_effectiveness AI_EFFECTIVENESS_x0_25, Score_Minus30
+AI_CBM_TypeMatchup_Modifiers_CheckUnmodifiedHalfDmg:
+	if_type_effectiveness AI_EFFECTIVENESS_x0_5, Score_Minus7
+	goto Score_Minus1
 
 AI_CBM_TypeMatchup_Modifiers_LastMon:
 	if_type_effectiveness_with_modifiers AI_EFFECTIVENESS_x0_25, Score_Minus3
@@ -188,6 +190,8 @@ AI_CBM_STAB:
 	get_curr_move_type
 	if_equal AI_TYPE1_USER, AI_CBM_CheckSoundproof
 	if_equal AI_TYPE2_USER, AI_CBM_CheckSoundproof
+	get_considered_move_effect
+	if_equal EFFECT_EXPLOSION, AI_CBM_CheckSoundproof
 	score -1
 AI_CBM_CheckSoundproof:
 	get_ability AI_TARGET
@@ -929,26 +933,29 @@ AI_MultiHit_Plus3:
 AI_CV_Sleep:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
-	if_not_equal EFFECT_SLEEP, AI_CV_SleepEncourageSlpDamage_Check
+	if_not_equal EFFECT_SLEEP, AI_CV_Sleep_ItemCheck
 	if_has_move_with_effect AI_USER, EFFECT_SUBSTITUTE, AI_CV_Sleep_CheckSubstitute
 	goto AI_CV_Sleep_RandomPlus30
 
 AI_CV_Sleep_CheckSubstitute:
 	if_hp_less_than AI_USER, 25, AI_CV_Sleep_RandomPlus30
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_Sleep_RandomPlus30
-	goto AI_CV_SleepEncourageSlpDamage_Check
+	goto AI_CV_Sleep_ItemCheck
 
 AI_CV_Sleep_RandomPlus30:
-	if_random_less_than 224, AI_CV_SleepEncourageSlpDamage_Check
+	if_random_less_than 224, AI_CV_Sleep_ItemCheck
 	score +30
-AI_CV_SleepEncourageSlpDamage_Check:
-	if_has_move_with_effect AI_USER, EFFECT_DREAM_EATER, AI_CV_SleepEncourageSlpDamage
-	if_has_move_with_effect AI_USER, EFFECT_NIGHTMARE, AI_CV_SleepEncourageSlpDamage
+AI_CV_Sleep_ItemCheck:
+	if_holds_item AI_TARGET, ITEM_CHESTO_BERRY, AI_CV_Sleep_ItemCheck_RandomMinus1
+	if_holds_item AI_TARGET, ITEM_LUM_BERRY, AI_CV_Sleep_ItemCheck_RandomMinus1
+	score +1
 	goto AI_CV_Status_CheckSubstitute
 
-AI_CV_SleepEncourageSlpDamage:
-	if_random_less_than 128, AI_End
-	score +1
+AI_CV_Sleep_ItemCheck_RandomMinus1:
+	if_target_faster AI_CV_Sleep_ItemCheck_Minus1
+	if_random_less_than 128, AI_CV_Status_CheckSubstitute
+AI_CV_Sleep_ItemCheck_Minus1:
+	score -1
 	goto AI_CV_Status_CheckSubstitute
 
 AI_CV_Toxic:
@@ -4292,7 +4299,7 @@ AI_ShouldSwitch:
 	if_equal FALSE, AI_ShouldSwitch_Seeded
 	get_turn_count
 	if_more_than 5, AI_ShouldSwitch_Seeded
-	score +12
+	score +5
 AI_ShouldSwitch_Seeded:
 	if_status3 AI_USER, STATUS3_LEECHSEED, AI_ShouldSwitch_Seeded_Minus7
 	goto AI_ShouldSwitch_Cursed
@@ -4335,10 +4342,41 @@ AI_ShouldSwitch_ChoiceLocked_Minus30:
 	score -30
 AI_ShouldSwitch_AreSpikesUp:
 	if_side_affecting AI_TARGET, SIDE_STATUS_SPIKES, AI_ShouldSwitch_SpikesAreUp_Plus2
-	goto AI_ShouldSwitch_CheckEncore
+	goto AI_ShouldSwitch_Substitute
 
 AI_ShouldSwitch_SpikesAreUp_Plus2:
 	score +2
+AI_ShouldSwitch_Substitute:
+	if_has_move_with_effect AI_TARGET, EFFECT_SUBSTITUTE, AI_ShouldSwitch_Substitute_Plus5
+	goto AI_ShouldSwitch_CheckBoostingMoves
+
+AI_ShouldSwitch_Substitute_Plus5:
+	score +5
+AI_ShouldSwitch_CheckBoostingMoves:
+	if_has_move_with_effect AI_TARGET, EFFECT_ATTACK_UP, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_ATTACK_UP_2, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_SPECIAL_ATTACK_UP, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_SPECIAL_ATTACK_UP_2, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_BELLY_DRUM, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_BULK_UP, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_CALM_MIND, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_CURSE, AI_ShouldSwitch_Boosting_Plus5
+	if_has_move_with_effect AI_TARGET, EFFECT_DRAGON_DANCE, AI_ShouldSwitch_Boosting_Plus5
+	goto AI_ShouldSwitch_CheckOwnStats
+
+AI_ShouldSwitch_Boosting_Plus5:
+	score +5
+AI_ShouldSwitch_CheckOwnStats:
+	if_stat_level_more_than AI_TARGET, STAT_ATK, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
+	if_stat_level_more_than AI_TARGET, STAT_DEF, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
+	if_stat_level_more_than AI_TARGET, STAT_SPEED, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
+	if_stat_level_more_than AI_TARGET, STAT_SPATK, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
+	if_stat_level_more_than AI_TARGET, STAT_SPDEF, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
+	if_stat_level_more_than AI_TARGET, STAT_EVASION, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
+	goto AI_ShouldSwitch_CheckEncore
+
+AI_ShouldSwitch_CheckOwnStats_Plus5:
+	score +5
 AI_ShouldSwitch_CheckEncore:
 	if_any_move_encored AI_USER, AI_ShouldSwitch_CheckEncore_CheckMove
 	goto AI_ShouldSwitch_CheckBadlyPoisoned
@@ -4413,19 +4451,29 @@ AI_ShouldSwitch_AICanFaint_ReallyAsleep:
 	get_move_effect_from_result
 	if_in_bytes AI_UseInSleep, AI_ShouldSwitch_AICanFaint_CheckHighHP
 	if_waking AI_USER, AI_ShouldSwitch_AICanFaint
-	goto AI_ShouldSwitch_AICanFaint_Minus16
+	goto AI_ShouldSwitch_AICanFaint_Minus12
 
 AI_ShouldSwitch_AICanFaint_CheckHighHP:
-	if_hp_less_than AI_USER, 70, AI_End
+	if_hp_less_than AI_USER, 85, AI_End
 AI_ShouldSwitch_AICanFaint_CheckMidHP:
-	if_hp_less_than AI_USER, 38, AI_End
+	if_hp_less_than AI_USER, 71, AI_End
+AI_ShouldSwitch_AICanFaint_CheckHealingMoves:
+	if_has_move_with_effect AI_USER, EFFECT_MOONLIGHT, AI_ShouldSwitch_AICanFaint_CheckLowHP
+	if_has_move_with_effect AI_USER, EFFECT_MORNING_SUN, AI_ShouldSwitch_AICanFaint_CheckLowHP
+	if_has_move_with_effect AI_USER, EFFECT_SYNTHESIS, AI_ShouldSwitch_AICanFaint_CheckLowHP
+	if_has_move_with_effect AI_USER, EFFECT_WISH, AI_ShouldSwitch_AICanFaint_CheckLowHP
+	if_has_move_with_effect AI_USER, EFFECT_REST, AI_ShouldSwitch_AICanFaint_CheckLowHP
+	if_has_move_with_effect AI_USER, EFFECT_SOFTBOILED, AI_ShouldSwitch_AICanFaint_CheckLowHP
+	if_has_move_with_effect AI_USER, EFFECT_RESTORE_HP, AI_ShouldSwitch_AICanFaint_CheckLowHP
 AI_ShouldSwitch_AICanFaint:
-	if_hp_less_than AI_USER, 25, AI_End
+	if_hp_less_than AI_USER, 55, AI_End
+AI_ShouldSwitch_AICanFaint_CheckLowHP:
+	if_hp_less_than AI_USER, 24, AI_End
 	is_first_turn_for AI_USER
-	if_equal FALSE, AI_ShouldSwitch_AICanFaint_Minus16
+	if_equal FALSE, AI_ShouldSwitch_AICanFaint_Minus12
 	if_has_move_with_effect AI_USER, EFFECT_FAKE_OUT, AI_End
-AI_ShouldSwitch_AICanFaint_Minus16:
-	score -16
+AI_ShouldSwitch_AICanFaint_Minus12:
+	score -12
 	end
 
 AI_DoubleBattle:

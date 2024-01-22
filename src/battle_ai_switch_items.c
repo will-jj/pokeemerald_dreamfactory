@@ -274,6 +274,8 @@ static bool8 ShouldSwitchIfLowScore(void)
             maxScore = currentScore;
     }
 
+    DebugPrintf("Max score found for %d is %d.",gBattleMons[gActiveBattler].species,maxScore);
+
     if (maxScore < 94)
     {
         *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
@@ -466,6 +468,8 @@ static bool8 ShouldSwitch(void)
     struct Pokemon *party;
     s32 i;
     s32 availableToSwitch;
+
+    DebugPrintf("Checking if %d should switch.",gBattleMons[gActiveBattler].species);
 
     if (gBattleMons[*(activeBattlerPtr = &gActiveBattler)].status2 & (STATUS2_WRAPPED | STATUS2_ESCAPE_PREVENTION))
         return FALSE;

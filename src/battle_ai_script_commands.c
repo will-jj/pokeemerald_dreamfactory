@@ -254,7 +254,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_if_target_taunted,                          // 0x5C
     Cmd_if_target_not_taunted,                      // 0x5D
     Cmd_if_target_is_ally,                          // 0x5E
-    Cmd_used_considered_move_last_turn,                                 // 0x5F
+    Cmd_used_considered_move_last_turn,             // 0x5F
     Cmd_check_ability,                              // 0x60
     Cmd_if_flash_fired,                             // 0x61
     Cmd_if_holds_item,                              // 0x62
@@ -314,6 +314,9 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves)
     s32 i;
     u8 *data = (u8 *)AI_THINKING_STRUCT;
     u8 moveLimitations;
+
+    DebugPrintf("Setting up AI data for %d.",gBattleMons[gActiveBattler].species);
+
 
     // Clear AI data.
     for (i = 0; i < sizeof(struct AI_ThinkingStruct); i++)
@@ -384,10 +387,14 @@ u8 BattleAI_ChooseMoveOrAction(void)
     u16 savedCurrentMove = gCurrentMove;
     u8 ret;
 
+    DebugPrintf("Choosing move or action for %d.",gBattleMons[gActiveBattler].species);
+
     if (!(gBattleTypeFlags & BATTLE_TYPE_DOUBLE))
         ret = ChooseMoveOrAction_Singles();
     else
         ret = ChooseMoveOrAction_Doubles();
+
+    DebugPrintf("Move or action chosen for %d. Chosen move: %d.",gBattleMons[gActiveBattler].species,savedCurrentMove);
 
     gCurrentMove = savedCurrentMove;
     AI_THINKING_STRUCT->chosenMoveId = ret;
@@ -425,6 +432,8 @@ static u8 ChooseMoveOrAction_Singles(void)
     currentMoveArray[0] = AI_THINKING_STRUCT->score[0];
     consideredMoveArray[0] = 0;
 
+    DebugPrintf("Looping through move list for %d.",gBattleMons[gActiveBattler].species);
+
     for (i = 1; i < MAX_MON_MOVES; i++)
     {
         if (gBattleMons[sBattler_AI].moves[i] != MOVE_NONE)
@@ -443,6 +452,9 @@ static u8 ChooseMoveOrAction_Singles(void)
             }
         }
     }
+
+    DebugPrintf("Equally good moves found: %d",numOfBestMoves);
+
     return consideredMoveArray[Random() % numOfBestMoves];
 }
 
@@ -681,20 +693,24 @@ static void Cmd_if_waking(void)
 {
     u8 battlerId;
 
+    DebugPrintf("if_waking checked for %d.",gBattleMons[gActiveBattler].species);
+
     if (gAIScriptPtr[1] == AI_USER)
         battlerId = sBattler_AI;
     else
         battlerId = gBattlerTarget;
 
     if ((gBattleMons[battlerId].status1 & STATUS1_SLEEP) > STATUS1_SLEEP_TURN(1))
-        gAIScriptPtr += 5;
+        gAIScriptPtr += 6;
     else
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
 }
 
 static void Cmd_if_badly_poisoned_for_turns(void)
 {
     u8 battlerId;
+
+    DebugPrintf("Cmd_if_badly_poisoned_for_turns checked for %d.",gBattleMons[gActiveBattler].species);
 
     if (gAIScriptPtr[1] == AI_USER)
         battlerId = sBattler_AI;
@@ -702,14 +718,15 @@ static void Cmd_if_badly_poisoned_for_turns(void)
         battlerId = gBattlerTarget;
 
     if ((gBattleMons[battlerId].status1 & STATUS1_TOXIC_COUNTER) >= STATUS1_TOXIC_TURN(gAIScriptPtr[2]))
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
     else
-        gAIScriptPtr += 5;
+        gAIScriptPtr += 7;
 }
-
 
 static void Cmd_score(void)
 {
+    DebugPrintf("Score incremented by %d.",(signed char) gAIScriptPtr[1]);
+
     AI_THINKING_STRUCT->score[AI_THINKING_STRUCT->movesetIndex] += gAIScriptPtr[1]; // Add the result to the array of the move consider's score.
 
     if (AI_THINKING_STRUCT->score[AI_THINKING_STRUCT->movesetIndex] < 0) // If the score is negative, flatten it to 0.
@@ -1102,6 +1119,8 @@ static void Cmd_if_user_has_no_attacking_moves(void)
 
 static void Cmd_get_turn_count(void)
 {
+    DebugPrintf("Turn count called.");
+
     AI_THINKING_STRUCT->funcResult = gBattleResults.battleTurnCounter;
     gAIScriptPtr += 1;
 }
@@ -1481,6 +1500,8 @@ static void Cmd_get_highest_type_effectiveness(void)
     s32 i;
     u8 *dynamicMoveType;
 
+    DebugPrintf("Looked for highest type effectiveness against  %d.",gBattleMons[gActiveBattler].species);
+
     gDynamicBasePower = 0;
     dynamicMoveType = &gBattleStruct->dynamicMoveType;
     *dynamicMoveType = 0;
@@ -1517,6 +1538,8 @@ static void Cmd_get_highest_type_effectiveness(void)
                 AI_THINKING_STRUCT->funcResult = gBattleMoveDamage;
         }
     }
+
+    DebugPrintf("Damage recorded: %d.",gBattleMoveDamage);
 
     gAIScriptPtr += 1;
 }
@@ -1576,6 +1599,8 @@ static void Cmd_if_type_effectiveness_with_modifiers(void)
     u8 damageVar, moveType, hpThreshhold, hpThreshholdHit, attackStage, defenseStage;
     u16 multiplier, divisor;
     u32 side, targetAbility;
+
+    DebugPrintf("Checking type effectiveness with modifiers for %d.",gBattleMons[gActiveBattler].species);
 
     gDynamicBasePower = 0;
     gBattleStruct->dynamicMoveType = 0;
@@ -1860,6 +1885,8 @@ static void Cmd_if_type_effectiveness_with_modifiers(void)
     if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
         damageVar = AI_EFFECTIVENESS_x0;
 
+    DebugPrintf("damageVar: %d, gBattleMoveDamage: %d, multiplier: %d, divisor: %d, targetAbility: %d.",damageVar, gBattleMoveDamage, multiplier, divisor);
+
     if (damageVar == gAIScriptPtr[1])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
     else
@@ -1933,9 +1960,7 @@ static void Cmd_if_status_not_in_party(void)
         if (species != SPECIES_NONE && species != SPECIES_EGG && hp != 0 && status == statusToCompareTo)
         {
             gAIScriptPtr += 10;
-            #ifdef UBFIX
             return;
-            #endif
         }
     }
 
@@ -2034,6 +2059,8 @@ static void Cmd_if_stat_level_not_equal(void)
 
 static void Cmd_if_can_faint(void)
 {
+    DebugPrintf("Checking if target can faint.");
+
     if (gBattleMoves[AI_THINKING_STRUCT->moveConsidered].power < 2)
     {
         gAIScriptPtr += 5;
@@ -2056,6 +2083,8 @@ static void Cmd_if_can_faint(void)
     if (gBattleMoveDamage == 0)
         gBattleMoveDamage = 1;
 
+    DebugPrintf("Damage: %d. HP: %d",gBattleMoveDamage,gBattleMons[gBattlerTarget].hp);
+
     if (gBattleMons[gBattlerTarget].hp <= gBattleMoveDamage)
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
     else
@@ -2064,8 +2093,9 @@ static void Cmd_if_can_faint(void)
 
 static void Cmd_consider_imitated_move(void)
 {
+    DebugPrintf("Considering imitated move.");
     AI_THINKING_STRUCT->moveConsidered = gLastMoves[gBattlerTarget];
-    gAIScriptPtr += 2;
+    gAIScriptPtr += 1;
 }
 
 static void Cmd_if_has_move(void)
@@ -2477,6 +2507,8 @@ static void Cmd_get_considered_move_second_eff_chance_from_result(void)
 
 static void Cmd_get_spikes_layers_target(void)
 {
+    DebugPrintf("Counting spikes layers. Result: %d",gSideTimers[GetBattlerSide(gBattlerTarget)].spikesAmount);
+
     AI_THINKING_STRUCT->funcResult = gSideTimers[GetBattlerSide(gBattlerTarget)].spikesAmount;
     gAIScriptPtr += 1;
 }
@@ -2486,6 +2518,8 @@ static void Cmd_if_ai_can_faint(void)
     s32 i;
     u8 *dynamicMoveType;
     u8 damageVar;
+
+    DebugPrintf("Running if_ai_can_faint!");
 
     damageVar = 0;
     gDynamicBasePower = 0;
@@ -2514,6 +2548,8 @@ static void Cmd_if_ai_can_faint(void)
     // Apply a higher likely damage roll
     damageVar = damageVar * 95 / 100;
 
+    DebugPrintf("damageVar: %d, HP: %d",damageVar,gBattleMons[sBattler_AI].hp);
+
     if (gBattleMons[sBattler_AI].hp <= damageVar)
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
     else
@@ -2527,6 +2563,8 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
     u16 multiplier, divisor;
     u32 side, userAbility;
     s32 i;
+
+    DebugPrintf("Running get_highest_type_effectiveness_from_target");
 
     gDynamicBasePower = 0;
     dynamicMoveType = &gBattleStruct->dynamicMoveType;
@@ -2792,6 +2830,8 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
     if (damageVar <= 30)
         resultVar = AI_EFFECTIVENESS_x0_5;
 
+    DebugPrintf("resultVar: %d, damageVar: %d",resultVar,damageVar);
+
     AI_THINKING_STRUCT->funcResult = resultVar;
 
     gAIScriptPtr += 1;
@@ -2811,6 +2851,8 @@ static void Cmd_goto(void)
 
 static void Cmd_end(void)
 {
+    DebugPrintf("End looking at move.");
+
     if (AIStackPop() == 0)
         AI_THINKING_STRUCT->aiAction |= AI_ACTION_DONE;
 }
