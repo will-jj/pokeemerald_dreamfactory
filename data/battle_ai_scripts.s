@@ -4444,6 +4444,7 @@ AI_ShouldSwitch_CanAIFaint_SpeedCheck:
 AI_ShouldSwitch_AICanFaint_LookForPriority:
 	if_has_move_with_effect AI_USER, EFFECT_ENDURE, AI_End
 	if_has_move_with_effect AI_USER, EFFECT_QUICK_ATTACK, AI_End
+	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_End
 	if_status AI_USER, STATUS1_SLEEP, AI_ShouldSwitch_AICanFaint_ReallyAsleep
 	if_status AI_USER, STATUS1_FREEZE, AI_End
 	if_status AI_USER, STATUS1_ANY, AI_ShouldSwitch_AICanFaint_CheckMidHP
