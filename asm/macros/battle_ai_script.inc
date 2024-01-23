@@ -19,7 +19,7 @@
 	.macro if_badly_poisoned_for_turns battler:req, param1:req, param2:req
 	.byte 0x3
 	.byte \battler
-	.4byte \param1
+	.byte \param1
 	.4byte \param2
 	.endm
 

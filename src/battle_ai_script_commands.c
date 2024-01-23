@@ -718,9 +718,15 @@ static void Cmd_if_badly_poisoned_for_turns(void)
         battlerId = gBattlerTarget;
 
     if ((gBattleMons[battlerId].status1 & STATUS1_TOXIC_COUNTER) >= STATUS1_TOXIC_TURN(gAIScriptPtr[2]))
+    {
+        DebugPrintf("Target badly poisoned for enough turns.");
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
+    }
     else
+    {
+        DebugPrintf("Target not badly poisoned for enough turns.");
         gAIScriptPtr += 7;
+    }
 }
 
 static void Cmd_score(void)
@@ -894,7 +900,7 @@ static void Cmd_if_can_use_substitute(void)
     else
         battlerId = gBattlerTarget;
 
-    if ((u32)(4 * gBattleMons[battlerId].hp) < gBattleMons[battlerId].maxHP)
+    if ((u32)(4 * gBattleMons[battlerId].hp) <= gBattleMons[battlerId].maxHP)
         gAIScriptPtr += 6;
     else
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
@@ -1398,51 +1404,7 @@ static void Cmd_get_ability(void)
     else
         battlerId = gBattlerTarget;
 
-    if (gActiveBattler != battlerId)
-    {
-        if (BATTLE_HISTORY->abilities[battlerId] != 0)
-        {
-            AI_THINKING_STRUCT->funcResult = BATTLE_HISTORY->abilities[battlerId];
-            gAIScriptPtr += 2;
-            return;
-        }
-
-        // abilities that prevent fleeing.
-        if (gBattleMons[battlerId].ability == ABILITY_SHADOW_TAG
-        || gBattleMons[battlerId].ability == ABILITY_MAGNET_PULL
-        || gBattleMons[battlerId].ability == ABILITY_ARENA_TRAP)
-        {
-            AI_THINKING_STRUCT->funcResult = gBattleMons[battlerId].ability;
-            gAIScriptPtr += 2;
-            return;
-        }
-
-        if (gSpeciesInfo[gBattleMons[battlerId].species].abilities[0] != ABILITY_NONE)
-        {
-            if (gSpeciesInfo[gBattleMons[battlerId].species].abilities[1] != ABILITY_NONE)
-            {
-                // AI has no knowledge of opponent, so it guesses which ability.
-                if (Random() & 1)
-                    AI_THINKING_STRUCT->funcResult = gSpeciesInfo[gBattleMons[battlerId].species].abilities[0];
-                else
-                    AI_THINKING_STRUCT->funcResult = gSpeciesInfo[gBattleMons[battlerId].species].abilities[1];
-            }
-            else
-            {
-                AI_THINKING_STRUCT->funcResult = gSpeciesInfo[gBattleMons[battlerId].species].abilities[0]; // It's definitely ability 1.
-            }
-        }
-        else
-        {
-            AI_THINKING_STRUCT->funcResult = gSpeciesInfo[gBattleMons[battlerId].species].abilities[1]; // AI can't actually reach this part since no pokemon has ability 2 and no ability 1.
-        }
-    }
-    else
-    {
-        // The AI knows its own ability.
-        AI_THINKING_STRUCT->funcResult = gBattleMons[battlerId].ability;
-    }
-
+    AI_THINKING_STRUCT->funcResult = gBattleMons[battlerId].ability;
     gAIScriptPtr += 2;
 }
 
@@ -1644,38 +1606,7 @@ static void Cmd_if_type_effectiveness_with_modifiers(void)
         hpThreshholdHit = FALSE;
 
     // Get the target's ability to perform extra checks
-    // This is a modified version of the get_ability command
-    if (BATTLE_HISTORY->abilities[gBattlerTarget] != ABILITY_NONE)
-    {
-        targetAbility = BATTLE_HISTORY->abilities[gBattlerTarget];
-    }
-    // Abilities that prevent fleeing.
-    else if (gBattleMons[gBattlerTarget].ability == ABILITY_SHADOW_TAG
-    || gBattleMons[gBattlerTarget].ability == ABILITY_MAGNET_PULL
-    || gBattleMons[gBattlerTarget].ability == ABILITY_ARENA_TRAP)
-    {
-        targetAbility = gBattleMons[gBattlerTarget].ability;
-    }
-    else
-    {
-        if (gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[1] != ABILITY_NONE)
-        {
-            u8 abilityDummyVariable = targetAbility; // Needed to match.
-            if (gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[0] != abilityDummyVariable
-            && gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[1] != abilityDummyVariable)
-            {
-                targetAbility = gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[0];
-            }
-            else
-            {
-                targetAbility = ABILITY_NONE;
-            }
-        }
-        else
-        {
-            targetAbility = gSpeciesInfo[gBattleMons[gBattlerTarget].species].abilities[0];
-        }
-    }
+    targetAbility = gBattleMons[gBattlerTarget].ability;
 
     if (targetAbility == ABILITY_WONDER_GUARD)
     {
