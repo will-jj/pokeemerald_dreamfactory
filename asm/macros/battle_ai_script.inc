@@ -91,10 +91,10 @@
 	.4byte \param2
 	.endm
 
-	.macro is_of_type battler:req, type:req
+	.macro if_can_use_substitute battler:req, param1:req
 	.byte 0xe
 	.byte \battler
-	.byte \type
+	.4byte \param1
 	.endm
 
 	.macro if_side_affecting battler:req, sidestatus:req, param2:req

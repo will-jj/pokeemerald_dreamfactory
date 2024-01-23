@@ -445,7 +445,10 @@ AI_CBM_FocusEnergy:
 	end
 
 AI_CBM_Substitute:
-	if_hp_less_than AI_USER, 26, Score_Minus30
+	if_can_use_substitute AI_USER, AI_CBM_Substitute_SubActiveCheck
+	goto Score_Minus30
+
+AI_CBM_Substitute_SubActiveCheck:
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CBM_Substitute_CheckSpeed
 	end
 
@@ -4535,7 +4538,10 @@ AI_DoubleBattleSkillSwap:
 AI_DoubleBattleElectricMove:
 	if_no_ability AI_TARGET_PARTNER, ABILITY_LIGHTNING_ROD, AI_DoubleBattleElectricMoveEnd
 	score -2
-	if_no_type AI_TARGET_PARTNER, TYPE_GROUND, AI_DoubleBattleElectricMoveEnd
+	get_type AI_TYPE1_TARGET
+	if_equal TYPE_GROUND, AI_DoubleBattleElectricMoveEnd
+	get_type AI_TYPE2_TARGET
+	if_equal TYPE_GROUND, AI_DoubleBattleElectricMoveEnd
 	score -8
 AI_DoubleBattleElectricMoveEnd:
 	end

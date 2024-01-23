@@ -64,7 +64,7 @@ static void Cmd_if_not_status(void);
 static void Cmd_if_status2(void);
 static void Cmd_if_not_status2(void);
 static void Cmd_if_status3(void);
-static void Cmd_removed(void);
+static void Cmd_if_can_use_substitute(void);
 static void Cmd_if_side_affecting(void);
 static void Cmd_if_not_side_affecting(void);
 static void Cmd_if_less_than(void);
@@ -173,7 +173,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_if_status2,                                 // 0xB
     Cmd_if_not_status2,                             // 0xC
     Cmd_if_status3,                                 // 0xD
-    Cmd_removed,                                    // 0xE
+    Cmd_if_can_use_substitute,                                    // 0xE
     Cmd_if_side_affecting,                          // 0xF
     Cmd_if_not_side_affecting,                      // 0x10
     Cmd_if_less_than,                               // 0x11
@@ -885,8 +885,19 @@ static void Cmd_if_status3(void)
         gAIScriptPtr += 10;
 }
 
-static void Cmd_removed(void)
+static void Cmd_if_can_use_substitute(void)
 {
+    u16 battlerId;
+
+    if (gAIScriptPtr[1] == AI_USER)
+        battlerId = sBattler_AI;
+    else
+        battlerId = gBattlerTarget;
+
+    if ((u32)(4 * gBattleMons[battlerId].hp) < gBattleMons[battlerId].maxHP)
+        gAIScriptPtr += 6;
+    else
+        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
 }
 
 static void Cmd_if_side_affecting(void)
