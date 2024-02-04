@@ -2953,10 +2953,10 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_HYPNO_1] = {
         .species = SPECIES_HYPNO,
-        .moves = {MOVE_BELLY_DRUM, MOVE_SUBSTITUTE, MOVE_BRICK_BREAK, MOVE_SHADOW_BALL},
-        .itemTableId = BATTLE_FRONTIER_ITEM_SALAC_BERRY,
-        .evSpread = F_EV_SPREAD_ATTACK | F_EV_SPREAD_SPEED,
-        .nature = NATURE_JOLLY
+        .moves = {MOVE_CALM_MIND, MOVE_BARRIER, MOVE_REST, MOVE_ASSIST},
+        .itemTableId = BATTLE_FRONTIER_ITEM_CHESTO_BERRY,
+        .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SP_DEFENSE,
+        .nature = NATURE_CALM
     },
     [FRONTIER_MON_HYPNO_2] = {
         .species = SPECIES_HYPNO,
@@ -4202,10 +4202,10 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_HYPNO_6] = {
         .species = SPECIES_HYPNO,
-        .moves = {MOVE_HYPNOSIS, MOVE_FIRE_PUNCH, MOVE_ICE_PUNCH, MOVE_DREAM_EATER},
-        .itemTableId = BATTLE_FRONTIER_ITEM_TWISTED_SPOON,
-        .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
-        .nature = NATURE_TIMID
+        .moves = {MOVE_BELLY_DRUM, MOVE_SUBSTITUTE, MOVE_BRICK_BREAK, MOVE_SHADOW_BALL},
+        .itemTableId = BATTLE_FRONTIER_ITEM_SALAC_BERRY,
+        .evSpread = F_EV_SPREAD_ATTACK | F_EV_SPREAD_SPEED,
+        .nature = NATURE_JOLLY
     },
     [FRONTIER_MON_JOLTEON_3] = {
         .species = SPECIES_JOLTEON,
