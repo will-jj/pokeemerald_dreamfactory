@@ -2029,7 +2029,7 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_GRANBULL_1] = {
         .species = SPECIES_GRANBULL,
-        .moves = {MOVE_CRUNCH, MOVE_FLAMETHROWER, MOVE_SMELLING_SALTS, MOVE_THUNDER_WAVE},
+        .moves = {MOVE_CRUNCH, MOVE_FLAMETHROWER, MOVE_SMELLING_SALT, MOVE_THUNDER_WAVE},
         .itemTableId = BATTLE_FRONTIER_ITEM_SILK_SCARF,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_SP_ATTACK,
         .nature = NATURE_QUIET
