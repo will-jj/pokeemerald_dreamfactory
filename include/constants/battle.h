@@ -108,6 +108,9 @@
 #define MOVE_TARGET_FOES_AND_ALLY       (1 << 5)
 #define MOVE_TARGET_OPPONENTS_FIELD     (1 << 6)
 
+//Type categories
+#define TYPE_PHYSICAL (1 << 0)
+#define TYPE_SPECIAL  (1 << 1)
 
 // Non-volatile status conditions
 // These persist remain outside of battle and after switching out

@@ -2810,8 +2810,8 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_RETURN] =
     {
-        .effect = EFFECT_RETURN,
-        .power = 1,
+        .effect = EFFECT_HIT,
+        .power = 102,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 20,
@@ -3085,7 +3085,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     {
         .effect = EFFECT_HIDDEN_POWER,
         .power = 1,
-        .type = TYPE_DARK,
+        .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 15,
         .secondaryEffectChance = 0,

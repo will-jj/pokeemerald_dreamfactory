@@ -147,16 +147,18 @@
 	.4byte \param1
 	.endm
 
-	.macro if_equal_ptr param0:req, param1:req
+	.macro if_has_attack_of_type battler:req, param1:req, param2:req
 	.byte 0x17
-	.4byte \param0
-	.4byte \param1
+	.byte \battler
+	.byte \param1
+	.4byte \param2
 	.endm
 
-	.macro if_not_equal_ptr param0:req, param1:req
+	.macro if_has_attack_of_category battler:req, param1:req, param2:req
 	.byte 0x18
-	.4byte \param0
-	.4byte \param1
+	.byte \battler
+	.byte \param1
+	.4byte \param2
 	.endm
 
 	.macro if_move param0:req, param1:req
@@ -227,16 +229,13 @@
 	.byte \battler
 	.endm
 
-	.macro if_equal_ param0:req, param1:req
+	.macro get_target_previous_move_pp
 	.byte 0x26
-	.byte \param0
-	.4byte \param1
 	.endm
 
-	.macro if_not_equal_ param0:req, param1:req
+	.macro if_shares_move_with_user param0:req
 	.byte 0x27
-	.byte \param0
-	.4byte \param1
+	.4byte \param0
 	.endm
 
 	.macro if_user_goes param0:req, param1:req
