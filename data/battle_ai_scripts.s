@@ -3334,14 +3334,14 @@ AI_TTF_DBond:
 
 AI_TTF_DBond_RandomMinus10:
 	if_random_less_than 48, AI_TTF_Grudge
-	score -10
+	score -7
 AI_TTF_Grudge:
 	if_status3 AI_TARGET, STATUS3_GRUDGE, AI_TTF_Grudge_RandomMinus10
 	goto AI_TTF_TryToEncouragePriority
 
 AI_TTF_Grudge_RandomMinus10:
 	if_random_less_than 196, AI_TTF_TryToEncouragePriority
-	score -10
+	score -6
 AI_TTF_TryToEncouragePriority:
 	get_considered_move_effect
 	if_in_bytes AI_TTF_DiscouragedEffList, AI_End
