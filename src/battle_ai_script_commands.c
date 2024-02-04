@@ -133,7 +133,7 @@ static void Cmd_get_move_power_from_result(void);
 static void Cmd_get_move_effect_from_result(void);
 static void Cmd_get_protect_count(void);
 static void Cmd_get_move_target_from_result(void);
-static void Cmd_if_type_effectiveness_from_result(void);
+static void Cmd_get_type_effectiveness_from_result(void);
 static void Cmd_get_considered_move_second_eff_chance_from_result(void);
 static void Cmd_get_spikes_layers_target(void);
 static void Cmd_if_ai_can_faint(void);
@@ -242,7 +242,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_get_move_effect_from_result,                // 0x50
     Cmd_get_protect_count,                          // 0x51
     Cmd_get_move_target_from_result,                // 0x52
-    Cmd_if_type_effectiveness_from_result,          // 0x53
+    Cmd_get_type_effectiveness_from_result,          // 0x53
     Cmd_get_considered_move_second_eff_chance_from_result, // 0x54
     Cmd_get_spikes_layers_target,                   // 0x55
     Cmd_if_ai_can_faint,                            // 0x56
@@ -1036,9 +1036,9 @@ static void Cmd_if_has_attack_of_category(void)
     {
         for (i = 0; i < MAX_MON_MOVES; i++)
             {
-                if(IS_TYPE_PHYSICAL(gBattleMoves[gBattleMons[battlerId].moves[i]].type))
+                if(IS_TYPE_PHYSICAL(gBattleMoves[gBattleMons[battlerId].moves[i]].type) && gBattleMoves[gBattleMons[battlerId].moves[i]].effect != EFFECT_HIDDEN_POWER)
                     {
-                        moveFound = FALSE;
+                        moveFound = TRUE;
                         break;
                     }
             }
@@ -1047,9 +1047,9 @@ static void Cmd_if_has_attack_of_category(void)
     {
         for (i = 0; i < MAX_MON_MOVES; i++)
             {
-                if(IS_TYPE_SPECIAL(gBattleMoves[gBattleMons[battlerId].moves[i]].type))
+                if(IS_TYPE_SPECIAL(gBattleMoves[gBattleMons[battlerId].moves[i]].type) && gBattleMoves[gBattleMons[battlerId].moves[i]].effect != EFFECT_HIDDEN_POWER)
                     {
-                        moveFound = FALSE;
+                        moveFound = TRUE;
                         break;
                     }
             }
@@ -2476,7 +2476,7 @@ static void Cmd_get_move_target_from_result(void)
     gAIScriptPtr += 1;
 }
 
-static void Cmd_if_type_effectiveness_from_result(void)
+static void Cmd_get_type_effectiveness_from_result(void)
 {
     u8 damageVar;
 
@@ -2503,13 +2503,7 @@ static void Cmd_if_type_effectiveness_from_result(void)
     if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
         gBattleMoveDamage = AI_EFFECTIVENESS_x0;
 
-    // Store gBattleMoveDamage in a u8 variable because gAIScriptPtr[1] is a u8.
-    damageVar = gBattleMoveDamage;
-
-    if (damageVar == gAIScriptPtr[1])
-        gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
-    else
-        gAIScriptPtr += 6;
+    AI_THINKING_STRUCT->funcResult = gBattleMoveDamage;
 }
 
 static void Cmd_get_considered_move_second_eff_chance_from_result(void)

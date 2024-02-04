@@ -473,10 +473,8 @@
 	.byte 0x52
 	.endm
 
-	.macro if_type_effectiveness_from_result param0:req, param1:req
+	.macro get_type_effectiveness_from_result
 	.byte 0x53
-	.byte \param0
-	.4byte \param1
 	.endm
 
 	.macro get_considered_move_second_eff_chance_from_result
