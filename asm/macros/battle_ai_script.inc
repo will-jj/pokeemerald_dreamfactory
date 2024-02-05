@@ -191,10 +191,8 @@
 	.4byte \param1
 	.endm
 
-	.macro if_not_in_hwords param0:req, param1:req
+	.macro check_curr_move_has_stab
 	.byte 0x1e
-	.4byte \param0
-	.4byte \param1
 	.endm
 
 	.macro if_user_has_attacking_move param0:req

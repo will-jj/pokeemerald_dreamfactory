@@ -215,9 +215,8 @@ AI_CBM_TypeMatchup_Minus7:
 AI_CBM_TypeMatchup_Minus30:
 	score -30
 AI_CBM_STAB:
-	get_curr_move_type
-	if_equal AI_TYPE1_USER, AI_CBM_CheckSoundproof
-	if_equal AI_TYPE2_USER, AI_CBM_CheckSoundproof
+	check_curr_move_has_stab
+	if_equal TRUE, AI_CBM_CheckSoundproof
 	get_considered_move_effect
 	if_equal EFFECT_EXPLOSION, AI_CBM_CheckSoundproof
 	if_equal EFFECT_FOCUS_PUNCH, AI_CBM_CheckSoundproof
@@ -3492,8 +3491,8 @@ AI_ShouldSwitch_CheckBoostingMoves:
 	if_has_move_with_effect AI_TARGET, EFFECT_DRAGON_DANCE, AI_ShouldSwitch_Boosting_Plus5
 	goto AI_ShouldSwitch_CheckOwnStats
 
-AI_ShouldSwitch_Boosting_Plus5: #Need to add RNG here
-	score +5
+AI_ShouldSwitch_Boosting_Plus5:
+	score +5 @ Need to add RNG here
 AI_ShouldSwitch_CheckOwnStats:
 	if_stat_level_more_than AI_TARGET, STAT_ATK, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
 	if_stat_level_more_than AI_TARGET, STAT_DEF, DEFAULT_STAT_STAGE, AI_ShouldSwitch_CheckOwnStats_Plus5
@@ -3600,13 +3599,14 @@ AI_ShouldSwitch_AICanFaint_CheckHasProtect:
 AI_ShouldSwitch_AICanFaint_CheckProtect:
 	get_last_used_bank_move AI_USER
 	get_move_effect_from_result
-	if_not_equal EFFECT_PROTECT, AI_ShouldSwitch_AICanFaint_Minus5
+	if_equal EFFECT_PROTECT, AI_ShouldSwitch_AICanFaint_Minus5
 AI_ShouldSwitch_AICanFaint_CheckSpeed:
 	if_has_move_with_effect AI_USER, EFFECT_QUICK_ATTACK, AI_ShouldSwitch_AICanFaint_Minus5
 	if_user_faster AI_ShouldSwitch_AICanFaint_Minus5
 	is_first_turn_for AI_USER
-	if_equal FALSE, AI_ShouldSwitch_AICanFaint_CheckSpeed
+	if_equal FALSE, AI_ShouldSwitch_AICanFaint_Minus12
 	if_has_move_with_effect AI_USER, EFFECT_FAKE_OUT, AI_ShouldSwitch_AICanFaint_Minus5
+AI_ShouldSwitch_AICanFaint_Minus12:
 	score -7
 AI_ShouldSwitch_AICanFaint_Minus5:
 	score -5

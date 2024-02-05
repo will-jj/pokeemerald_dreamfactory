@@ -80,7 +80,7 @@ static void Cmd_if_not_move(void);
 static void Cmd_if_in_bytes(void);
 static void Cmd_if_not_in_bytes(void);
 static void Cmd_if_in_hwords(void);
-static void Cmd_if_not_in_hwords(void);
+static void Cmd_check_curr_move_has_stab(void);
 static void Cmd_if_user_has_attacking_move(void);
 static void Cmd_if_user_has_no_attacking_moves(void);
 static void Cmd_get_turn_count(void);
@@ -189,7 +189,7 @@ static const BattleAICmdFunc sBattleAICmdTable[] =
     Cmd_if_in_bytes,                                // 0x1B
     Cmd_if_not_in_bytes,                            // 0x1C
     Cmd_if_in_hwords,                               // 0x1D
-    Cmd_if_not_in_hwords,                           // 0x1E
+    Cmd_check_curr_move_has_stab,                   // 0x1E
     Cmd_if_user_has_attacking_move,                 // 0x1F
     Cmd_if_user_has_no_attacking_moves,             // 0x20
     Cmd_get_turn_count,                             // 0x21
@@ -1001,6 +1001,8 @@ static void Cmd_if_has_attack_of_type(void)
     u8 battlerId, moveFound;
     s32 i;
 
+    DebugPrintf("Running if_has_attack_of_type");
+
     if (gAIScriptPtr[1] == AI_USER)
         battlerId = sBattler_AI;
     else
@@ -1014,6 +1016,8 @@ static void Cmd_if_has_attack_of_type(void)
                 moveFound = TRUE;
         }
 
+    DebugPrintf("Result: %d",moveFound);
+
     if (moveFound == TRUE)
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
     else
@@ -1024,6 +1028,8 @@ static void Cmd_if_has_attack_of_category(void)
 {
     u8 battlerId, moveFound;
     s32 i;
+
+    DebugPrintf("Running Cmd_if_has_attack_of_category");
 
     if (gAIScriptPtr[1] == AI_USER)
         battlerId = sBattler_AI;
@@ -1054,6 +1060,8 @@ static void Cmd_if_has_attack_of_category(void)
                     }
             }
     }
+
+    DebugPrintf("Result: %d",moveFound);
 
     if (moveFound == TRUE)
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
@@ -1129,25 +1137,21 @@ static void Cmd_if_in_hwords(void)
     gAIScriptPtr += 9;
 }
 
-static void Cmd_if_not_in_hwords(void)
+static void Cmd_check_curr_move_has_stab(void)
 {
-    const u16 *ptr = (const u16 *)T1_READ_PTR(gAIScriptPtr + 1);
+    if (gBattleMons[sBattler_AI].type1 == AI_THINKING_STRUCT->moveConsidered || gBattleMons[sBattler_AI].type2 == AI_THINKING_STRUCT->moveConsidered)
+        AI_THINKING_STRUCT->funcResult = TRUE;
+    else
+        AI_THINKING_STRUCT->funcResult = FALSE;
 
-    while (*ptr != 0xFFFF)
-    {
-        if (AI_THINKING_STRUCT->funcResult == *ptr)
-        {
-            gAIScriptPtr += 9;
-            return;
-        }
-        ptr++;
-    }
-    gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 5);
+    gAIScriptPtr += 1;
 }
 
 static void Cmd_if_user_has_attacking_move(void)
 {
     s32 i;
+
+    DebugPrintf("Running if_user_has_attacking_move");
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
@@ -1155,6 +1159,8 @@ static void Cmd_if_user_has_attacking_move(void)
             && gBattleMoves[gBattleMons[sBattler_AI].moves[i]].power != 0)
             break;
     }
+
+    DebugPrintf("Result: %d",i);
 
     if (i == MAX_MON_MOVES)
         gAIScriptPtr += 5;
@@ -1243,6 +1249,8 @@ static u8 BattleAI_GetWantedBattler(u8 wantedBattler)
 
 static void Cmd_used_considered_move_last_turn(void)
 {
+    DebugPrintf("Running used_considered_move_last_turn");
+
     if (gLastMoves[sBattler_AI] == AI_THINKING_STRUCT->moveConsidered)
         AI_THINKING_STRUCT->funcResult = TRUE;
     else
@@ -1357,6 +1365,8 @@ static void Cmd_if_shares_move_with_user(void)
     u8 moveFound;
     s32 i,j;
 
+    DebugPrintf("Running Cmd_if_shares_move_with_user");
+
     moveFound = FALSE;
 
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -1373,6 +1383,8 @@ static void Cmd_if_shares_move_with_user(void)
                         }
                 }
         }
+
+    DebugPrintf("Result: %d",moveFound);
 
     if (moveFound == TRUE)
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
@@ -1408,6 +1420,7 @@ static void Cmd_get_considered_move_accuracy(void)
         AI_THINKING_STRUCT->funcResult = 100;
     else
         AI_THINKING_STRUCT->funcResult = gBattleMoves[AI_THINKING_STRUCT->moveConsidered].accuracy;
+
     gAIScriptPtr += 1;
 }
 
@@ -1888,6 +1901,8 @@ static void Cmd_if_type_effectiveness_with_modifiers(void)
         // Applying stat stage adjustments
         gBattleMoveDamage = gBattleMoveDamage * multiplier / divisor;
 
+        if (gBattleMoveDamage == 0)
+            damageVar = AI_EFFECTIVENESS_x0;
         if (gBattleMoveDamage >= 160)
             damageVar = AI_EFFECTIVENESS_x4;
         if (gBattleMoveDamage <= 15)
@@ -2480,6 +2495,8 @@ static void Cmd_get_type_effectiveness_from_result(void)
 {
     u8 damageVar;
 
+    DebugPrintf("Running get_type_effectiveness_from_result");
+
     gDynamicBasePower = 0;
     gBattleStruct->dynamicMoveType = 0;
     gBattleScripting.dmgMultiplier = 1;
@@ -2504,6 +2521,10 @@ static void Cmd_get_type_effectiveness_from_result(void)
         gBattleMoveDamage = AI_EFFECTIVENESS_x0;
 
     AI_THINKING_STRUCT->funcResult = gBattleMoveDamage;
+
+    DebugPrintf("Result: %d",gBattleMoveDamage);
+
+    gAIScriptPtr += 1;
 }
 
 static void Cmd_get_considered_move_second_eff_chance_from_result(void)
