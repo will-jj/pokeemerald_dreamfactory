@@ -372,7 +372,7 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves)
     else if (gBattleTypeFlags & BATTLE_TYPE_FACTORY)
         AI_THINKING_STRUCT->aiFlags = GetAiScriptsInBattleFactory();
     else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_TRAINER_HILL | BATTLE_TYPE_SECRET_BASE))
-        AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_SHOULD_SWITCH;
+        AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_TRY_TO_FAINT;
     else if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
         AI_THINKING_STRUCT->aiFlags = gTrainers[gTrainerBattleOpponent_A].aiFlags | gTrainers[gTrainerBattleOpponent_B].aiFlags;
     else
@@ -1040,6 +1040,8 @@ static void Cmd_if_has_attack_of_category(void)
 
     if (gAIScriptPtr[2] == TYPE_PHYSICAL)
     {
+        DebugPrintf("Checking for a physical move");
+
         for (i = 0; i < MAX_MON_MOVES; i++)
             {
                 if(IS_TYPE_PHYSICAL(gBattleMoves[gBattleMons[battlerId].moves[i]].type) && gBattleMoves[gBattleMons[battlerId].moves[i]].effect != EFFECT_HIDDEN_POWER)
@@ -1051,6 +1053,8 @@ static void Cmd_if_has_attack_of_category(void)
     }
     else
     {
+        DebugPrintf("Checking for a special move");
+
         for (i = 0; i < MAX_MON_MOVES; i++)
             {
                 if(IS_TYPE_SPECIAL(gBattleMoves[gBattleMons[battlerId].moves[i]].type) && gBattleMoves[gBattleMons[battlerId].moves[i]].effect != EFFECT_HIDDEN_POWER)
@@ -1139,10 +1143,14 @@ static void Cmd_if_in_hwords(void)
 
 static void Cmd_check_curr_move_has_stab(void)
 {
+    DebugPrintf("Running check_curr_move_has_stab");
+
     if (gBattleMons[sBattler_AI].type1 == AI_THINKING_STRUCT->moveConsidered || gBattleMons[sBattler_AI].type2 == AI_THINKING_STRUCT->moveConsidered)
         AI_THINKING_STRUCT->funcResult = TRUE;
     else
         AI_THINKING_STRUCT->funcResult = FALSE;
+
+    DebugPrintf("Result: %d",AI_THINKING_STRUCT->funcResult);
 
     gAIScriptPtr += 1;
 }
@@ -2237,7 +2245,7 @@ static void Cmd_if_has_move_with_effect(void)
     case AI_TARGET_PARTNER:
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (gBattleMons[sBattler_AI].moves[i] != 0 && gBattleMoves[BATTLE_HISTORY->usedMoves[gBattlerTarget].moves[i]].effect == gAIScriptPtr[2])
+            if (gBattleMons[sBattler_AI].moves[i] != 0 && gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].moves[i]].effect == gAIScriptPtr[2])
                 break;
         }
         if (i == MAX_MON_MOVES)

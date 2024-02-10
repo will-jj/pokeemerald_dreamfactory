@@ -899,7 +899,7 @@ void FillHillTrainersParties(void)
 // hill trainers.
 u32 GetTrainerHillAIFlags(void)
 {
-    return (AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SHOULD_SWITCH);
+    return (AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY);
 }
 
 u8 GetTrainerEncounterMusicIdInTrainerHill(u16 trainerId)

@@ -264,8 +264,320 @@ static bool8 ShouldSwitchIfLowScore(void)
 {
     s32 i;
     s8 currentScore;
+    u8 *dynamicMoveType;
+    u8 damageVar;
+    u16 hp, species;
     s8 maxScore = 0;
+    s8 threshold = 94;
+    u8 currentHP = gBattleMons[sBattler_AI].hp;
+    u8 teamHasRapidSpin = FALSE;
+    u8 aiCanFaint = FALSE;
+    u8 hasEndure = FALSE;
+    u8 encourageSwitch = TRUE;
+    u8 turnCount = gBattleResults.battleTurnCounter;
+    u8 statBoostingEffects[] = {EFFECT_ATTACK_UP, EFFECT_ATTACK_UP_2, EFFECT_SPECIAL_ATTACK_UP, EFFECT_SPECIAL_ATTACK_UP_2, EFFECT_BELLY_DRUM, EFFECT_BULK_UP, EFFECT_CALM_MIND, EFFECT_CURSE, EFFECT_DRAGON_DANCE};
+    u8 shedinjaKOEffects[] = {EFFECT_CONFUSE, EFFECT_FLATTER, EFFECT_HAIL, EFFECT_LEECH_SEED, EFFECT_POISON, EFFECT_SANDSTORM, EFFECT_SWAGGER, EFFECT_TOXIC, EFFECT_WILL_O_WISP};
+    u8 healingEffects[] = {EFFECT_MOONLIGHT, EFFECT_MORNING_SUN, EFFECT_SYNTHESIS, EFFECT_WISH, EFFECT_REST, EFFECT_SOFTBOILED, EFFECT_RESTORE_HP};
 
+    //Slightly lower threshold in the first few turns of the battle
+    if(turnCount < 5 && gDisableStructs[sBattler_AI].isFirstTurn && !(gDisableStructs[gBattlerTarget].isFirstTurn))
+        {
+            threshold += -5 + turnCount;
+        }
+
+    //Check badly poisoned
+    if ((gBattleMons[sBattler_AI].status1 & STATUS1_TOXIC_COUNTER) >= STATUS1_TOXIC_TURN(3))
+        {
+            threshold += 4 + Random() % 3;
+
+            if ((gBattleMons[sBattler_AI].status1 & STATUS1_TOXIC_COUNTER) >= STATUS1_TOXIC_TURN(5))
+                {
+                    threshold += 3;
+                }
+
+            if ((gBattleMons[sBattler_AI].status1 & STATUS1_TOXIC_COUNTER) >= STATUS1_TOXIC_TURN(7))
+                {
+                    threshold += 3;
+                }
+        }
+
+    //Check cursed or nightmared
+    if (gBattleMons[sBattler_AI].status2 & (STATUS2_CURSED | STATUS2_NIGHTMARE))
+        {
+            threshold += 8;
+        }
+
+    //Check seeded
+    if ((gBattleMons[sBattler_AI].status3 & STATUS3_LEECHSEED))
+        {
+            threshold += 6;
+            random = Random();
+
+            if(random < 252)
+                {
+                    threshold += 1;
+                }
+        }
+
+    //Check yawned, with no sleep removal item
+    if ((gBattleMons[sBattler_AI].status3 & STATUS3_YAWN)
+        && gBattleMons[sBattler_AI].item != ITEM_CHESTO_BERRY
+        && gBattleMons[sBattler_AI].item != ITEM_LUM_BERRY)
+        {
+            threshold += 6;
+            random = Random();
+
+            if(random < 252)
+                {
+                    threshold += 2;
+                }
+        }
+
+    //Check encored
+    if (gDisableStructs[sBattler_AI].encoredMove != MOVE_NONE && gBattleMons[sBattler_AI].item != ITEM_CHOICE_BAND)
+        {
+            threshold += 5 + Random() % 2;
+        }
+
+    //Discourage staying in when choice locked, especially when locked into sleep talk
+    if(!(gDisableStructs[sBattler_AI].isFirstTurn) && gBattleMons[sBattler_AI].item == ITEM_CHOICE_BAND)
+        {
+            threshold += 5;
+
+            if(BattleMoves[gLastMoves[sBattler_AI]].effect == EFFECT_SLEEP_TALK)
+                {
+                    threshold += 30;
+                }
+        }
+
+    //Check for stat boosting moves on the opponent's side
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        {
+            for (j = 0; j < ARRAY_COUNT(statBoostingEffects); j++)
+                {
+                    if (gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].effect == statBoostingEffects[j])
+                        {
+                            threshold += -2 - Random() % 4;
+                            break;
+                        }
+                }
+        }
+
+    //Check for the move substitute on the opponent's side
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        {
+            if (gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].effect == EFFECT_SUBSTITUTE)
+                {
+                    threshold += -3 - Random() % 3;
+                    break;
+                }
+        }
+
+    //check if spikes are up
+    if (gSideStatuses[B_SIDE_OPPONENT] & SIDE_STATUS_SPIKES)
+        {
+            threshold += -2;
+        }
+
+    //Check if own stat levels are above the minimum
+    for (i = 1; i < NUM_BATTLE_STATS; i++)
+        {
+            if (gBattleMons[sBattler_AI].statStages[i] > DEFAULT_STAT_STAGE)
+            {
+                    threshold += -4 - Random() % 2;
+                    break;
+            }
+        }
+
+    //Check if AI can faint
+    damageVar = 0;
+    gDynamicBasePower = 0;
+    dynamicMoveType = &gBattleStruct->dynamicMoveType;
+    *dynamicMoveType = 0;
+    gBattleScripting.dmgMultiplier = 1;
+    gMoveResultFlags = 0;
+    gCritMultiplier = 1;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        {
+            gCurrentMove = gBattleMons[gBattlerTarget].moves[i];
+
+            if (gCurrentMove != MOVE_NONE)
+                {
+                    AI_CalcDmg(gBattlerTarget, sBattler_AI);
+                    TypeCalc(gCurrentMove, gBattlerTarget, sBattler_AI);
+
+                    // Get the highest battle move damage
+                    if (damageVar < gBattleMoveDamage)
+                        damageVar = gBattleMoveDamage;
+                }
+        }
+
+    // Apply a higher likely damage roll
+    damageVar = damageVar * 95 / 100;
+
+    if (currentHP <= damageVar)
+        {
+            aiCanFaint = TRUE;
+        }
+
+    //Check for endure
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        {
+            if (gBattleMoves[gBattleMons[sBattler_AI].moves[i]].effect == EFFECT_ENDURE)
+                {
+                    hasEndure = TRUE;
+                }
+        }
+
+    //If the AI can faint (and isn't behind a sub or already very weakened)
+    if(aiCanFaint == TRUE
+        && hasEndure == FALSE
+        && !(gBattleMons[sBattler_AI].status1 & STATUS1_FREEZE)
+        && !(gBattleMons[sBattler_AI].status2 & STATUS2_SUBSTITUTE)
+        && currentHP > 23)
+    {
+        //Increase the threshold as we want the ai to switch out. Increase the threshold more when at a higher HP
+        threshold += 5 + ((currentHP - 17) / 14);
+
+        //If asleep
+        if ((gBattleMons[battlerId].status1 & STATUS1_SLEEP) > STATUS1_SLEEP_TURN(1))
+            {
+                threshold += -3
+
+                if(BattleMoves[gLastMoves[sBattler_AI]].effect == EFFECT_SLEEP_TALK
+                    || BattleMoves[gLastMoves[sBattler_AI]].effect == EFFECT_SNORE)
+                    {
+                        threshold += -4;
+                    }
+            }
+
+        //If otherwise statused
+        if(gBattleMons[battlerId].status1 & (STATUS1_POISON | STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_TOXIC_POISON))
+            {
+                threshold += 2;
+            }
+
+        //If the AI has a healing move
+        for (i = 0; i < MAX_MON_MOVES; i++)
+            {
+                for (j = 0; j < ARRAY_COUNT(healingEffects); j++)
+                    {
+                        if (gBattleMoves[gBattleMons[sBattler_AI].moves[i]].effect == healingEffects[j])
+                            {
+                                threshold += 3;
+                                break;
+                            }
+                    }
+            }
+
+        //check for certain moves
+        for (i = 0; i < MAX_MON_MOVES; i++)
+            {
+                if(encourageSwitch == FALSE)
+                    {
+                        if (gBattleMoves[gBattleMons[sBattler_AI].moves[i]].effect == EFFECT_QUICK_ATTACK)
+                            {
+                                encourageSwitch = FALSE;
+                            }
+
+                        if (gBattleMoves[gBattleMons[sBattler_AI].moves[i]].effect == EFFECT_FAKE_OUT
+                            && gDisableStructs[sBattler_AI].isFirstTurn)
+                            {
+                                encourageSwitch = FALSE;
+                            }
+
+                        if (gBattleMoves[gBattleMons[sBattler_AI].moves[i]].effect == EFFECT_PROTECT
+                            && BattleMoves[gLastMoves[sBattler_AI]].effect != EFFECT_PROTECT)
+                            {
+                                encourageSwitch = FALSE;
+                            }
+                    }
+            }
+
+        //If no useful priority moves and the AI target is faster
+        if(encourageSwitch == TRUE && (GetWhoStrikesFirst(sBattler_AI, gBattlerTarget, TRUE))
+            {
+                threshold += 5;
+            }
+    }
+
+    //Additional checks for shedinja
+    if(gBattleMons[sBattler_AI].ability == ABILITY_WONDER_GUARD)
+        {
+            //Check if it can faint
+            if(aiCanFaint == TRUE)
+                {
+                    threshold += 30;
+                }
+
+            //Check for status moves which KO Shedinja on the opposing side
+            for (i = 0; i < MAX_MON_MOVES; i++)
+                {
+                    for (j = 0; j < ARRAY_COUNT(shedinjaKOEffects); j++)
+                        {
+                            if (gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].effect == shedinjaKOEffects[j])
+                                {
+                                    threshold += 30;
+                                    break;
+                                }
+                        }
+                }
+
+            //Check if shedinja is confused
+            if ((gBattleMons[sBattler_AI].status2 & STATUS2_CONFUSION))
+                {
+                    threshold += 10;
+                }
+
+            //check weather
+            if (gBattleWeather & (B_WEATHER_HAIL | B_WEATHER_SANDSTORM))
+                {
+                    threshold += 30;
+                }
+
+            //check party for rapid spin:
+            for (i = 0; i < PARTY_SIZE; i++)
+                {
+                    species = GetMonData(&gEnemyParty[i], MON_DATA_SPECIES);
+                    hp = GetMonData(&gEnemyParty[i], MON_DATA_HP);
+
+                    if (species != SPECIES_NONE && species != SPECIES_EGG && hp != 0 && teamHasRapidSpin == FALSE)
+                        {
+                            //check each move
+                            for (j = 0; j < MAX_MON_MOVES; j++)
+                                {
+                                    if (gBattleMoves[GetMonData(&gEnemyParty[i], MON_DATA_MOVE1 + j)].effect == EFFECT_RAPID_SPIN)
+                                        {
+                                            teamHasRapidSpin = TRUE;
+                                        }
+                                }
+                        }
+                }
+
+            if (teamHasRapidSpin == FALSE)
+                {
+                    //check if the target has spikes
+                    for (i = 0; i < MAX_MON_MOVES; i++)
+                        {
+                            if (gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].effect == EFFECT_SPIKES)
+                                {
+                                    threshold = -1;
+                                    break;
+                                }
+                        }
+
+                    //check if spikes are up
+                    if (gSideStatuses[B_SIDE_OPPONENT] & SIDE_STATUS_SPIKES)
+                        {
+                            threshold = -1;
+                        }
+                }
+        }
+
+    DebugPrintf("Threshold set for %d is %s.",gBattleMons[gActiveBattler].species,threshold);
+
+    // Find the score of the move being used by the AI
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         currentScore = gBattleResources->ai->score[i];
@@ -276,7 +588,7 @@ static bool8 ShouldSwitchIfLowScore(void)
 
     DebugPrintf("Max score found for %d is %d.",gBattleMons[gActiveBattler].species,maxScore);
 
-    if (maxScore < 94)
+    if (maxScore < threshold)
     {
         *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
         BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);

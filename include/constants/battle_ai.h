@@ -41,8 +41,7 @@
 #define AI_SCRIPT_CHECK_BAD_MOVE        (1 << 0)
 #define AI_SCRIPT_TRY_TO_FAINT          (1 << 1)
 #define AI_SCRIPT_CHECK_VIABILITY       (1 << 2)
-#define AI_SCRIPT_SHOULD_SWITCH         (1 << 3)
-#define AI_SCRIPT_DOUBLE_BATTLE         (1 << 4)
+#define AI_SCRIPT_DOUBLE_BATTLE         (1 << 3)
 // 5 - 28 are not used
 #define AI_SCRIPT_ROAMING               (1 << 29)
 #define AI_SCRIPT_SAFARI                (1 << 30)
