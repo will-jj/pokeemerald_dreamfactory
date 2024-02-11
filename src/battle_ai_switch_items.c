@@ -375,9 +375,9 @@ static bool8 ShouldSwitchIfLowScore(void)
                             break;
                         }
                 }
-
-                DebugPrintf("Stat boosting move check applied. Threshold now: %d",(signed char) threshold);
         }
+
+    DebugPrintf("Stat boosting move check applied. Threshold now: %d",(signed char) threshold);
 
     //Check for the move substitute on the opponent's side
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -387,9 +387,9 @@ static bool8 ShouldSwitchIfLowScore(void)
                     threshold += -3 - Random() % 3;
                     break;
                 }
-
-                DebugPrintf("Substitute check applied. Threshold now: %d",(signed char) threshold);
         }
+
+    DebugPrintf("Substitute check applied. Threshold now: %d",(signed char) threshold);
 
     //check if spikes are up
     if (gSideStatuses[B_SIDE_OPPONENT] & SIDE_STATUS_SPIKES)
@@ -406,11 +406,9 @@ static bool8 ShouldSwitchIfLowScore(void)
                     threshold += -4 - Random() % 2;
                     break;
             }
-
-            DebugPrintf("Stat level check applied. Threshold now: %d",(signed char) threshold);
         }
 
-    DebugPrintf("Checking if AI can faint");
+    DebugPrintf("Stat level check applied. Threshold now: %d. Next, checking if AI can faint.",(signed char) threshold);
 
     //Check if AI can faint
     damageVar = 0;
@@ -454,9 +452,9 @@ static bool8 ShouldSwitchIfLowScore(void)
                 {
                     hasEndure = TRUE;
                 }
-
-            DebugPrintf("Endure searched for. Result: %d",aiCanFaint);
         }
+
+    DebugPrintf("Endure searched for. Result: %d",aiCanFaint);
 
     //If the AI can faint (and isn't behind a sub or already very weakened)
     if(aiCanFaint == TRUE
@@ -466,7 +464,7 @@ static bool8 ShouldSwitchIfLowScore(void)
         && currentHP > 23)
     {
         //Increase the threshold as we want the ai to switch out. Increase the threshold more when at a higher HP. Also a random factor
-        threshold += 3 + ((currentHP - 17) / 14) + Random() % 4;
+        threshold += 3 + ((currentHP - 17) / 14) + Random() % 3;
 
         DebugPrintf("AI can faint. Threshold now: %d",(signed char) threshold);
 
@@ -622,7 +620,7 @@ static bool8 ShouldSwitchIfLowScore(void)
                 }
         }
 
-    DebugPrintf("Threshold set for %d is %s.",gBattleMons[gActiveBattler].species,threshold);
+    DebugPrintf("Threshold set for %d is %d.",gBattleMons[gActiveBattler].species,(signed char) threshold);
 
     // Find the score of the move being used by the AI
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -939,6 +937,8 @@ void AI_TrySwitchOrUseItem(void)
     s32 lastId; // + 1
     u8 battlerIdentity = GetBattlerPosition(gActiveBattler);
 
+    DebugPrintf("Runnung AI_TrySwitchOrUseItem.");
+
     if (GetBattlerSide(gActiveBattler) == B_SIDE_PLAYER)
         party = gPlayerParty;
     else
@@ -946,8 +946,12 @@ void AI_TrySwitchOrUseItem(void)
 
     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
     {
+        DebugPrintf("Checking ShouldSwitch.");
+
         if (ShouldSwitch())
         {
+            DebugPrintf("ShouldSwitch returned TRUE.");
+
             if (*(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) == PARTY_SIZE)
             {
                 s32 monToSwitchId = GetMostSuitableMonToSwitchInto();

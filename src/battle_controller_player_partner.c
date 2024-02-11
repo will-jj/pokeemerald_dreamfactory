@@ -1501,6 +1501,8 @@ static void PlayerPartnerHandlePrintSelectionString(void)
 
 static void PlayerPartnerHandleChooseAction(void)
 {
+    DebugPrintf("Running AI_TrySwitchOrUseItem in PlayerPartnerHandleChooseAction.");
+
     AI_TrySwitchOrUseItem();
     PlayerPartnerBufferExecCompleted();
 }
