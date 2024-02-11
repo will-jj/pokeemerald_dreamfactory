@@ -1,11 +1,11 @@
-# Pokémon Emerald
+# Pokémon Emerald - Dream Factory
 
-This is a decompilation of Pokémon Emerald.
+This is a mod based on the decompilation of Pokémon Emerald. The original decompilation can be found [here](https://github.com/pret/pokeemerald). To download the .gba file, head to the [Discord](https://discord.gg/fwZgX7cYzc)!
 
-It builds the following ROM:
+# Credits
 
-* [**pokeemerald.gba**](https://datomatic.no-intro.org/index.php?page=show_record&s=23&n=1961) `sha1: f3ae088181bf583e55daf962a92bb46f4f1d07b7`
+This mod was made by [DisasterArea96](https://github.com/DisasterArea96). It also features code written & committed by [MarcusWheeler](https://github.com/MarcusWheeler). This mod could not be possible without help from the [pret Discord](https://discord.gg/d5dubZ3), especially but not exclusively [GriffinR](https://github.com/GriffinRichards).
 
-To set up the repository, see [INSTALL.md](INSTALL.md).
+# Related Tools
 
-For contacts and other pret projects, see [pret.github.io](https://pret.github.io/).
+This [Google Sheet](https://docs.google.com/spreadsheets/d/1D3fHS8_cnHw_KApxJmGFqJUsgifzldprq4BKXn2HyRM/edit?usp=sharing) contains extensive information on the changes made to this mod, particularly with respect to the sets of Pokémon in the battle factory. This [Damage Calculator](https://disasterarea96.github.io/DreamFactoryCalc/) features all of the included sets in the Battle Factory in Dream Factory.
