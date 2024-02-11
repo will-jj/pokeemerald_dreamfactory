@@ -227,8 +227,15 @@ AI_CBM_CheckSoundproof:
 	goto AI_CBM_IfStatLowering
 
 AI_CBM_CheckIfSound:
-	get_considered_move
-	if_in_hwords AI_CBM_SoundMoves_MoveList, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_GRASS_WHISTLE, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_GROWL, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_METAL_SOUND, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_ROAR, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SCREECH, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SING, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SNORE, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_SUPERSONIC, AI_CBM_CheckIfSound_Minus10
+	if_move MOVE_UPROAR, AI_CBM_CheckIfSound_Minus10
 	goto AI_CBM_IfStatLowering
 
 AI_CBM_CheckIfSound_Minus10:
@@ -788,10 +795,15 @@ AI_CV_Imitate:
 	if_equal TRUE, AI_CV_ImitateMove_Minus10
 	consider_imitated_move
 AI_CV_CheckMovesAndEffects:
-	get_considered_move
-	if_in_hwords AI_CV_Underground_MoveList, AI_CV_Underground
-	if_in_hwords AI_CV_Underwater_MoveList, AI_CV_Underwater
-	if_in_hwords AI_CV_InTheAir_MoveList, AI_CV_InTheAir
+	if_move MOVE_EARTHQUAKE, AI_CV_Underground
+	if_move MOVE_FISSURE, AI_CV_Underground
+	if_move MOVE_MAGNITUDE, AI_CV_Underground
+	if_move MOVE_SURF, AI_CV_Underwater
+	if_move MOVE_WHIRLPOOL, AI_CV_Underwater
+	if_move MOVE_GUST, AI_CV_InTheAir
+	if_move MOVE_SKY_UPPERCUT, AI_CV_InTheAir
+	if_move MOVE_THUNDER, AI_CV_InTheAir
+	if_move MOVE_TWISTER, AI_CV_InTheAir
 	get_considered_move_effect
 	if_in_bytes AI_CV_DefenseUp_EffList, AI_CV_DefenseUp
 	if_in_bytes AI_CV_SpDefUp_EffList, AI_CV_SpDefUp
@@ -4218,33 +4230,3 @@ AI_PoisoningImmune:
 	.byte TYPE_POISON
 	.byte TYPE_STEEL
 	.byte -1
-
-AI_CBM_SoundMoves_MoveList:
-	.2byte MOVE_GRASS_WHISTLE
-	.2byte MOVE_GROWL
-	.2byte MOVE_METAL_SOUND
-	.2byte MOVE_ROAR
-	.2byte MOVE_SCREECH
-	.2byte MOVE_SING
-	.2byte MOVE_SNORE
-	.2byte MOVE_SUPERSONIC
-	.2byte MOVE_UPROAR
-	.2byte -1
-
-AI_CV_Underground_MoveList:
-	.2byte MOVE_EARTHQUAKE
-	.2byte MOVE_FISSURE
-	.2byte MOVE_MAGNITUDE
-	.2byte -1
-
-AI_CV_Underwater_MoveList:
-	.2byte MOVE_SURF
-	.2byte MOVE_WHIRLPOOL
-	.2byte -1
-
-AI_CV_InTheAir_MoveList:
-	.2byte MOVE_GUST
-	.2byte MOVE_SKY_UPPERCUT
-	.2byte MOVE_THUNDER
-	.2byte MOVE_TWISTER
-	.2byte -1
