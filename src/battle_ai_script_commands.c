@@ -1132,7 +1132,7 @@ static void Cmd_if_move(void)
 {
     u16 move = T1_READ_16(gAIScriptPtr + 1);
 
-    DebugPrintf("Running if_move");
+    // DebugPrintf("Running if_move");
 
     if (AI_THINKING_STRUCT->moveConsidered == move)
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
@@ -1156,7 +1156,7 @@ static void Cmd_if_in_bytes(void)
 {
     const u8 *ptr = T1_READ_PTR(gAIScriptPtr + 1);
 
-    DebugPrintf("Running if_in_bytes");
+    // DebugPrintf("Running if_in_bytes");
 
     while (*ptr != 0xFF)
     {
@@ -2125,7 +2125,7 @@ static void Cmd_get_weather(void)
 
 static void Cmd_if_effect(void)
 {
-    DebugPrintf("Running if_effect");
+    // DebugPrintf("Running if_effect");
 
     if (gBattleMoves[AI_THINKING_STRUCT->moveConsidered].effect == gAIScriptPtr[1])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
@@ -2346,7 +2346,7 @@ static void Cmd_if_has_move_with_effect(void)
 {
     s32 i;
 
-    DebugPrintf("Running if_has_move_with_effect");
+    // DebugPrintf("Running if_has_move_with_effect");
 
     switch (gAIScriptPtr[1])
     {
@@ -3031,14 +3031,14 @@ static void Cmd_get_highest_type_effectiveness_from_target(void)
 
 static void Cmd_call(void)
 {
-    DebugPrintf("Running call");
+    // DebugPrintf("Running call");
     AIStackPushVar(gAIScriptPtr + 5);
     gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
 }
 
 static void Cmd_goto(void)
 {
-    DebugPrintf("Running goto");
+    // DebugPrintf("Running goto");
     gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 1);
 }
 
@@ -3132,18 +3132,18 @@ static void UNUSED AIStackPushVar_cursor(void)
 
 static bool8 AIStackPop(void)
 {
-    DebugPrintf("Running AIStackPop");
+    // DebugPrintf("Running AIStackPop");
 
     if (gBattleResources->AI_ScriptsStack->size != 0)
     {
         --gBattleResources->AI_ScriptsStack->size;
         gAIScriptPtr = gBattleResources->AI_ScriptsStack->ptr[gBattleResources->AI_ScriptsStack->size];
-        DebugPrintf("Returning TRUE");
+        // DebugPrintf("Returning TRUE");
         return TRUE;
     }
     else
     {
-        DebugPrintf("Returning FALSE");
+        // DebugPrintf("Returning FALSE");
         return FALSE;
     }
 }

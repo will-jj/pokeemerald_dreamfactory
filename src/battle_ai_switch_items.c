@@ -266,24 +266,32 @@ static bool8 ShouldSwitchIfLowScore(void)
     s32 i, j;
     s8 currentScore;
     u8 *dynamicMoveType;
-    u8 damageVar, random;
+    u8 damageVar, consideredEffect, teamHasRapidSpin, aiCanFaint, targetCanFaint, canUseFakeOut, isFaster, hasEndure, hasWishCombo;
     u16 hp, species;
     s8 maxScore = 0;
     s8 threshold = 94;
+
+    //Frequently referenced information
     u8 currentHP = gBattleMons[gActiveBattler].hp;
-    u8 teamHasRapidSpin = FALSE;
-    u8 aiCanFaint = FALSE;
-    u8 hasEndure = FALSE;
-    u8 encourageSwitch = TRUE;
+    u8 item = gBattleMons[gActiveBattler].item;
+    u8 lastUsedEffect = gBattleMoves[gLastMoves[gActiveBattler]].effect;
     u8 turnCount = gBattleResults.battleTurnCounter;
+    u8 aiFirstTurn = gDisableStructs[gActiveBattler].isFirstTurn;
+
+    //Arrays
     u8 statBoostingEffects[] = {EFFECT_ATTACK_UP, EFFECT_ATTACK_UP_2, EFFECT_SPECIAL_ATTACK_UP, EFFECT_SPECIAL_ATTACK_UP_2, EFFECT_BELLY_DRUM, EFFECT_BULK_UP, EFFECT_CALM_MIND, EFFECT_CURSE, EFFECT_DRAGON_DANCE};
     u8 shedinjaKOEffects[] = {EFFECT_CONFUSE, EFFECT_FLATTER, EFFECT_HAIL, EFFECT_LEECH_SEED, EFFECT_POISON, EFFECT_SANDSTORM, EFFECT_SWAGGER, EFFECT_TOXIC, EFFECT_WILL_O_WISP};
     u8 healingEffects[] = {EFFECT_MOONLIGHT, EFFECT_MORNING_SUN, EFFECT_SYNTHESIS, EFFECT_WISH, EFFECT_REST, EFFECT_SOFTBOILED, EFFECT_RESTORE_HP};
 
+    //Initialising booleans
+    teamHasRapidSpin = aiCanFaint = targetCanFaint = canUseFakeOut = isFaster = hasEndure = hasWishCombo = FALSE;
+
     DebugPrintf("Checking ShouldSwitchIfLowScore.");
 
+    //Note that increasing the threshold encourages switching, and the reverse
+
     //Slightly lower threshold in the first few turns of the battle
-    if(turnCount < 5 && gDisableStructs[gActiveBattler].isFirstTurn && !(gDisableStructs[gBattlerTarget].isFirstTurn))
+    if(turnCount < 5 && aiFirstTurn && !(gDisableStructs[gBattlerTarget].isFirstTurn))
         {
             threshold += -5 + turnCount;
             DebugPrintf("First turn score lowering applied. Threshold now: %d",(signed char) threshold);
@@ -314,13 +322,19 @@ static bool8 ShouldSwitchIfLowScore(void)
             DebugPrintf("Curse / Nightmare check applied. Threshold now: %d",(signed char) threshold);
         }
 
+    //Check substitute
+    if (gBattleMons[gActiveBattler].status2 & (STATUS2_SUBSTITUTE))
+        {
+            threshold += -2;
+            DebugPrintf("Substitute for self check applied. Threshold now: %d",(signed char) threshold);
+        }
+
     //Check seeded
     if ((gStatuses3[gActiveBattler] & STATUS3_LEECHSEED))
         {
             threshold += 6;
-            random = Random();
 
-            if(random < 252)
+            if(Random() % 64)
                 {
                     threshold += 1;
                 }
@@ -330,13 +344,12 @@ static bool8 ShouldSwitchIfLowScore(void)
 
     //Check yawned, with no sleep removal item
     if ((gStatuses3[gActiveBattler] & STATUS3_YAWN)
-        && gBattleMons[gActiveBattler].item != ITEM_CHESTO_BERRY
-        && gBattleMons[gActiveBattler].item != ITEM_LUM_BERRY)
+        && item != ITEM_CHESTO_BERRY
+        && item != ITEM_LUM_BERRY)
         {
             threshold += 6;
-            random = Random();
 
-            if(random < 252)
+            if(Random() % 64)
                 {
                     threshold += 2;
                 }
@@ -345,23 +358,23 @@ static bool8 ShouldSwitchIfLowScore(void)
         }
 
     //Check encored
-    if (gDisableStructs[gActiveBattler].encoredMove != MOVE_NONE && gBattleMons[gActiveBattler].item != ITEM_CHOICE_BAND)
+    if (gDisableStructs[gActiveBattler].encoredMove != MOVE_NONE && item != ITEM_CHOICE_BAND)
         {
-            threshold += 5 + Random() % 2;
+            threshold += 5 + Random() % 3;
             DebugPrintf("Encore check applied. Threshold now: %d",(signed char) threshold);
         }
 
     //Discourage staying in when choice locked, especially when locked into sleep talk
-    if(!(gDisableStructs[gActiveBattler].isFirstTurn) && gBattleMons[gActiveBattler].item == ITEM_CHOICE_BAND)
+    if(!(aiFirstTurn) && item == ITEM_CHOICE_BAND)
         {
             threshold += 5;
 
-            if(gBattleMoves[gLastMoves[gActiveBattler]].effect == EFFECT_SLEEP_TALK)
+            if(lastUsedEffect == EFFECT_SLEEP_TALK)
                 {
                     threshold += 30;
                 }
 
-                DebugPrintf("CB check applied. Threshold now: %d",(signed char) threshold);
+            DebugPrintf("CB check applied. Threshold now: %d",(signed char) threshold);
         }
 
     //Check for stat boosting moves on the opponent's side
@@ -389,12 +402,12 @@ static bool8 ShouldSwitchIfLowScore(void)
                 }
         }
 
-    DebugPrintf("Substitute check applied. Threshold now: %d",(signed char) threshold);
+    DebugPrintf("Substitute for target check applied. Threshold now: %d",(signed char) threshold);
 
     //check if spikes are up
     if (gSideStatuses[B_SIDE_OPPONENT] & SIDE_STATUS_SPIKES)
         {
-            threshold += -2;
+            threshold += -2 - Random() % 3;
             DebugPrintf("Spikes check applied. Threshold now: %d",(signed char) threshold);
         }
 
@@ -442,41 +455,105 @@ static bool8 ShouldSwitchIfLowScore(void)
             aiCanFaint = TRUE;
         }
 
-
     DebugPrintf("Result: %d",aiCanFaint);
 
-    //Check for endure
+    // Check if target can faint
+    damageVar = 0;
+    gDynamicBasePower = 0;
+    dynamicMoveType = &gBattleStruct->dynamicMoveType;
+    *dynamicMoveType = 0;
+    gBattleScripting.dmgMultiplier = 1;
+    gMoveResultFlags = 0;
+    gCritMultiplier = 1;
+
     for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == EFFECT_ENDURE)
+            gCurrentMove = gBattleMons[gActiveBattler].moves[i];
+
+            if (gCurrentMove != MOVE_NONE)
                 {
-                    hasEndure = TRUE;
+                    AI_CalcDmg(gActiveBattler, gBattlerTarget);
+                    TypeCalc(gCurrentMove, gActiveBattler, gBattlerTarget);
+
+                    // Get the highest battle move damage
+                    if (damageVar < gBattleMoveDamage)
+                        damageVar = gBattleMoveDamage;
                 }
         }
 
-    DebugPrintf("Endure searched for. Result: %d",aiCanFaint);
+    // Apply a higher likely damage roll
+    damageVar = damageVar * 95 / 100;
 
-    //If the AI can faint (and isn't behind a sub or already very weakened)
-    if(aiCanFaint == TRUE
+    if (gBattleMons[gBattlerTarget].hp <= damageVar)
+        {
+            targetCanFaint = TRUE;
+        }
+
+    DebugPrintf("Result: %d",targetCanFaint);
+
+    //Check if AI is faster
+    if ((GetWhoStrikesFirst(gBattlerTarget, gActiveBattler, TRUE)))
+        {
+            isFaster = TRUE;
+        }
+
+    //check for certain moves
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        {
+            if (consideredEffect == EFFECT_ENDURE)
+                {
+                    hasEndure = TRUE;
+                }
+
+            if (consideredEffect == EFFECT_QUICK_ATTACK
+                || (consideredEffect == EFFECT_PROTECT
+                    && lastUsedEffect != EFFECT_PROTECT)
+            )
+                {
+                    isFaster = TRUE;
+                }
+
+            if (consideredEffect == EFFECT_FAKE_OUT
+                && aiFirstTurn)
+                {
+                    isFaster = TRUE;
+                    canUseFakeOut = TRUE;
+                }
+
+            if (lastUsedEffect == EFFECT_WISH
+                || consideredEffect == EFFECT_SEMI_INVULNERABLE)
+                {
+                    hasWishCombo = TRUE;
+                }
+        }
+
+    DebugPrintf("isFaster: %d, canUseFakeOut: %d, hasEndure: %d",isFaster,canUseFakeOut, hasEndure);
+
+    //If the AI can faint, with other checks to ensure switching isn't a terrible idea
+    if(aiCanFaint
         && hasEndure == FALSE
         && !(gBattleMons[gActiveBattler].status1 & STATUS1_FREEZE)
         && !(gBattleMons[gActiveBattler].status2 & STATUS2_SUBSTITUTE)
-        && currentHP > 23)
+        && canUseFakeOut == FALSE
+        && !(isFaster
+            && (targetCanFaint
+                || hasWishCombo
+                || (Random() % 3))))
     {
-        //Increase the threshold as we want the ai to switch out. Increase the threshold more when at a higher HP. Also a random factor
-        threshold += 3 + ((currentHP - 17) / 14) + Random() % 3;
+        //Increase the threshold more when at a higher HP. Also a random factor
+        threshold += 4 + ((currentHP - 17) / 14) + Random() % 2;
 
         DebugPrintf("AI can faint. Threshold now: %d",(signed char) threshold);
 
         //If asleep
         if ((gBattleMons[gActiveBattler].status1 & STATUS1_SLEEP) > STATUS1_SLEEP_TURN(1))
             {
-                threshold += -3;
+                threshold += -5;
 
-                if(gBattleMoves[gLastMoves[gActiveBattler]].effect == EFFECT_SLEEP_TALK
-                    || gBattleMoves[gLastMoves[gActiveBattler]].effect == EFFECT_SNORE)
+                if(lastUsedEffect == EFFECT_SLEEP_TALK
+                    || lastUsedEffect == EFFECT_SNORE)
                     {
-                        threshold += -4;
+                        threshold += -3;
                     }
 
                 DebugPrintf("AI asleep. Threshold now: %d",(signed char) threshold);
@@ -485,7 +562,7 @@ static bool8 ShouldSwitchIfLowScore(void)
         //If otherwise statused
         if(gBattleMons[gActiveBattler].status1 & (STATUS1_POISON | STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_TOXIC_POISON))
             {
-                threshold += 2;
+                threshold += -3;
                 DebugPrintf("AI statused. Threshold now: %d",(signed char) threshold);
             }
 
@@ -496,44 +573,13 @@ static bool8 ShouldSwitchIfLowScore(void)
                     {
                         if (gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == healingEffects[j])
                             {
-                                threshold += 3;
+                                threshold += 4;
                                 break;
                             }
                     }
             }
 
         DebugPrintf("Checked for healing moves. Threshold now: %d",(signed char) threshold);
-
-        //check for certain moves
-        for (i = 0; i < MAX_MON_MOVES; i++)
-            {
-                if(encourageSwitch == TRUE)
-                    {
-                        if (gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == EFFECT_QUICK_ATTACK)
-                            {
-                                encourageSwitch = FALSE;
-                            }
-
-                        if (gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == EFFECT_FAKE_OUT
-                            && gDisableStructs[gActiveBattler].isFirstTurn)
-                            {
-                                encourageSwitch = FALSE;
-                            }
-
-                        if (gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == EFFECT_PROTECT
-                            && gBattleMoves[gLastMoves[gActiveBattler]].effect != EFFECT_PROTECT)
-                            {
-                                encourageSwitch = FALSE;
-                            }
-                    }
-            }
-
-        //If no useful priority moves and the AI target is faster
-        if(encourageSwitch == TRUE && (GetWhoStrikesFirst(gActiveBattler, gBattlerTarget, TRUE)))
-            {
-                threshold += 5;
-                DebugPrintf("AI slower with no useful priority moves. Threshold now: %d",(signed char) threshold);
-            }
     }
 
     //Additional checks for shedinja
@@ -633,7 +679,7 @@ static bool8 ShouldSwitchIfLowScore(void)
 
     DebugPrintf("Max score found for %d is %d.",gBattleMons[gActiveBattler].species,maxScore);
 
-    if (maxScore < threshold)
+    if ((maxScore + Random() % 2) < threshold)
     {
         *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
         BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);

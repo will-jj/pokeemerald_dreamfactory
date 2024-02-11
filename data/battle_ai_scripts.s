@@ -3314,7 +3314,7 @@ AI_CV_SuicideCheck:
 AI_TryToFaint:
 	if_target_is_ally AI_End
 	if_effect EFFECT_MIRROR_MOVE, AI_TTF_MirrorMove
-	goto AI_TTF_CanAIFaint
+	goto AI_TTF_Check
 
 AI_TTF_MirrorMove:
 	get_last_used_bank_move AI_TARGET
@@ -3325,14 +3325,6 @@ AI_TTF_MirrorMove:
 	is_first_turn_for AI_USER
 	if_equal TRUE, AI_TTF_Minus10
 	consider_imitated_move
-AI_TTF_CanAIFaint:
-	if_user_faster AI_TTF_Check
-	if_ai_can_faint AI_TTF_AICanFaint
-	goto AI_TTF_Check
-
-AI_TTF_AICanFaint:
-	if_random_less_than 16, AI_TTF_Check
-	score -7
 AI_TTF_Check:
 	if_can_faint AI_TTF_DBond
 	get_how_powerful_move_is
