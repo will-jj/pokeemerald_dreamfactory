@@ -2003,17 +2003,17 @@ AI_CV_ClearStatus_Minus1:
 
 AI_CV_Thief:
 	if_holds_item AI_USER, ITEM_NONE, AI_CV_Thief_CheckTarget
-	goto AI_CV_Thief_Minus6
+	goto AI_CV_Thief_Minus8
 
 AI_CV_Thief_CheckTarget:
 	get_hold_effect AI_TARGET
-	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CV_Thief_Minus6
+	if_not_in_bytes AI_CV_Thief_EncourageItemsToSteal, AI_CV_Thief_Minus8
 	if_random_less_than 50, AI_End
 	score +1
 	end
 
-AI_CV_Thief_Minus6:
-	score -6
+AI_CV_Thief_Minus8:
+	score -8
 	end
 
 AI_CV_Trick:
