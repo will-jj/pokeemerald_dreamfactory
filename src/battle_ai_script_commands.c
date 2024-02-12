@@ -1210,7 +1210,8 @@ static void Cmd_check_curr_move_has_stab(void)
 {
     DebugPrintf("Running check_curr_move_has_stab");
 
-    if (gBattleMons[sBattler_AI].type1 == AI_THINKING_STRUCT->moveConsidered || gBattleMons[sBattler_AI].type2 == AI_THINKING_STRUCT->moveConsidered)
+    if (gBattleMons[sBattler_AI].type1 == AI_THINKING_STRUCT->moveConsidered
+        || gBattleMons[sBattler_AI].type2 == AI_THINKING_STRUCT->moveConsidered)
         AI_THINKING_STRUCT->funcResult = TRUE;
     else
         AI_THINKING_STRUCT->funcResult = FALSE;
@@ -1599,7 +1600,7 @@ static void Cmd_check_ability(void)
     u32 battlerId = BattleAI_GetWantedBattler(gAIScriptPtr[1]);
     u32 ability = gAIScriptPtr[2];
 
-    DebugPrintf("Running check_ability");
+    DebugPrintf("This command is not used.");
 
     if (gAIScriptPtr[1] == AI_TARGET || gAIScriptPtr[1] == AI_TARGET_PARTNER)
     {
@@ -2295,7 +2296,7 @@ static void Cmd_if_has_move(void)
     case AI_TARGET_PARTNER:
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (BATTLE_HISTORY->usedMoves[gBattlerTarget].moves[i] == *movePtr)
+            if (gBattleMons[gBattlerTarget].moves[i] == *movePtr)
                 break;
         }
         if (i == MAX_MON_MOVES)
@@ -2331,7 +2332,7 @@ static void Cmd_if_doesnt_have_move(void)
     case AI_TARGET_PARTNER:
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (BATTLE_HISTORY->usedMoves[gBattlerTarget].moves[i] == *movePtr)
+            if (gBattleMons[gBattlerTarget].moves[i] == *movePtr)
                 break;
         }
         if (i != MAX_MON_MOVES)
@@ -2401,7 +2402,7 @@ static void Cmd_if_doesnt_have_move_with_effect(void)
     case AI_TARGET_PARTNER:
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (BATTLE_HISTORY->usedMoves[gBattlerTarget].moves[i] && gBattleMoves[BATTLE_HISTORY->usedMoves[gBattlerTarget].moves[i]].effect == gAIScriptPtr[2])
+            if (gBattleMons[gBattlerTarget].moves[i] && gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].effect == gAIScriptPtr[2])
                 break;
         }
         if (i != MAX_MON_MOVES)
@@ -2504,10 +2505,7 @@ static void Cmd_get_hold_effect(void)
     else
         battlerId = gBattlerTarget;
 
-    if (gActiveBattler != battlerId)
-        AI_THINKING_STRUCT->funcResult = ItemId_GetHoldEffect(BATTLE_HISTORY->itemEffects[battlerId]);
-    else
-        AI_THINKING_STRUCT->funcResult = ItemId_GetHoldEffect(gBattleMons[battlerId].item);
+    AI_THINKING_STRUCT->funcResult = ItemId_GetHoldEffect(gBattleMons[battlerId].item);
 
     gAIScriptPtr += 2;
 }
@@ -2520,10 +2518,7 @@ static void Cmd_if_holds_item(void)
 
     DebugPrintf("Running if_holds_item");
 
-    if ((battlerId & BIT_SIDE) == (sBattler_AI & BIT_SIDE))
-        item = gBattleMons[battlerId].item;
-    else
-        item = BATTLE_HISTORY->itemEffects[battlerId];
+    item = gBattleMons[battlerId].item;
 
     itemHi = gAIScriptPtr[2];
     itemLo = gAIScriptPtr[3];
