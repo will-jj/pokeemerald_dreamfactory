@@ -101,8 +101,8 @@ AI_CBM_VS_Substitute_CheckEffect:
 AI_CBM_SubstituteBlocks_SpeedCheck:
 	if_status2 AI_TARGET, STATUS2_SUBSTITUTE, AI_CBM_SubstituteBlocks
 	if_user_faster AI_CBM_CheckImmunities_PreCheck
-AI_CBM_SubstituteBlocks:
 	if_random_less_than 10, AI_CBM_CheckImmunities_PreCheck
+AI_CBM_SubstituteBlocks:
 	score -10
 AI_CBM_CheckImmunities_PreCheck:
 	get_considered_move_power
