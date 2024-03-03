@@ -80,14 +80,14 @@ AI_CBM_VS_Substitute:
 	if_equal 0, AI_CBM_VS_Substitute_CheckTarget
 	if_effect EFFECT_CURSE, AI_CBM_VS_Substitute_CurseTypeCheck
 	get_considered_move_effect
-	if_in_bytes AI_CBM_SubstituteBlocks_EffList, AI_CBM_SubstituteBlocks
+	if_in_bytes AI_CBM_SubstituteBlocks_EffList, AI_CBM_SubstituteBlocks_SpeedCheck
 	goto AI_CBM_CheckImmunities
 
 AI_CBM_VS_Substitute_CurseTypeCheck:
 	get_user_type1
-	if_equal TYPE_GHOST, AI_CBM_SubstituteBlocks
+	if_equal TYPE_GHOST, AI_CBM_SubstituteBlocks_SpeedCheck
 	get_user_type2
-	if_equal TYPE_GHOST, AI_CBM_SubstituteBlocks
+	if_equal TYPE_GHOST, AI_CBM_SubstituteBlocks_SpeedCheck
 	goto AI_CBM_CheckEffect
 
 AI_CBM_VS_Substitute_CheckTarget:
@@ -98,8 +98,10 @@ AI_CBM_VS_Substitute_CheckEffect:
 	if_effect EFFECT_ROAR, AI_CBM_CheckSoundproof
 	get_considered_move_effect
 	if_in_bytes AI_CBM_IgnoresSubstitute_EffList, AI_CBM_CheckEffect
-AI_CBM_SubstituteBlocks:
+AI_CBM_SubstituteBlocks_SpeedCheck:
+	if_status2 AI_TARGET, STATUS2_SUBSTITUTE, AI_CBM_SubstituteBlocks
 	if_user_faster AI_CBM_CheckImmunities_PreCheck
+AI_CBM_SubstituteBlocks:
 	if_random_less_than 10, AI_CBM_CheckImmunities_PreCheck
 	score -10
 AI_CBM_CheckImmunities_PreCheck:
