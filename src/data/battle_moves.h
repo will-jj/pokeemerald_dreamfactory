@@ -2836,8 +2836,8 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_FRUSTRATION] =
     {
-        .effect = EFFECT_HIT,
-        .power = 102,
+        .effect = EFFECT_FRUSTRATION,
+        .power = 1,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 20,

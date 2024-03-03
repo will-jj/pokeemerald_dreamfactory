@@ -126,6 +126,8 @@ static bool8 FindMonThatAbsorbsOpponentsMove(void)
     struct Pokemon *party;
     s32 i;
 
+    // I have opted to exclude this function
+
     if (HasSuperEffectiveMoveAgainstOpponents(TRUE) && Random() % 3 != 0)
         return FALSE;
     if (gLastLandedMoves[gActiveBattler] == MOVE_NONE)
@@ -220,38 +222,12 @@ static bool8 ShouldSwitchIfNaturalCure(void)
 {
     if (gBattleMons[gActiveBattler].ability != ABILITY_NATURAL_CURE)
         return FALSE;
-    if (!((gBattleMons[gActiveBattler].status1 & STATUS1_SLEEP)
-        || (gBattleMons[gActiveBattler].status1 & STATUS1_POISON)
-        || (gBattleMons[gActiveBattler].status1 & STATUS1_TOXIC_POISON)
-        || (gBattleMons[gActiveBattler].status1 & STATUS1_PARALYSIS)
-        || (gBattleMons[gActiveBattler].status1 & STATUS1_BURN)
-        || (gBattleMons[gActiveBattler].status1 & STATUS1_FREEZE)))
-        return FALSE;
     if (gBattleMons[gActiveBattler].hp < gBattleMons[gActiveBattler].maxHP / 2)
         return FALSE;
+    if (!(gBattleMons[gActiveBattler].status1 & STATUS1_ANY))
+        return FALSE;
 
-    if ((gLastLandedMoves[gActiveBattler] == MOVE_NONE
-      || gLastLandedMoves[gActiveBattler] == MOVE_UNAVAILABLE)
-     && Random() & 1)
-    {
-        *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
-        BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);
-        return TRUE;
-    }
-    else if (gBattleMoves[gLastLandedMoves[gActiveBattler]].power == 0
-          && Random() & 1)
-    {
-        *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
-        BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);
-        return TRUE;
-    }
-
-    if (FindMonWithFlagsAndSuperEffective(MOVE_RESULT_DOESNT_AFFECT_FOE, 1))
-        return TRUE;
-    if (FindMonWithFlagsAndSuperEffective(MOVE_RESULT_NOT_VERY_EFFECTIVE, 1))
-        return TRUE;
-
-    if (Random() & 1)
+    if (Random() % 7 < 2)
     {
         *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
         BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);
@@ -266,7 +242,7 @@ static bool8 ShouldSwitchIfLowScore(void)
     s32 i, j;
     s8 currentScore;
     u8 *dynamicMoveType;
-    u8 damageVar, consideredEffect, teamHasRapidSpin, aiCanFaint, targetCanFaint, canUseFakeOut, isFaster, hasEndure, hasWishCombo;
+    u8 damageVar, consideredEffect, teamHasRapidSpin, aiCanFaint, targetCanFaint, isFaster, hasPriority, hasWishCombo;
     u16 hp, species;
     s8 maxScore = 0;
     s8 threshold = 94;
@@ -284,7 +260,7 @@ static bool8 ShouldSwitchIfLowScore(void)
     u8 healingEffects[] = {EFFECT_MOONLIGHT, EFFECT_MORNING_SUN, EFFECT_SYNTHESIS, EFFECT_WISH, EFFECT_REST, EFFECT_SOFTBOILED, EFFECT_RESTORE_HP};
 
     //Initialising booleans
-    teamHasRapidSpin = aiCanFaint = targetCanFaint = canUseFakeOut = isFaster = hasEndure = hasWishCombo = FALSE;
+    teamHasRapidSpin = aiCanFaint = targetCanFaint = isFaster = hasPriority = hasWishCombo = FALSE;
 
     DebugPrintf("Checking ShouldSwitchIfLowScore.");
 
@@ -334,7 +310,7 @@ static bool8 ShouldSwitchIfLowScore(void)
         {
             threshold += 6;
 
-            if(Random() % 64)
+            if(Random() % 6)
                 {
                     threshold += 1;
                 }
@@ -349,7 +325,7 @@ static bool8 ShouldSwitchIfLowScore(void)
         {
             threshold += 6;
 
-            if(Random() % 64)
+            if(Random() % 6)
                 {
                     threshold += 2;
                 }
@@ -500,24 +476,15 @@ static bool8 ShouldSwitchIfLowScore(void)
     //check for certain moves
     for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (consideredEffect == EFFECT_ENDURE)
-                {
-                    hasEndure = TRUE;
-                }
-
             if (consideredEffect == EFFECT_QUICK_ATTACK
+                || consideredEffect == EFFECT_ENDURE
                 || (consideredEffect == EFFECT_PROTECT
                     && lastUsedEffect != EFFECT_PROTECT)
+                || (consideredEffect == EFFECT_FAKE_OUT
+                    && aiFirstTurn)
             )
                 {
-                    isFaster = TRUE;
-                }
-
-            if (consideredEffect == EFFECT_FAKE_OUT
-                && aiFirstTurn)
-                {
-                    isFaster = TRUE;
-                    canUseFakeOut = TRUE;
+                    hasPriority = TRUE;
                 }
 
             if (lastUsedEffect == EFFECT_WISH
@@ -527,14 +494,13 @@ static bool8 ShouldSwitchIfLowScore(void)
                 }
         }
 
-    DebugPrintf("isFaster: %d, canUseFakeOut: %d, hasEndure: %d",isFaster,canUseFakeOut, hasEndure);
+    DebugPrintf("isFaster: %d, hasPriority: %d",isFaster,hasPriority);
 
     //If the AI can faint, with other checks to ensure switching isn't a terrible idea
     if(aiCanFaint
-        && hasEndure == FALSE
+        && hasPriority == FALSE
         && !(gBattleMons[gActiveBattler].status1 & STATUS1_FREEZE)
         && !(gBattleMons[gActiveBattler].status2 & STATUS2_SUBSTITUTE)
-        && canUseFakeOut == FALSE
         && !(isFaster
             && (targetCanFaint
                 || hasWishCombo
@@ -573,8 +539,16 @@ static bool8 ShouldSwitchIfLowScore(void)
                     {
                         if (gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == healingEffects[j])
                             {
-                                threshold += 4;
-                                break;
+                                if (isFaster)
+                                    {
+                                        threshold += -4;
+                                        break;
+                                    }
+                                else
+                                    {
+                                        threshold += 4;
+                                        break;
+                                    }
                             }
                     }
             }
@@ -651,7 +625,7 @@ static bool8 ShouldSwitchIfLowScore(void)
                         {
                             if (gBattleMoves[gBattleMons[gBattlerTarget].moves[i]].effect == EFFECT_SPIKES)
                                 {
-                                    threshold = -1;
+                                    threshold = -70;
                                     break;
                                 }
                         }
@@ -659,7 +633,7 @@ static bool8 ShouldSwitchIfLowScore(void)
                     //check if spikes are up
                     if (gSideStatuses[B_SIDE_OPPONENT] & SIDE_STATUS_SPIKES)
                         {
-                            threshold = -1;
+                            threshold = -70;
                         }
 
                     DebugPrintf("Spikes checks applied. Threshold now: %d",(signed char) threshold);
@@ -954,23 +928,23 @@ static bool8 ShouldSwitch(void)
 
     if (availableToSwitch == 0)
         return FALSE;
-    if (ShouldSwitchIfPerishSong())
-        return TRUE;
+    // if (FindMonThatAbsorbsOpponentsMove())
+    //     return TRUE;
     if (ShouldSwitchIfWonderGuard())
         return TRUE;
-    if (ShouldSwitchIfLowScore())
-        return TRUE;
-    if (FindMonThatAbsorbsOpponentsMove())
+    if (ShouldSwitchIfPerishSong())
         return TRUE;
     if (ShouldSwitchIfNaturalCure())
         return TRUE;
-    if (HasSuperEffectiveMoveAgainstOpponents(FALSE))
-        return FALSE;
-    if (AreStatsRaised())
-        return FALSE;
-    if (FindMonWithFlagsAndSuperEffective(MOVE_RESULT_DOESNT_AFFECT_FOE, 2)
-        || FindMonWithFlagsAndSuperEffective(MOVE_RESULT_NOT_VERY_EFFECTIVE, 3))
+    if (ShouldSwitchIfLowScore())
         return TRUE;
+    // if (HasSuperEffectiveMoveAgainstOpponents(FALSE))
+    //     return FALSE;
+    // if (AreStatsRaised())
+    //     return FALSE;
+    // if (FindMonWithFlagsAndSuperEffective(MOVE_RESULT_DOESNT_AFFECT_FOE, 2)
+    //     || FindMonWithFlagsAndSuperEffective(MOVE_RESULT_NOT_VERY_EFFECTIVE, 3))
+    //     return TRUE;
 
     return FALSE;
 }
@@ -1089,12 +1063,13 @@ u8 GetMostSuitableMonToSwitchInto(void)
     u8 bestMonId;
     u8 battlerIn1, battlerIn2;
     s32 firstId;
-    s32 lastId; // + 1
+    s32 lastId;
     struct Pokemon *party;
     s32 i, j;
     u8 invalidMons;
     u16 move;
-    bool8 checkedAllMonForSEMoves = FALSE;  // We have checked all Pokemon in the party for if they have a super effective move
+    u8 consideredSpeed, bestSpeed;
+    bool8 checkedAllMonForSEMoves = FALSE;
 
     if (*(gBattleStruct->monToSwitchIntoId + gActiveBattler) != PARTY_SIZE)
         return *(gBattleStruct->monToSwitchIntoId + gActiveBattler);
@@ -1109,7 +1084,6 @@ u8 GetMostSuitableMonToSwitchInto(void)
         else
             battlerIn2 = GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gActiveBattler)));
 
-        // UB: It considers the opponent only player's side even though it can battle alongside player.
         opposingBattler = Random() & BIT_FLANK;
         if (gAbsentBattlerFlags & gBitTable[opposingBattler])
             opposingBattler ^= BIT_FLANK;
@@ -1138,77 +1112,9 @@ u8 GetMostSuitableMonToSwitchInto(void)
     else
         party = gEnemyParty;
 
-    invalidMons = 0;
+    bestSpeed = 0;
 
-    while (invalidMons != (1 << PARTY_SIZE) - 1) // All mons are invalid.
-    {
-        bestDmg = 255;
-        bestMonId = PARTY_SIZE;
-        // Find the mon whose type is the most suitable offensively.
-        for (i = firstId; i < lastId; i++)
-        {
-            u16 species = GetMonData(&party[i], MON_DATA_SPECIES);
-            if (species != SPECIES_NONE
-                && GetMonData(&party[i], MON_DATA_HP) != 0
-                && !(gBitTable[i] & invalidMons)
-                && gBattlerPartyIndexes[battlerIn1] != i
-                && gBattlerPartyIndexes[battlerIn2] != i
-                && i != *(gBattleStruct->monToSwitchIntoId + battlerIn1)
-                && i != *(gBattleStruct->monToSwitchIntoId + battlerIn2))
-            {
-                u8 type1 = gSpeciesInfo[species].types[0];
-                u8 type2 = gSpeciesInfo[species].types[1];
-                u8 typeDmg = TYPE_MUL_NORMAL;
-                ModulateByTypeEffectiveness(gBattleMons[opposingBattler].type1, type1, type2, &typeDmg);
-                ModulateByTypeEffectiveness(gBattleMons[opposingBattler].type2, type1, type2, &typeDmg);
-                
-                if (bestDmg > typeDmg)
-                {
-                    bestDmg = typeDmg;
-                    bestMonId = i;
-                }
-            }
-            else
-            {
-                invalidMons |= gBitTable[i];
-            }
-        }
-
-        // Ok, we know the mon has the right typing but does it have at least one super effective move?
-        if (bestMonId != PARTY_SIZE)
-        {
-            for (i = 0; i < MAX_MON_MOVES; i++)
-            {
-                move = GetMonData(&party[bestMonId], MON_DATA_MOVE1 + i);
-                if (move != MOVE_NONE && TypeCalc(move, gActiveBattler, opposingBattler) & MOVE_RESULT_SUPER_EFFECTIVE)
-                    break;
-            }
-
-            if (i != MAX_MON_MOVES || (checkedAllMonForSEMoves && bestDmg <= TYPE_MUL_NOT_EFFECTIVE))
-                return bestMonId; // Has both the typing and at least one super effective move.
-
-            invalidMons |= gBitTable[bestMonId]; // Sorry buddy, we want something better.
-            if (invalidMons == 0x3F && !checkedAllMonForSEMoves)  // If we already checked all for a super effective move, then use the one with the best typing
-            {
-                invalidMons = 0;
-                checkedAllMonForSEMoves = TRUE;
-            }
-        }
-        else
-        {
-            invalidMons = (1 << PARTY_SIZE) - 1; // No viable mon to switch.
-        }
-    }
-
-    gDynamicBasePower = 0;
-    gBattleStruct->dynamicMoveType = 0;
-    gBattleScripting.dmgMultiplier = 1;
-    gMoveResultFlags = 0;
-    gCritMultiplier = 1;
-    bestDmg = 0;
-    bestMonId = PARTY_SIZE;
-
-    // If we couldn't find the best mon in terms of typing, find the one that deals most damage.
+    // Find the fastest Pokemon
     for (i = firstId; i < lastId; i++)
     {
         if ((u16)(GetMonData(&party[i], MON_DATA_SPECIES)) == SPECIES_NONE)
@@ -1224,20 +1130,12 @@ u8 GetMostSuitableMonToSwitchInto(void)
         if (i == *(gBattleStruct->monToSwitchIntoId + battlerIn2))
             continue;
 
-        for (j = 0; j < MAX_MON_MOVES; j++)
+        consideredSpeed = GetMonData(&party[i], MON_DATA_SPEED);
+
+        if (consideredSpeed > bestSpeed)
         {
-            move = GetMonData(&party[i], MON_DATA_MOVE1 + j);
-            gBattleMoveDamage = 0;
-            if (move != MOVE_NONE && gBattleMoves[move].power != 1)
-            {
-                AI_CalcDmg(gActiveBattler, opposingBattler);
-                TypeCalc(move, gActiveBattler, opposingBattler);
-            }
-            if (bestDmg < gBattleMoveDamage)
-            {
-                bestDmg = gBattleMoveDamage;
-                bestMonId = i;
-            }
+            bestSpeed = consideredSpeed;
+            bestMonId = i;
         }
     }
 
