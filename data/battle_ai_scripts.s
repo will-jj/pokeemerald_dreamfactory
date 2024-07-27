@@ -478,6 +478,7 @@ AI_CBM_PerishSong:
 
 AI_CBM_DamageDuringSleep:
 	if_not_status AI_USER, STATUS1_SLEEP, Score_Minus10
+    if_waking AI_USER, Score_Minus10
 	end
 
 AI_CBM_HealBell:
