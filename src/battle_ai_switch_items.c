@@ -856,7 +856,7 @@ static bool8 ShouldSwitch(void)
         return FALSE;
     if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_ARENA_TRAP) & !(IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING)) & !(ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE)))
         return FALSE;
-    if (ABILITY_ON_OPPOSING_FIELD(ABILITY_MAGNET_PULL) & IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_STEEL))
+    if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_MAGNET_PULL) & IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_STEEL))
         return FALSE;
     if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
         return FALSE;
