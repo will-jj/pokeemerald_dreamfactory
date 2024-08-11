@@ -854,23 +854,10 @@ static bool8 ShouldSwitch(void)
         return FALSE;
     if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_SHADOW_TAG))
         return FALSE;
-    if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_ARENA_TRAP))
-    {
-        if (IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING))
-            return TRUE;
-        else
-        {
-            if (ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE))
-                return TRUE;
-            else
-                return FALSE;
-        }
-    }
-    if (ABILITY_ON_FIELD2(ABILITY_MAGNET_PULL))
-    {
-        if (IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_STEEL))
-            return FALSE;
-    }
+    if (ABILITY_ON_OPPOSING_FIELD(gActiveBattler, ABILITY_ARENA_TRAP) & !(IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING)) & !(ABILITY_ON_OWN_FIELD(gActiveBattler, ABILITY_LEVITATE)))
+        return FALSE;
+    if (ABILITY_ON_OPPOSING_FIELD(ABILITY_MAGNET_PULL) & IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_STEEL))
+        return FALSE;
     if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
         return FALSE;
 
