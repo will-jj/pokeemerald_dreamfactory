@@ -654,7 +654,7 @@ static bool8 ShouldSwitchIfLowScore(void)
         }
 
         //Find whether Baton Pass could have been chosen, so the AI does not switch if it has chosen to use Baton Pass
-        if (maxScore == currentScore && gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect = EFFECT_BATON_PASS)
+        if (maxScore == currentScore && gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect == EFFECT_BATON_PASS)
             BatonPassChosen = TRUE;
     }
 
