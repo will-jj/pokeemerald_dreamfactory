@@ -242,7 +242,7 @@ static bool8 ShouldSwitchIfLowScore(void)
     s32 i, j;
     s8 currentScore;
     u8 *dynamicMoveType;
-    u8 damageVar, consideredEffect, teamHasRapidSpin, aiCanFaint, targetCanFaint, isFaster, hasPriority, hasWishCombo;
+    u8 damageVar, consideredEffect, teamHasRapidSpin, aiCanFaint, targetCanFaint, isFaster, hasPriority, hasWishCombo, BatonPassChosen;
     u16 hp, species;
     s8 maxScore = 0;
     s8 threshold = 94;
