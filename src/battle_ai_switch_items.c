@@ -260,7 +260,7 @@ static bool8 ShouldSwitchIfLowScore(void)
     u8 healingEffects[] = {EFFECT_MOONLIGHT, EFFECT_MORNING_SUN, EFFECT_SYNTHESIS, EFFECT_WISH, EFFECT_REST, EFFECT_SOFTBOILED, EFFECT_RESTORE_HP};
 
     //Initialising booleans
-    teamHasRapidSpin = aiCanFaint = targetCanFaint = isFaster = hasPriority = hasWishCombo = FALSE;
+    teamHasRapidSpin = aiCanFaint = targetCanFaint = isFaster = hasPriority = hasWishCombo = BatonPassChosen = FALSE;
 
     DebugPrintf("Checking ShouldSwitchIfLowScore.");
 
@@ -648,12 +648,19 @@ static bool8 ShouldSwitchIfLowScore(void)
         currentScore = gBattleResources->ai->score[i];
 
         if (maxScore < currentScore)
+        {
             maxScore = currentScore;
+            BatonPassChosen = FALSE;
+        }
+
+        //Find whether Baton Pass could have been chosen, so the AI does not switch if it has chosen to use Baton Pass
+        if (maxScore == currentScore && gBattleMoves[gBattleMons[gActiveBattler].moves[i]].effect = EFFECT_BATON_PASS)
+            BatonPassChosen = TRUE;
     }
 
     DebugPrintf("Max score found for %d is %d.",gBattleMons[gActiveBattler].species,maxScore);
 
-    if ((maxScore + Random() % 2) < threshold)
+    if ((maxScore + Random() % 2) < threshold && !(BatonPassChosen))
     {
         *(gBattleStruct->AI_monToSwitchIntoId + gActiveBattler) = PARTY_SIZE;
         BtlController_EmitTwoReturnValues(BUFFER_B, B_ACTION_SWITCH, 0);

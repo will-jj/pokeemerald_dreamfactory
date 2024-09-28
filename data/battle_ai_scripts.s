@@ -2476,6 +2476,7 @@ AI_CV_Endure_DontUse:
 	end
 
 AI_CV_BatonPass:
+	if_status3 AI_USER, STATUS3_LEECHSEED, AI_CV_BatonPass_Minus7
 	if_status2 AI_USER, STATUS2_SUBSTITUTE, AI_CV_BatonPass_Plus1
 	if_stat_level_more_than AI_USER, STAT_ATK, 6, AI_CV_BatonPass_Plus1_Random
 	if_stat_level_more_than AI_USER, STAT_DEF, 6, AI_CV_BatonPass_Plus1_Random
@@ -2490,6 +2491,10 @@ AI_CV_BatonPass_Plus1_Random:
 	if_random_less_than 96, AI_End
 AI_CV_BatonPass_Plus1:
 	score +1
+	end
+
+AI_CV_BatonPass_Minus7:
+	score -7
 	end
 
 AI_CV_RainDance:
