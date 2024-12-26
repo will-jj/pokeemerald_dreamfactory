@@ -368,14 +368,14 @@ BattleFrontier_Lounge3_Text_GetToBattleDomeDouble::
 	.string "Both of our futures depend on you!$"
 
 BattleFrontier_Lounge3_Text_GetToBattleFactorySingle::
-	.string "Get to the BATTLE FACTORY's\n"
+	.string "Get to the DREAM FACTORY's\n"
 	.string "Battle Swap Single Tourney pronto!\p"
 	.string "It's a must-win situation!\n"
 	.string "Don't blow your chance!\l"
 	.string "Both of our futures depend on you!$"
 
 BattleFrontier_Lounge3_Text_GetToBattleFactoryDouble::
-	.string "Get to the BATTLE FACTORY's\n"
+	.string "Get to the DREAM FACTORY's\n"
 	.string "Battle Swap Double Tourney pronto!\p"
 	.string "It's a must-win situation!\n"
 	.string "Don't blow your chance!\l"
