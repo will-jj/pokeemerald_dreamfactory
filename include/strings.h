@@ -1323,6 +1323,8 @@ extern const u8 gText_MultiBattleRoomResults[];
 extern const u8 gText_LinkMultiBattleRoomResults[];
 extern const u8 gText_Lv502[];
 extern const u8 gText_OpenLv[];
+extern const u8 gText_Lv502Rec[];
+extern const u8 gText_OpenLvRec[];
 extern const u8 gText_RentalSwap[];
 extern const u8 gText_ClearStreak[];
 extern const u8 gText_Total[];
