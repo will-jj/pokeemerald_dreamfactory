@@ -2114,6 +2114,7 @@ static u16 FactoryGetWinStreak(u8 battleMode, u8 lvlMode)
 
 void BufferSaveMenuText(u8 textId, u8 *dest, u8 color)
 {
+    u16 record;
     s32 curFlag;
     s32 flagCount;
     u8 *endOfString;
@@ -2156,12 +2157,12 @@ void BufferSaveMenuText(u8 textId, u8 *dest, u8 color)
             *endOfString = EOS;
             break;
         case SAVE_MENU_OL_REC:
-            u16 recordOL = FactoryGetWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_OPEN);
-            string = ConvertIntToDecimalStringN(string, MAX_STREAK, STR_CONV_MODE_RIGHT_ALIGN, 4);
+            record = FactoryGetWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_OPEN);
+            string = ConvertIntToDecimalStringN(string, record, STR_CONV_MODE_RIGHT_ALIGN, 4);
             break;
         case SAVE_MENU_50_REC:
-            u16 record50 = FactoryGetWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_50);
-            string = ConvertIntToDecimalStringN(string, record50, STR_CONV_MODE_RIGHT_ALIGN, 4);
+            record = FactoryGetWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_50);
+            string = ConvertIntToDecimalStringN(string, record, STR_CONV_MODE_RIGHT_ALIGN, 4);
             break;
     }
 }
