@@ -2143,5 +2143,14 @@ void BufferSaveMenuText(u8 textId, u8 *dest, u8 color)
             *string = flagCount + CHAR_0;
             *endOfString = EOS;
             break;
+        case SAVE_MENU_OL_REC:
+            u16 recordOL = gSaveBlock2Ptr->frontier.factoryWinStreaks[0][1];
+            string = ConvertIntToDecimalStringN(string, recordOL, STR_CONV_MODE_RIGHT_ALIGN, 4);
+            break;
+        case SAVE_MENU_50_REC:
+            u16 record50 = gSaveBlock2Ptr->frontier.factoryWinStreaks[0][0];
+            string = ConvertIntToDecimalStringN(string, record50, STR_CONV_MODE_RIGHT_ALIGN, 4);
+            break;
+
     }
 }
