@@ -45,7 +45,7 @@ gText_Birch_SoItsPlayer::
 gText_Birch_YourePlayer::
 	.string "Ah, okay!\p"
 	.string "You're {PLAYER}{KUN} who's come to\n"
-	.string "compete at the BATTLE FACTORY.\l"
+	.string "compete at the DREAM FACTORY.\l"
 	.string "I get it now!\p"
 	.string "$"
 

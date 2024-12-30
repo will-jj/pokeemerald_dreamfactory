@@ -312,7 +312,7 @@ BattleFrontier_OutsideWest_Text_BattleDomeSign:
 	.string "Your path to the invincible superstar!$"
 
 BattleFrontier_OutsideWest_Text_BattleFactorySign:
-	.string "This is the BATTLE FACTORY!\n"
+	.string "This is the DREAM FACTORY!\n"
 	.string "Seek out the toughest POKéMON!$"
 
 BattleFrontier_OutsideWest_Text_BattlePikeSign:
@@ -393,7 +393,7 @@ BattleFrontier_OutsideWest_Text_BigGuySaidIllLendYouMons:
 	.string "He said, “I'll lend you POKéMON!”$"
 
 BattleFrontier_OutsideWest_Text_WhosRaisingThoseRentalMons:
-	.string "That's the BATTLE FACTORY.\n"
+	.string "That's the DREAM FACTORY.\n"
 	.string "You can rent strong POKéMON there.\p"
 	.string "But it makes me wonder.\n"
 	.string "Who's raising those rental POKéMON?$"

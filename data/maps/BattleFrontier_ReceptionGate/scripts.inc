@@ -347,7 +347,7 @@ BattleFrontier_ReceptionGate_Text_BattleArenaInfo:
 	.string "takes place at the BATTLE ARENA.$"
 
 BattleFrontier_ReceptionGate_Text_BattleFactoryInfo:
-	.string "The BATTLE FACTORY is the large\n"
+	.string "The DREAM FACTORY is the large\n"
 	.string "building that is the closest to us.\p"
 	.string "An event called the Battle Swap\n"
 	.string "is conducted there.\p"
