@@ -20,6 +20,8 @@
 #include "window.h"
 #include "constants/songs.h"
 
+#include "constants/battle_frontier.h"
+
 #define DLG_WINDOW_PALETTE_NUM 15
 #define DLG_WINDOW_BASE_TILE_NUM 0x200
 #define STD_WINDOW_PALETTE_NUM 14
@@ -2100,8 +2102,19 @@ void BlitMenuInfoIcon(u8 windowId, u8 iconId, u16 x, u16 y)
     BlitBitmapRectToWindow(windowId, &gMenuInfoElements_Gfx[sMenuInfoIcons[iconId].offset * 32], 0, 0, 128, 128, x, y, sMenuInfoIcons[iconId].width, sMenuInfoIcons[iconId].height);
 }
 
+// Duplication of function from /src/frontier_util.c
+static u16 FactoryGetWinStreak(u8 battleMode, u8 lvlMode)
+{
+    u16 winStreak = gSaveBlock2Ptr->frontier.factoryWinStreaks[battleMode][lvlMode];
+    if (winStreak > MAX_STREAK)
+        return MAX_STREAK;
+    else
+        return winStreak;
+}
+
 void BufferSaveMenuText(u8 textId, u8 *dest, u8 color)
 {
+    u16 record;
     s32 curFlag;
     s32 flagCount;
     u8 *endOfString;
@@ -2142,6 +2155,14 @@ void BufferSaveMenuText(u8 textId, u8 *dest, u8 color)
             }
             *string = flagCount + CHAR_0;
             *endOfString = EOS;
+            break;
+        case SAVE_MENU_OL_REC:
+            record = FactoryGetWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_OPEN);
+            string = ConvertIntToDecimalStringN(string, record, STR_CONV_MODE_RIGHT_ALIGN, 4);
+            break;
+        case SAVE_MENU_50_REC:
+            record = FactoryGetWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_50);
+            string = ConvertIntToDecimalStringN(string, record, STR_CONV_MODE_RIGHT_ALIGN, 4);
             break;
     }
 }
