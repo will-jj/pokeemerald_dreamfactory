@@ -4,7 +4,7 @@ This is a mod based on the decompilation of Pokémon Emerald. The original decom
 
 # Credits
 
-This mod was made by [DisasterArea96](https://github.com/DisasterArea96). It also features code written & committed by [MarcusWheeler](https://github.com/MarcusWheeler). This mod could not be possible without help from the [pret Discord](https://discord.gg/d5dubZ3), especially but not exclusively [GriffinR](https://github.com/GriffinRichards).
+This mod was made by [DisasterArea96](https://github.com/DisasterArea96). It also features code written & committed by [William Jackson](https://github.com/will-jj) and [MarcusWheeler](https://github.com/MarcusWheeler). This mod could not be possible without help from the [pret Discord](https://discord.gg/d5dubZ3), especially but not exclusively [GriffinR](https://github.com/GriffinRichards).
 
 # Related Tools
 
