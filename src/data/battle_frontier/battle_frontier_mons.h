@@ -2716,7 +2716,7 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_GRANBULL_3] = {
         .species = SPECIES_GRANBULL,
-        .moves = {MOVE_ROCK_SLIDE, MOVE_THUNDER_WAVE, MOVE_SMELLING_SALTS, MOVE_BRICK_BREAK},
+        .moves = {MOVE_ROCK_SLIDE, MOVE_THUNDER_WAVE, MOVE_SMELLING_SALT, MOVE_BRICK_BREAK},
         .itemTableId = BATTLE_FRONTIER_ITEM_LUM_BERRY,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_ATTACK,
         .nature = NATURE_ADAMANT
@@ -4214,7 +4214,7 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_MACHAMP_3] = {
         .species = SPECIES_MACHAMP,
-        .moves = {MOVE_ROLLING_KICK, MOVE_FORESIGHT, MOVE_BODY_SLAM, MOVE_SMELLING_SALTS},
+        .moves = {MOVE_ROLLING_KICK, MOVE_FORESIGHT, MOVE_BODY_SLAM, MOVE_SMELLING_SALT},
         .itemTableId = BATTLE_FRONTIER_ITEM_CHERI_BERRY,
         .evSpread = F_EV_SPREAD_HP | F_EV_SPREAD_ATTACK,
         .nature = NATURE_ADAMANT
