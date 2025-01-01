@@ -4,6 +4,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
+#include "constants/battle_frontier.h"
 #include "data.h"
 #include "decompress.h"
 #include "event_data.h"
@@ -240,9 +241,9 @@ static void Task_NewGameBirchSpeech_Cleanup(u8);
 static void SpriteCB_Null();
 static void Task_NewGameBirchSpeech_ReturnFromNamingScreenShowTextbox(u8);
 static void MainMenu_FormatSavegamePlayer(void);
-static void MainMenu_FormatSavegamePokedex(void);
 static void MainMenu_FormatSavegameTime(void);
-static void MainMenu_FormatSavegameBadges(void);
+static void MainMenu_FormatSavegameLv50Record(void);
+static void MainMenu_FormatSavegameOLRecord(void);
 static void NewGameBirchSpeech_CreateDialogueWindowBorder(u8, u8, u8, u8, u8, u8);
 
 // .rodata
@@ -2157,9 +2158,9 @@ static void CreateMainMenuErrorWindow(const u8 *str)
 static void MainMenu_FormatSavegameText(void)
 {
     MainMenu_FormatSavegamePlayer();
-    MainMenu_FormatSavegamePokedex();
+    MainMenu_FormatSavegameLv50Record();
     MainMenu_FormatSavegameTime();
-    MainMenu_FormatSavegameBadges();
+    MainMenu_FormatSavegameOLRecord();
 }
 
 static void MainMenu_FormatSavegamePlayer(void)
@@ -2182,38 +2183,34 @@ static void MainMenu_FormatSavegameTime(void)
     AddTextPrinterParameterized3(2, FONT_NORMAL, GetStringRightAlignXOffset(FONT_NORMAL, str, 0xD0), 17, sTextColor_MenuInfo, TEXT_SKIP_DRAW, str);
 }
 
-static void MainMenu_FormatSavegamePokedex(void)
+static u16 FactoryGetRecordWinStreak(u8 battleMode, u8 lvlMode)
 {
-    u8 str[0x20];
-    u16 dexCount;
-
-    if (FlagGet(FLAG_SYS_POKEDEX_GET) == TRUE)
-    {
-        if (IsNationalPokedexEnabled())
-            dexCount = GetNationalPokedexCount(FLAG_GET_CAUGHT);
-        else
-            dexCount = GetHoennPokedexCount(FLAG_GET_CAUGHT);
-        StringExpandPlaceholders(gStringVar4, gText_ContinueMenuPokedex);
-        AddTextPrinterParameterized3(2, FONT_NORMAL, 0, 33, sTextColor_MenuInfo, TEXT_SKIP_DRAW, gStringVar4);
-        ConvertIntToDecimalStringN(str, dexCount, STR_CONV_MODE_LEFT_ALIGN, 3);
-        AddTextPrinterParameterized3(2, FONT_NORMAL, GetStringRightAlignXOffset(FONT_NORMAL, str, 100), 33, sTextColor_MenuInfo, TEXT_SKIP_DRAW, str);
-    }
+    u16 winStreak = gSaveBlock2Ptr->frontier.factoryRecordWinStreaks[battleMode][lvlMode];
+    if (winStreak > MAX_STREAK)
+        return MAX_STREAK;
+    else
+        return winStreak;
 }
 
-static void MainMenu_FormatSavegameBadges(void)
+static void MainMenu_FormatSavegameLv50Record(void)
 {
     u8 str[0x20];
-    u8 badgeCount = 0;
-    u32 i;
+    u16 record = FactoryGetRecordWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_50);
 
-    for (i = FLAG_BADGE01_GET; i < FLAG_BADGE01_GET + NUM_BADGES; i++)
-    {
-        if (FlagGet(i))
-            badgeCount++;
-    }
-    StringExpandPlaceholders(gStringVar4, gText_ContinueMenuBadges);
+    StringExpandPlaceholders(gStringVar4, gText_Lv502RecShort);
+    AddTextPrinterParameterized3(2, FONT_NORMAL, 0, 33, sTextColor_MenuInfo, TEXT_SKIP_DRAW, gStringVar4);
+    ConvertIntToDecimalStringN(str, record, STR_CONV_MODE_RIGHT_ALIGN, 4);
+    AddTextPrinterParameterized3(2, FONT_NORMAL, GetStringRightAlignXOffset(FONT_NORMAL, str, 100), 33, sTextColor_MenuInfo, TEXT_SKIP_DRAW, str);
+}
+
+static void MainMenu_FormatSavegameOLRecord(void)
+{
+    u8 str[0x20];
+    u16 record = FactoryGetRecordWinStreak(FRONTIER_MODE_SINGLES, FRONTIER_LVL_OPEN);
+
+    StringExpandPlaceholders(gStringVar4, gText_OpenLvRecShort);
     AddTextPrinterParameterized3(2, FONT_NORMAL, 0x6C, 33, sTextColor_MenuInfo, TEXT_SKIP_DRAW, gStringVar4);
-    ConvertIntToDecimalStringN(str, badgeCount, STR_CONV_MODE_LEADING_ZEROS, 1);
+    ConvertIntToDecimalStringN(str, record, STR_CONV_MODE_RIGHT_ALIGN, 4);
     AddTextPrinterParameterized3(2, FONT_NORMAL, GetStringRightAlignXOffset(FONT_NORMAL, str, 0xD0), 33, sTextColor_MenuInfo, TEXT_SKIP_DRAW, str);
 }
 
