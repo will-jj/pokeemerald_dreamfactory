@@ -8057,7 +8057,7 @@ const struct FacilityMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_WALREIN_3] = {
         .species = SPECIES_WALREIN,
-        .moves = {MOVE_ICE_BALL, MOVE_SUBSTITUTE, MOVE_DEFENSE_CURSE, MOVE_ENCORE},
+        .moves = {MOVE_ICE_BALL, MOVE_SUBSTITUTE, MOVE_DEFENSE_CURL, MOVE_ENCORE},
         .itemTableId = BATTLE_FRONTIER_ITEM_LEFTOVERS,
         .evSpread = F_EV_SPREAD_SP_ATTACK | F_EV_SPREAD_SPEED,
         .nature = NATURE_TIMID
