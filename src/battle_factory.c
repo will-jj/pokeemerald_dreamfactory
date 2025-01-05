@@ -337,42 +337,21 @@ static void GenerateOpponentMons(void)
     i = 0;
     while (i != FRONTIER_PARTY_SIZE)
     {
-        u16 monId = GetFactoryMonId(lvlMode, challengeNum, FALSE);
+        u16 monId = 0;
 
-        // Unown (FRONTIER_MON_UNOWN) is forbidden on opponent Factory teams.
-        if (gFacilityTrainerMons[monId].species == SPECIES_UNOWN)
-            continue;
-
-        // Ensure none of the opponent's pokemon are the same as the potential rental pokemon for the player
-        for (j = 0; j < (int)ARRAY_COUNT(gSaveBlock2Ptr->frontier.rentalMons); j++)
+        if (i == 0)
         {
-            if (gFacilityTrainerMons[monId].species == gFacilityTrainerMons[gSaveBlock2Ptr->frontier.rentalMons[j].monId].species)
-                break;
+            monId = FRONTIER_MON_MAGNETON_2;
         }
-        if (j != (int)ARRAY_COUNT(gSaveBlock2Ptr->frontier.rentalMons))
-            continue;
-
-        // "High tier" pokemon are only allowed on open level mode
-        if (lvlMode == FRONTIER_LVL_50 && monId > FRONTIER_MONS_HIGH_TIER)
-            continue;
-
-        // Ensure this species hasn't already been chosen for the opponent
-        for (k = firstMonId; k < firstMonId + i; k++)
+        if (i == 1)
         {
-            if (species[k] == gFacilityTrainerMons[monId].species)
-                break;
+            monId = FRONTIER_MON_HYPNO_2;
         }
-        if (k != firstMonId + i)
-            continue;
-
-        // Ensure held items don't repeat on the opponent's team
-        for (k = firstMonId; k < firstMonId + i; k++)
+        if (i == 2)
         {
-            if (heldItems[k] != ITEM_NONE && heldItems[k] == gBattleFrontierHeldItems[gFacilityTrainerMons[monId].itemTableId])
-                break;
+            monId = FRONTIER_MON_GYARADOS_3;
         }
-        if (k != firstMonId + i)
-            continue;
+
 
         // Successful selection
         species[i] = gFacilityTrainerMons[monId].species;
@@ -558,31 +537,18 @@ static void GenerateInitialRentalMons(void)
     i = 0;
     while (i != PARTY_SIZE)
     {
-        if (i < rentalRank) // The more times the player has rented, the more initial rentals are generated from a better set of pokemon
-            monId = GetFactoryMonId(factoryLvlMode, challengeNum, TRUE);
-        else
-            monId = GetFactoryMonId(factoryLvlMode, challengeNum, FALSE);
-
-        if (gFacilityTrainerMons[monId].species == SPECIES_UNOWN)
-            continue;
-
-        // Cannot have two pokemon of the same species.
-        for (j = firstMonId; j < firstMonId + i; j++)
+        if (i == 0)
         {
-            if (species[j] == gFacilityTrainerMons[monId].species)
-                break;
+            monId = FRONTIER_MON_LINOONE_4;
         }
-        if (j != firstMonId + i)
-            continue;
-
-        // Cannot have two same held items.
-        for (j = firstMonId; j < firstMonId + i; j++)
+        if (i == 1)
         {
-            if (heldItems[j] != ITEM_NONE && heldItems[j] == gBattleFrontierHeldItems[gFacilityTrainerMons[monId].itemTableId])
-                break;
+            monId = FRONTIER_MON_MUK_4;
         }
-        if (j != firstMonId + i)
-            continue;
+        if (i == 2)
+        {
+            monId = FRONTIER_MON_JUMPLUFF_3;
+        }
 
         gSaveBlock2Ptr->frontier.rentalMons[i].monId = monId;
         species[i] = gFacilityTrainerMons[monId].species;
@@ -733,7 +699,7 @@ u8 GetFactoryMonFixedIV(u8 challengeNum, bool8 isLastBattle)
     u8 ivSet;
     bool8 useHigherIV = isLastBattle ? TRUE : FALSE;
 
-    if (challengeNum >= ARRAY_COUNT(sFixedIVTable))
+    if (1)
         ivSet = ARRAY_COUNT(sFixedIVTable) - 1;
     else
         ivSet = challengeNum;
