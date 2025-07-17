@@ -2292,12 +2292,19 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         iv = (value & (MAX_IV_MASK << 10)) >> 10;
         SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
     }
-
-    if (gSpeciesInfo[species].abilities[1])
+    if (gSaveBlock2Ptr->frontier.monsFromSave)
     {
-        value = personality & 1;
-        SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
+        value = gSaveBlock2Ptr->frontier.rentalMons[gSaveBlock2Ptr->frontier.currentMonIndex].abilityNum;
     }
+    else
+    {
+        if (gSpeciesInfo[species].abilities[1])
+        {
+            value = personality & 1;
+        }
+    }
+
+    SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
 
     GiveBoxMonInitialMoveset(boxMon);
 }

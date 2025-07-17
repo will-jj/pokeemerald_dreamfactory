@@ -339,40 +339,48 @@ static void GenerateOpponentMons(void)
     {
         u16 monId = GetFactoryMonId(lvlMode, challengeNum, FALSE);
 
-        // Unown (FRONTIER_MON_UNOWN) is forbidden on opponent Factory teams.
-        if (gFacilityTrainerMons[monId].species == SPECIES_UNOWN)
-            continue;
-
-        // Ensure none of the opponent's pokemon are the same as the potential rental pokemon for the player
-        for (j = 0; j < (int)ARRAY_COUNT(gSaveBlock2Ptr->frontier.rentalMons); j++)
+        if (gSaveBlock2Ptr->frontier.monsFromSave)
         {
-            if (gFacilityTrainerMons[monId].species == gFacilityTrainerMons[gSaveBlock2Ptr->frontier.rentalMons[j].monId].species)
-                break;
+            monId = gSaveBlock2Ptr->frontier.rentalMons[i + FRONTIER_PARTY_SIZE].monId;
         }
-        if (j != (int)ARRAY_COUNT(gSaveBlock2Ptr->frontier.rentalMons))
-            continue;
-
-        // "High tier" pokemon are only allowed on open level mode
-        if (lvlMode == FRONTIER_LVL_50 && monId > FRONTIER_MONS_HIGH_TIER)
-            continue;
-
-        // Ensure this species hasn't already been chosen for the opponent
-        for (k = firstMonId; k < firstMonId + i; k++)
+        else
         {
-            if (species[k] == gFacilityTrainerMons[monId].species)
-                break;
-        }
-        if (k != firstMonId + i)
-            continue;
 
-        // Ensure held items don't repeat on the opponent's team
-        for (k = firstMonId; k < firstMonId + i; k++)
-        {
-            if (heldItems[k] != ITEM_NONE && heldItems[k] == gBattleFrontierHeldItems[gFacilityTrainerMons[monId].itemTableId])
-                break;
+            // Unown (FRONTIER_MON_UNOWN) is forbidden on opponent Factory teams.
+            if (gFacilityTrainerMons[monId].species == SPECIES_UNOWN)
+                continue;
+
+            // Ensure none of the opponent's pokemon are the same as the potential rental pokemon for the player
+            for (j = 0; j < (int)ARRAY_COUNT(gSaveBlock2Ptr->frontier.rentalMons); j++)
+            {
+                if (gFacilityTrainerMons[monId].species == gFacilityTrainerMons[gSaveBlock2Ptr->frontier.rentalMons[j].monId].species)
+                    break;
+            }
+            if (j != (int)ARRAY_COUNT(gSaveBlock2Ptr->frontier.rentalMons))
+                continue;
+
+            // "High tier" pokemon are only allowed on open level mode
+            if (lvlMode == FRONTIER_LVL_50 && monId > FRONTIER_MONS_HIGH_TIER)
+                continue;
+
+            // Ensure this species hasn't already been chosen for the opponent
+            for (k = firstMonId; k < firstMonId + i; k++)
+            {
+                if (species[k] == gFacilityTrainerMons[monId].species)
+                    break;
+            }
+            if (k != firstMonId + i)
+                continue;
+
+            // Ensure held items don't repeat on the opponent's team
+            for (k = firstMonId; k < firstMonId + i; k++)
+            {
+                if (heldItems[k] != ITEM_NONE && heldItems[k] == gBattleFrontierHeldItems[gFacilityTrainerMons[monId].itemTableId])
+                    break;
+            }
+            if (k != firstMonId + i)
+                continue;
         }
-        if (k != firstMonId + i)
-            continue;
 
         // Successful selection
         species[i] = gFacilityTrainerMons[monId].species;

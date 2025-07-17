@@ -1861,6 +1861,11 @@ static void FillFactoryFrontierTrainerParty(u16 trainerId, u8 firstMonId)
     for (i = 0; i < FRONTIER_PARTY_SIZE; i++)
     {
         u16 monId = gFrontierTempParty[i];
+        if(gSaveBlock2Ptr->frontier.monsFromSave)
+        {
+            gSaveBlock2Ptr->frontier.currentMonIndex = i + FRONTIER_PARTY_SIZE;
+            fixedIV = gSaveBlock2Ptr->frontier.rentalMons[i + FRONTIER_PARTY_SIZE].ivs;
+        }
         CreateMonWithEVSpreadNatureOTID(&gEnemyParty[firstMonId + i],
                                              gFacilityTrainerMons[monId].species,
                                              level,
@@ -1876,6 +1881,8 @@ static void FillFactoryFrontierTrainerParty(u16 trainerId, u8 firstMonId)
         SetMonData(&gEnemyParty[firstMonId + i], MON_DATA_FRIENDSHIP, &friendship);
         SetMonData(&gEnemyParty[firstMonId + i], MON_DATA_HELD_ITEM, &gBattleFrontierHeldItems[gFacilityTrainerMons[monId].itemTableId]);
     }
+
+    gSaveBlock2Ptr->frontier.monsFromSave = 0;
 }
 
 static void FillFactoryTentTrainerParty(u16 trainerId, u8 firstMonId)
