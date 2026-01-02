@@ -1966,7 +1966,7 @@ static void Cmd_if_type_effectiveness_with_modifiers(void)
     if (gMoveResultFlags & MOVE_RESULT_DOESNT_AFFECT_FOE)
         damageVar = AI_EFFECTIVENESS_x0;
 
-    DebugPrintf("damageVar: %d, gBattleMoveDamage: %d, +targetAbility: %d.",damageVar, gBattleMoveDamage+);
+    DebugPrintf("damageVar: %d, gBattleMoveDamage: %d, +targetAbility: %d.",damageVar, gBattleMoveDamage, targetAbility);
 
     if (damageVar == gAIScriptPtr[1])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 2);
